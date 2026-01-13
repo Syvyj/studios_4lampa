@@ -1,4 +1,4 @@
-# Studios Master for Lampa
+# Studios 4Lampa
 
 [🇺🇦 Українська версія](#-опис-українською) | [🇬🇧 English version](#-english-description)
 
