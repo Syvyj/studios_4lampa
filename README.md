@@ -63,7 +63,7 @@ Unified plugin for [Lampa](https://github.com/lampa-app/lampa) that integrates m
 1. Open your Lampa application / Відкрийте застосунок Lampa.
 2. Go to **Settings** -> **Plugins** / Перейдіть у **Налаштування** -> **Плагіни**.
 3. Click **Add Plugin** / Натисніть **Додати плагін**.
-4. Enter the URL of your hosted `studios.js` or use this link: `https://syvyj.github.io/plugins/studios.js` / Введіть URL-адресу вашого файлу `studios.js` або скористайтеся цим посиланням: `https://syvyj.github.io/plugins/studios.js`.
+4. Enter the URL of your hosted `studios.js` or use this link: `https://syvyj.github.io/studios_4lampa/studios.js` / Введіть URL-адресу вашого файлу `studios.js` або скористайтеся цим посиланням: `https://syvyj.github.io/studios_4lampa/studios.js`.
 5. Restart the application / Перезапустіть застосунок.
 
 ## ✍️ Credits
