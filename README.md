@@ -26,7 +26,7 @@
 - **Пізнавальний контент**: Добірки від Discovery, National Geographic, BBC Earth та History.
 - **Оптимізація для ТБ**: Спеціальна розмітка карток для зручного перегляду на великих екранах.
 
-![Studios Features](./promo/promo_studios_3.png)
+![Studios Features](./promo_studios_3.png)
 
 > [!TIP]
 > Вимкнути або змінити порядок каталогів можна через стандартне налаштування «Редагування меню» в Lampa.
@@ -53,7 +53,7 @@ Unified plugin for [Lampa](https://github.com/lampa-app/lampa) that integrates m
 - **Educational & Reality**: Curated content from Discovery, NatGeo, BBC Earth, etc.
 - **Optimized for TV**: Wide-card layout for better browsing on large screens.
 
-![Studios Features](./promo/promo_studios_3.png)
+![Studios Features](./promo_studios_3.png)
 
 > [!TIP]
 > You can disable or reorder catalogs via the standard "Menu Editing" setting in Lampa.
