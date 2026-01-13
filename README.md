@@ -4,7 +4,7 @@
 
 ---
 
-![Studios Master Logo](../promo/promo_studios_1.png)
+![Studios Master Logo](../promo_studios_1.png)
 
 ### ⚠️ Disclaimer / Відмова від відповідальності
 
@@ -18,7 +18,7 @@
 
 Уніфікований плагін для застосунку [Lampa](https://github.com/lampa-app/lampa), що об'єднує колекції провідних світових студій в єдиний зручний інтерфейс.
 
-![Studios Interface](../promo/Promo_studios_2.png)
+![Studios Interface](../Promo_studios_2.png)
 
 ### 🚀 Можливості
 - **Єдиний інтерфейс**: Доступ до всіх студій через основне меню сайдбару.
@@ -37,7 +37,7 @@
 
 Unified plugin for [Lampa](https://github.com/lampa-app/lampa) that integrates multiple streaming studio collections into one interface.
 
-![Studios Interface](../promo/Promo_studios_2.png)
+![Studios Interface](../Promo_studios_2.png)
 
 ### 🚀 Features
 - **Unified Interface**: Access all major studios from a single sidebar menu.
