@@ -339,7 +339,7 @@
         window.plugin_studios_master_ready = true;
 
         // Branding
-        Lampa.Noty.show('Studios Master by Syvyj розгорнуто');
+      //   Lampa.Noty.show('Studios Master by Syvyj розгорнуто');
 
         // Register components
         Lampa.Component.add('studios_main', StudiosMain);
