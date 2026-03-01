@@ -2041,7 +2041,6 @@
         }
 
         addServiceRows();
-        addPolishContentRow();
 
         // Start dynamic title modifier for icons
         modifyServiceTitles();
