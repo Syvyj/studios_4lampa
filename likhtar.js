@@ -1219,41 +1219,70 @@
                             return;
                         }
 
-                        // Беремо першу категорію ("Новинки") для цієї студії
-                        var cat = conf.categories[0];
-                        var pParams = [];
-                        pParams.push('api_key=' + getTmdbKey());
-                        pParams.push('language=' + Lampa.Storage.get('language', 'uk'));
+                        // Беремо перші дві категорії ("Новинки фільмів" та "Новинки серіалів") для міксу на головній
+                        var categoriesToLoad = conf.categories.slice(0, 2);
+                        window.LikhtarFeedsCache[id] = conf.categories || [];
 
-                        if (cat.params) {
-                            for (var key in cat.params) {
-                                var val = cat.params[key];
-                                if (val === '{current_date}') {
-                                    var d = new Date();
-                                    val = [d.getFullYear(), ('0' + (d.getMonth() + 1)).slice(-2), ('0' + d.getDate()).slice(-2)].join('-');
+                        var promises = categoriesToLoad.map(function (cat) {
+                            return new Promise(function (resolve) {
+                                var pParams = [];
+                                pParams.push('api_key=' + getTmdbKey());
+                                pParams.push('language=' + Lampa.Storage.get('language', 'uk'));
+
+                                if (cat.params) {
+                                    for (var key in cat.params) {
+                                        var val = cat.params[key];
+                                        if (val === '{current_date}') {
+                                            var d = new Date();
+                                            val = [d.getFullYear(), ('0' + (d.getMonth() + 1)).slice(-2), ('0' + d.getDate()).slice(-2)].join('-');
+                                        }
+                                        pParams.push(key + '=' + val);
+                                    }
                                 }
-                                pParams.push(key + '=' + val);
-                            }
-                        }
 
-                        var url = Lampa.TMDB.api(cat.url + '?' + pParams.join('&'));
-                        var network = new Lampa.Reguest();
+                                var url = Lampa.TMDB.api(cat.url + '?' + pParams.join('&'));
+                                var network = new Lampa.Reguest();
 
-                        network.silent(url, function (json) {
-                            if (json && json.results) {
-                                // Кешуємо внутрішні категорії для кнопки "На сторінку"
-                                window.LikhtarFeedsCache[id] = conf.categories || [];
-
-                                var items = json.results.slice(0, 20);
-                                callback({
-                                    results: items,
-                                    title: 'Сьогодні на ' + conf.title,
-                                    params: { items: { mapping: 'line', view: 15 } }
+                                network.silent(url, function (json) {
+                                    resolve(json && json.results ? json.results : []);
+                                }, function () {
+                                    resolve([]);
                                 });
-                            } else {
-                                callback({ results: [] });
-                            }
-                        }, function () { callback({ results: [] }); });
+                            });
+                        });
+
+                        Promise.all(promises).then(function (resultsArray) {
+                            var combined = [];
+                            resultsArray.forEach(function (res) {
+                                combined = combined.concat(res);
+                            });
+
+                            // Сортування за датою виходу (найновіші перші)
+                            combined.sort(function (a, b) {
+                                var dateA = new Date(a.release_date || a.first_air_date || '1970-01-01').getTime();
+                                var dateB = new Date(b.release_date || b.first_air_date || '1970-01-01').getTime();
+                                return dateB - dateA;
+                            });
+
+                            // Видалення дублікатів (за ID), якщо перетинаються
+                            var unique = [];
+                            var addedIds = {};
+                            combined.forEach(function (item) {
+                                if (!addedIds[item.id]) {
+                                    addedIds[item.id] = true;
+                                    unique.push(item);
+                                }
+                            });
+
+                            var items = unique.slice(0, 20);
+                            callback({
+                                results: items,
+                                title: 'Сьогодні на ' + conf.title,
+                                params: { items: { mapping: 'line', view: 15 } }
+                            });
+                        }).catch(function () {
+                            callback({ results: [] });
+                        });
                     }
                 }
             });
