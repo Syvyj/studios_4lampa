@@ -917,6 +917,7 @@
                                             title: s.name,
                                             component: 'studios_main',
                                             service_id: s.id,
+                                            categories: SERVICE_CONFIGS[s.id] ? SERVICE_CONFIGS[s.id].categories : [],
                                             page: 1
                                         });
                                     }
