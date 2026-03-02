@@ -282,25 +282,89 @@
         var comp = new Lampa.InteractionMain(object);
 
         comp.create = function () {
+            var _this = this;
             this.activity.loader(true);
 
-            // Магія! Ми просто беремо готові категорії, які передала кнопка "На сторінку"
             if (object.categories && object.categories.length) {
-                // Додаємо стиль "wide" (широкі картки) для краси
-                object.categories.forEach(function (cat) {
-                    if (cat.results) Lampa.Utils.extendItemsParams(cat.results, { style: { name: 'wide' } });
+                var categories = object.categories;
+                var network = new Lampa.Reguest();
+                var status = new Lampa.Status(categories.length);
+
+                status.onComplite = function () {
+                    var fulldata = [];
+                    Object.keys(status.data).sort(function (a, b) { return a - b; }).forEach(function (key) {
+                        var data = status.data[key];
+                        if (data && data.results && data.results.length) {
+                            var cat = categories[parseInt(key)];
+                            Lampa.Utils.extendItemsParams(data.results, { style: { name: 'wide' } });
+                            fulldata.push({
+                                title: cat.title,
+                                results: data.results,
+                                url: cat.url,
+                                params: cat.params,
+                                service_id: object.service_id
+                            });
+                        }
+                    });
+
+                    if (fulldata.length) {
+                        _this.build(fulldata);
+                        _this.activity.loader(false);
+                    } else {
+                        _this.empty();
+                    }
+                };
+
+                categories.forEach(function (cat, index) {
+                    var params = [];
+                    params.push('api_key=' + getTmdbKey());
+                    params.push('language=' + Lampa.Storage.get('language', 'uk'));
+
+                    if (cat.params) {
+                        for (var key in cat.params) {
+                            var val = cat.params[key];
+                            if (val === '{current_date}') {
+                                var d = new Date();
+                                val = [d.getFullYear(), ('0' + (d.getMonth() + 1)).slice(-2), ('0' + d.getDate()).slice(-2)].join('-');
+                            }
+                            params.push(key + '=' + val);
+                        }
+                    }
+
+                    var url = Lampa.TMDB.api(cat.url + '?' + params.join('&'));
+
+                    network.silent(url, function (json) {
+                        // FIX: Normalize image paths for all items
+                        if (json && json.results && Array.isArray(json.results)) {
+                            json.results.forEach(function (item) {
+                                if (!item.poster_path && item.backdrop_path) {
+                                    item.poster_path = item.backdrop_path;
+                                }
+                            });
+                        }
+                        status.append(index.toString(), json);
+                    }, function () {
+                        status.error();
+                    });
                 });
-                this.build(object.categories);
             } else {
+                this.activity.loader(false);
                 this.empty();
             }
 
-            this.activity.loader(false);
             return this.render();
         };
 
-        // Залишаємо OnMore пустим, бо ми завантажили топ-20 одразу і більше Лампі думати не треба
-        comp.onMore = function (data) { };
+        // OnMore will be handled by StudiosView 
+        comp.onMore = function (data) {
+            Lampa.Activity.push({
+                url: data.url,
+                params: data.params,
+                title: data.title,
+                component: 'studios_view',
+                page: 1
+            });
+        };
         return comp;
     }
 
