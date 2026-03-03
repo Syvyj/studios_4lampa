@@ -1563,14 +1563,7 @@
                             scrollBody.data('likhtar-more-observed', true);
 
                             // Додаємо order: 9999; щоб кнопка завжди була в самому кінці
-                            var serviceLogos = {
-                                'netflix': 'netflix.svg', 'apple': 'apple.svg', 'hbo': 'hbo.svg',
-                                'amazon': 'amazon.png', 'disney': 'disney.svg', 'paramount': 'paramount.svg',
-                                'sky_showtime': 'SkyShowtime.svg', 'hulu': 'Hulu.svg', 'syfy': 'Syfy.svg',
-                                'educational_and_reality': 'Discovery.svg'
-                            };
-                            var imgFile = serviceLogos[id] || (id + '.svg');
-                            var moreCard = $('<div class="card selector likhtar-more-btn"><div><img src="' + LIKHTAR_BASE_URL + 'logos/' + imgFile + '" onerror="this.src=\'\'" alt="На сторінку"><br>На сторінку<br><span style="color: #90caf9; font-size: 0.85em; display: block; margin-top: 0.4em;">' + config.title + '</span></div></div>');
+                            var moreCard = $('<div class="card selector likhtar-more-btn"><div><span style="font-size: 1.4em; opacity: 0.7;">→</span><br>На сторінку<br><span style="color: #90caf9; font-size: 0.85em; display: block; margin-top: 0.4em;">' + config.title + '</span></div></div>');
 
                             moreCard.on('hover:enter', (function (serviceId, sTitle) {
                                 return function () {
@@ -1690,12 +1683,6 @@
             field: { name: 'Кіно під настрій', description: 'Підбірки фільмів за жанрами та настроєм' }
         });
 
-        Lampa.SettingsApi.addParam({
-            component: 'likhtar_plugin',
-            param: { name: 'likhtar_kinooglad_enabled', type: 'trigger', default: true },
-            field: { name: 'Кіноогляд', description: 'Увімкнути розділ Кіноогляд у бічному меню, підтягує матеріали з YouTube каналів про кіно. Налаштування каналів нижче.' }
-        });
-
         // === Мітки якості та озвучки ===
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
@@ -1713,6 +1700,12 @@
             component: 'likhtar_plugin',
             param: { name: 'likhtar_show_logo_instead_text', type: 'trigger', default: true },
             field: { name: 'Логотип замість тексту', description: 'Завантажувати і показувати логотип фільму замість звичайної назви у повній картці та херо секції.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_kinooglad_enabled', type: 'trigger', default: true },
+            field: { name: 'Кіноогляд', description: 'Увімкнути розділ Кіноогляд у бічному меню, підтягує матеріали з YouTube каналів про кіно. Налаштування каналів нижче.' }
         });
 
 
@@ -2792,7 +2785,7 @@
                         applyLogo(window.LikhtarHeroLogos[movie.id].path, window.LikhtarHeroLogos[movie.id].invert);
                     } else if (!window.LikhtarHeroLogos || !window.LikhtarHeroLogos[movie.id] || !window.LikhtarHeroLogos[movie.id].fail) {
                         var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
-                        Lampa.TMDB.api((movie.name ? 'tv/' : 'movie/') + movie.id + '/images?api_key=' + getTmdbKey(), function (data) {
+                        Lampa.TMDB.api((movie.name ? 'tv/' : 'movie/') + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=' + requestLang + ',en,null', function (data) {
                             var final_logo = null;
                             if (data.logos && data.logos.length > 0) {
                                 var found = data.logos.find(function (l) { return l.iso_639_1 == requestLang; }) ||
@@ -2941,18 +2934,37 @@
             }
             
             /* Native Lampa Full Movie Tags Redesign */
-            .full-start__pg, .full-start__rate {
+            .full-start__pg, .full-start__rate,
+            .likhtar-full-badge {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
                 background: linear-gradient(135deg, #424242, #616161) !important;
                 color: #f5f5f5 !important;
                 border: 1px solid rgba(255,255,255,0.15) !important;
                 border-radius: 0.3em !important;
-                padding: 0.25em 0.5em !important;
-                font-size: 0.75em !important;
-                font-weight: 800 !important;
-                line-height: 1 !important;
-                letter-spacing: 0.05em !important;
+                padding: 0.2em 0.55em !important;
+                font-size: 0.85em !important;
+                font-weight: 700 !important;
+                line-height: 1.2 !important;
+                letter-spacing: 0.03em !important;
                 box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
-                margin-right: 0;
+                margin: 0 !important;
+                text-transform: uppercase !important;
+                height: auto !important;
+                min-height: 0 !important;
+            }
+            .likhtar-full-badge--ua {
+                background: linear-gradient(135deg, #1565c0, #42a5f5) !important;
+                color: #fff !important;
+            }
+            .likhtar-full-badge--quality {
+                background: linear-gradient(135deg, #2e7d32, #66bb6a) !important;
+                color: #fff !important;
+            }
+            .likhtar-full-badge--hdr {
+                background: linear-gradient(135deg, #512da8, #ab47bc) !important;
+                color: #fff !important;
             }
             .full-start-new__rate-line {
                 display: flex !important;
