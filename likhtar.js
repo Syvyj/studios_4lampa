@@ -382,7 +382,7 @@
                 },
                 emit: {
                     onCreate: function () {
-                        var img = movie.backdrop_path ? Lampa.TMDB.image('t/p/original' + movie.backdrop_path) : (movie.poster_path ? Lampa.TMDB.image('t/p/original' + movie.poster_path) : '');
+                        var img = movie.backdrop_path ? Lampa.TMDB.image('t/p/w1280' + movie.backdrop_path) : (movie.poster_path ? Lampa.TMDB.image('t/p/w780' + movie.poster_path) : '');
                         try {
                             var item = $(this.html);
                             item.addClass('hero-banner');
@@ -406,18 +406,18 @@
                             item.find('.card__title').remove();
                             item.find('.card__age').remove();
                             item[0].heroMovieData = movie;
+                            item[0]._heroInitDone = true;
 
-                            // Завантажуємо крутий логотип замість тексту:
                             fetchHeroLogo(movie, item, heightEm);
-                            // Підтягуємо деталі (тривалість, вік, країна)
                             fetchHeroDetails(movie, item, metaEm);
                         } catch (e) { console.log('Hero onCreate error:', e); }
                     },
                     onVisible: function () {
                         try {
                             var item = $(this.html);
-                            if (!item.hasClass('hero-banner')) {
-                                var img = movie.backdrop_path ? Lampa.TMDB.image('t/p/original' + movie.backdrop_path) : (movie.poster_path ? Lampa.TMDB.image('t/p/original' + movie.poster_path) : '');
+                            // Only re-init if Lampa reset the DOM (hero-banner class lost)
+                            if (!item.hasClass('hero-banner') || !this.html._heroInitDone) {
+                                var img = movie.backdrop_path ? Lampa.TMDB.image('t/p/w1280' + movie.backdrop_path) : (movie.poster_path ? Lampa.TMDB.image('t/p/w780' + movie.poster_path) : '');
                                 item.addClass('hero-banner');
                                 item.css({
                                     'background-image': 'url(' + img + ')',
@@ -440,8 +440,8 @@
                                 item.find('.card__title').remove();
                                 item.find('.card__age').remove();
                                 item[0].heroMovieData = movie;
+                                item[0]._heroInitDone = true;
 
-                                // Перезавантажуємо лого після відновлення віртуального DOM Lampa
                                 fetchHeroLogo(movie, item, heightEm);
                                 fetchHeroDetails(movie, item, metaEm);
                             }
@@ -2707,7 +2707,8 @@
             var observer = new MutationObserver(function () {
                 processCards();
             });
-            observer.observe(document.body, { childList: true, subtree: true });
+            var target = document.getElementById('app') || document.body;
+            observer.observe(target, { childList: true, subtree: true });
             processCards();
         }
 
@@ -2849,29 +2850,67 @@
                 }
             }
 
-            var rateLine = $render.find('.full-start-new__rate-line, .full-start__rate-line').first();
-            if (!rateLine.length) return;
-            if (rateLine.find('.jacred-info-marks-v3').length) return;
-            var marksContainer = $('<div class="jacred-info-marks-v3"></div>');
-            rateLine.prepend(marksContainer);
+            // Co-existence guard: if QualityUA.js is active, skip our badge injection
+            if ($('.quality-badges-container').length) return;
 
-            getBestJacred(movie, function (data) {
-                var bestData = data || { empty: true };
-                if (!bestData.ukr) {
-                    checkUafix(movie, function (hasUafix) {
-                        if (hasUafix) {
-                            if (bestData.empty) bestData = { empty: false, resolution: 'FHD', hdr: false };
-                            bestData.ukr = true;
-                            if (!bestData.resolution || bestData.resolution === 'SD' || bestData.resolution === 'HD') {
-                                bestData.resolution = 'FHD';
+            // Detect layout: wide card = full-start-new with no separate poster column
+            var isWide = $render.find('.full-start-new').length > 0 && !$render.find('.full-start__poster').length;
+
+            if (!isWide) {
+                // ── REGULAR CARD: overlay badges on the poster image (bottom-left) ──────
+                var poster = $render.find('.full-start__poster, .full-start-new__poster').first();
+                if (!poster.length) return;
+                if ($render.find('.likhtar-poster-badges').length) return;
+
+                // Ensure poster wrapper is position:relative so our absolute badges work
+                poster.css('position', 'relative');
+                var posterBadges = $('<div class="likhtar-poster-badges"></div>');
+                poster.append(posterBadges);
+
+                getBestJacred(movie, function (data) {
+                    var bestData = data || { empty: true };
+                    if (!bestData.ukr) {
+                        checkUafix(movie, function (hasUafix) {
+                            if (hasUafix) {
+                                if (bestData.empty) bestData = { empty: false, resolution: 'FHD', hdr: false };
+                                bestData.ukr = true;
+                                if (!bestData.resolution || bestData.resolution === 'SD' || bestData.resolution === 'HD') {
+                                    bestData.resolution = 'FHD';
+                                }
                             }
-                        }
-                        if (!bestData.empty) renderInfoRowBadges(marksContainer, bestData);
-                    });
-                } else if (!bestData.empty) {
-                    renderInfoRowBadges(marksContainer, bestData);
-                }
-            });
+                            if (!bestData.empty) renderInfoRowBadges(posterBadges, bestData);
+                        });
+                    } else if (!bestData.empty) {
+                        renderInfoRowBadges(posterBadges, bestData);
+                    }
+                });
+
+            } else {
+                // ── WIDE CARD: append badges at the end of rate-line (bottom-right) ────
+                var rateLine = $render.find('.full-start-new__rate-line, .full-start__rate-line').first();
+                if (!rateLine.length) return;
+                if ($render.find('.likhtar-quality-row').length) return;
+                var qualityRow = $('<div class="likhtar-quality-row"></div>');
+                rateLine.append(qualityRow);
+
+                getBestJacred(movie, function (data) {
+                    var bestData = data || { empty: true };
+                    if (!bestData.ukr) {
+                        checkUafix(movie, function (hasUafix) {
+                            if (hasUafix) {
+                                if (bestData.empty) bestData = { empty: false, resolution: 'FHD', hdr: false };
+                                bestData.ukr = true;
+                                if (!bestData.resolution || bestData.resolution === 'SD' || bestData.resolution === 'HD') {
+                                    bestData.resolution = 'FHD';
+                                }
+                            }
+                            if (!bestData.empty) renderInfoRowBadges(qualityRow, bestData);
+                        });
+                    } else if (!bestData.empty) {
+                        renderInfoRowBadges(qualityRow, bestData);
+                    }
+                });
+            }
         }
 
         function initFullCardMarks() {
@@ -2895,8 +2934,11 @@
 
         function renderInfoRowBadges(container, data) {
             container.empty();
-            if (!isSettingEnabled('likhtar_badge_enabled', true)) return;
-            container.addClass('jacred-info-marks-v3');
+            // If setting is OFF — remove the row entirely so native Lampa badges remain untouched
+            if (!isSettingEnabled('likhtar_badge_enabled', true)) {
+                container.remove();
+                return;
+            }
             if (data.ukr && isSettingEnabled('likhtar_badge_ua', true)) {
                 var uaTag = $('<div class="likhtar-full-badge likhtar-full-badge--ua"></div>');
                 uaTag.text('UA+');
@@ -2954,42 +2996,27 @@
                 color: #fff !important;
             }
             
-            /* Native Lampa Full Movie Tags Redesign */
-            #app .full-start-new .full-start-new__rate-line > div:not(.jacred-info-marks-v3),
-            #app .full-start-new .full-start-new__rate-line > span:not(.jacred-info-marks-v3),
-            #app .full-start__rate-line > div:not(.jacred-info-marks-v3),
-            #app .full-start__rate-line > span:not(.jacred-info-marks-v3),
-            .likhtar-full-badge {
-                display: inline-flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                padding: 0.3em 0.6em !important;
-                border-radius: 0.35em !important;
-                font-weight: 800 !important;
-                font-size: 0.85em !important;
-                color: rgba(255,255,255,0.9) !important;
-                background: linear-gradient(135deg, #37474f, #546e7a) !important;
-                border: 1px solid rgba(84,110,122,0.5) !important;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
-                line-height: 1.2 !important;
-                letter-spacing: 0.03em !important;
-                margin: 0 !important;
-                height: auto !important;
-                min-height: 0 !important;
+            /* ====== Poster overlay badges (regular card, bottom-left) ====== */
+            .likhtar-poster-badges {
+                position: absolute;
+                bottom: 0.5em;
+                left: 0.5em;
+                display: flex;
+                flex-direction: column;
+                gap: 0.3em;
+                z-index: 20;
+                pointer-events: none;
             }
 
-            #app .full-start-new .full-start-new__rate-line > .full-start__rate,
-            #app .full-start__rate-line > .full-start__rate {
-                background: linear-gradient(135deg, #f57f17, #fbc02d) !important;
-                color: #000 !important;
-                border-color: rgba(251,192,45,0.4) !important;
-            }
-            #app .full-start-new .full-start-new__rate-line > .full-start__pg,
-            #app .full-start__rate-line > .full-start__pg {
-                background: linear-gradient(135deg, #c62828, #e53935) !important;
-                border-color: rgba(229,57,53,0.4) !important;
+            /* ====== Wide card: quality row appended to rate-line (bottom-right) ====== */
+            .likhtar-quality-row {
+                display: inline-flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 0.4em;
             }
 
+            /* Only style OUR badges — never override Lampa's native ones */
             .likhtar-full-badge--ua {
                 background: linear-gradient(135deg, #1565c0, #42a5f5) !important;
                 color: #fff !important;
@@ -3004,38 +3031,6 @@
                 background: linear-gradient(135deg, #512da8, #ab47bc) !important;
                 color: #fff !important;
                 border-color: rgba(171,71,188,0.4) !important;
-            }
-            .full-start-new__rate-line {
-                display: flex !important;
-                flex-wrap: wrap !important;
-                align-items: center !important;
-                gap: 0.4em !important;
-            }
-            .jacred-info-marks-v3 {
-                display: flex;
-                align-items: center;
-                gap: 0.4em;
-                background: transparent !important;
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-
-            /* Genres & runtime line */
-            #app .full-start-new__info, #app .full-start__info,
-            #app .full-start-new__text, #app .full-start__text {
-                background: linear-gradient(135deg, #1f2235, #2c314a) !important;
-                border: 1px solid rgba(44,49,74,0.5) !important;
-                border-radius: 0.4em !important;
-                padding: 0.4em 0.8em !important;
-                display: inline-block !important;
-                color: #e0e0e0 !important;
-                font-size: 0.9em !important;
-                letter-spacing: 0.02em !important;
-                margin-top: 0.5em !important;
-                backdrop-filter: blur(4px) !important;
-                -webkit-backdrop-filter: blur(4px) !important;
             }
 
             .card .card__type { left: -0.2em !important; }
