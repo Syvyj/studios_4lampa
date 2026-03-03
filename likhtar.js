@@ -2942,19 +2942,21 @@
             }
             
             /* Native Lampa Full Movie Tags Redesign */
-            .full-start-new__rate-line > div:not(.jacred-info-marks-v3),
-            .full-start__rate-line > div:not(.jacred-info-marks-v3),
+            #app .full-start-new .full-start-new__rate-line > div:not(.jacred-info-marks-v3),
+            #app .full-start-new .full-start-new__rate-line > span:not(.jacred-info-marks-v3),
+            #app .full-start__rate-line > div:not(.jacred-info-marks-v3),
+            #app .full-start__rate-line > span:not(.jacred-info-marks-v3),
             .likhtar-full-badge {
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                padding: 0.25em 0.5em !important;
-                border-radius: 0.3em !important;
+                padding: 0.3em 0.6em !important;
+                border-radius: 0.35em !important;
                 font-weight: 800 !important;
-                font-size: 0.8em !important;
-                color: rgba(255,255,255,0.85) !important;
+                font-size: 0.85em !important;
+                color: rgba(255,255,255,0.9) !important;
                 background: linear-gradient(135deg, #37474f, #546e7a) !important;
-                border: 1px solid rgba(84,110,122,0.4) !important;
+                border: 1px solid rgba(84,110,122,0.5) !important;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
                 line-height: 1.2 !important;
                 letter-spacing: 0.03em !important;
@@ -2963,12 +2965,14 @@
                 min-height: 0 !important;
             }
 
-            .full-start__rate {
+            #app .full-start-new .full-start-new__rate-line > .full-start__rate,
+            #app .full-start__rate-line > .full-start__rate {
                 background: linear-gradient(135deg, #f57f17, #fbc02d) !important;
                 color: #000 !important;
                 border-color: rgba(251,192,45,0.4) !important;
             }
-            .full-start__pg {
+            #app .full-start-new .full-start-new__rate-line > .full-start__pg,
+            #app .full-start__rate-line > .full-start__pg {
                 background: linear-gradient(135deg, #c62828, #e53935) !important;
                 border-color: rgba(229,57,53,0.4) !important;
             }
@@ -2976,17 +2980,17 @@
             .likhtar-full-badge--ua {
                 background: linear-gradient(135deg, #1565c0, #42a5f5) !important;
                 color: #fff !important;
-                border-color: rgba(66,165,245,0.3) !important;
+                border-color: rgba(66,165,245,0.4) !important;
             }
             .likhtar-full-badge--quality {
                 background: linear-gradient(135deg, #2e7d32, #66bb6a) !important;
                 color: #fff !important;
-                border-color: rgba(102,187,106,0.3) !important;
+                border-color: rgba(102,187,106,0.4) !important;
             }
             .likhtar-full-badge--hdr {
                 background: linear-gradient(135deg, #512da8, #ab47bc) !important;
                 color: #fff !important;
-                border-color: rgba(171,71,188,0.3) !important;
+                border-color: rgba(171,71,188,0.4) !important;
             }
             .full-start-new__rate-line {
                 display: flex !important;
@@ -2998,18 +3002,25 @@
                 display: flex;
                 align-items: center;
                 gap: 0.4em;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
             }
 
             /* Genres & runtime line */
-            .full-start-new__text, .full-start__text {
+            #app .full-start-new__info, #app .full-start__info,
+            #app .full-start-new__text, #app .full-start__text {
                 background: linear-gradient(135deg, #1f2235, #2c314a) !important;
                 border: 1px solid rgba(44,49,74,0.5) !important;
                 border-radius: 0.4em !important;
-                padding: 0.35em 0.7em !important;
+                padding: 0.4em 0.8em !important;
                 display: inline-block !important;
-                color: #ccc !important;
-                font-size: 0.85em !important;
+                color: #e0e0e0 !important;
+                font-size: 0.9em !important;
                 letter-spacing: 0.02em !important;
+                margin-top: 0.5em !important;
                 backdrop-filter: blur(4px) !important;
                 -webkit-backdrop-filter: blur(4px) !important;
             }
