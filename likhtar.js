@@ -1408,7 +1408,7 @@
         window.LikhtarFeedsCache = window.LikhtarFeedsCache || {};
 
         Lampa.ContentRows.add({
-            index: 3,
+            index: 99, // Place it at the end
             name: 'custom_ua_feed_row',
             title: '🇺🇦 Українська стрічка',
             screen: ['main'],
@@ -1447,8 +1447,8 @@
         var services = ['netflix', 'apple', 'hbo', 'amazon', 'disney', 'paramount', 'sky_showtime', 'hulu', 'syfy', 'educational_and_reality'];
 
         services.forEach(function (id, index) {
-            // Починаємо стрімінги після "Кіно під настрій" та "Українська стрічка" (0, 1, 2, 3)
-            var rowIndex = index + 4;
+            // Починаємо стрімінги після "Кіно під настрій" (0, 1, 2)
+            var rowIndex = index + 3;
 
             var config = SERVICE_CONFIGS[id];
             var rowTitle = config ? config.title : 'Завантаження...';
@@ -2465,359 +2465,359 @@
         }, 1000);
     }
 
-// =================================================================
-// LIKHTAR QUALITY MARKS (PARSING JACRED + UAFLIX)
-// =================================================================
-function initMarksJacRed() {
-    var _jacredCache = {};
-    var _uafixCache = {};
+    // =================================================================
+    // LIKHTAR QUALITY MARKS (PARSING JACRED + UAFLIX)
+    // =================================================================
+    function initMarksJacRed() {
+        var _jacredCache = {};
+        var _uafixCache = {};
 
-    function fetchWithProxy(url, callback) {
-        var proxies = [
-            'https://api.allorigins.win/get?url=',
-            'https://cors-anywhere.herokuapp.com/',
-            'https://thingproxy.freeboard.io/fetch/'
-        ];
+        function fetchWithProxy(url, callback) {
+            var proxies = [
+                'https://api.allorigins.win/get?url=',
+                'https://cors-anywhere.herokuapp.com/',
+                'https://thingproxy.freeboard.io/fetch/'
+            ];
 
-        function tryProxy(index) {
-            if (index >= proxies.length) return callback(new Error('All proxies failed'), null);
+            function tryProxy(index) {
+                if (index >= proxies.length) return callback(new Error('All proxies failed'), null);
 
-            var p = proxies[index];
-            var reqUrl = p === 'https://api.allorigins.win/get?url='
-                ? p + encodeURIComponent(url)
-                : p + url;
+                var p = proxies[index];
+                var reqUrl = p === 'https://api.allorigins.win/get?url='
+                    ? p + encodeURIComponent(url)
+                    : p + url;
 
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', reqUrl, true);
-            if (p === 'https://cors-anywhere.herokuapp.com/') {
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            }
-
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    callback(null, xhr.responseText);
-                } else {
-                    tryProxy(index + 1);
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', reqUrl, true);
+                if (p === 'https://cors-anywhere.herokuapp.com/') {
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
                 }
-            };
-            xhr.onerror = function () { tryProxy(index + 1); };
-            xhr.timeout = 10000;
-            xhr.ontimeout = function () { tryProxy(index + 1); };
-            xhr.send();
-        }
-        tryProxy(0);
-    }
 
-    function getBestJacred(card, callback) {
-        var cacheKey = 'jacred_v4_' + card.id;
-
-        if (_jacredCache[cacheKey]) return callback(_jacredCache[cacheKey]);
-
-        try {
-            var raw = Lampa.Storage.get(cacheKey, '');
-            if (raw && typeof raw === 'object' && raw._ts && (Date.now() - raw._ts < 48 * 60 * 60 * 1000)) {
-                _jacredCache[cacheKey] = raw;
-                return callback(raw);
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        callback(null, xhr.responseText);
+                    } else {
+                        tryProxy(index + 1);
+                    }
+                };
+                xhr.onerror = function () { tryProxy(index + 1); };
+                xhr.timeout = 10000;
+                xhr.ontimeout = function () { tryProxy(index + 1); };
+                xhr.send();
             }
-        } catch (e) { }
+            tryProxy(0);
+        }
 
-        var title = (card.original_title || card.title || card.name || '').toLowerCase();
-        var year = (card.release_date || card.first_air_date || '').substr(0, 4);
+        function getBestJacred(card, callback) {
+            var cacheKey = 'jacred_v4_' + card.id;
 
-        if (!title || !year) return callback(null);
-
-        var releaseDate = new Date(card.release_date || card.first_air_date);
-        if (releaseDate && releaseDate.getTime() > Date.now()) return callback(null);
-
-        // Fetch from Jacred
-        var apiUrl = 'https://jr.maxvol.pro/api/v1.0/torrents?search=' + encodeURIComponent(title) + '&year=' + year;
-        fetchWithProxy(apiUrl, function (err, data) {
-            if (err || !data) return callback(null);
+            if (_jacredCache[cacheKey]) return callback(_jacredCache[cacheKey]);
 
             try {
-                var parsed;
-                try { parsed = JSON.parse(data); } catch (e) { return callback(null); }
-                if (parsed.contents) {
-                    try { parsed = JSON.parse(parsed.contents); } catch (e) { }
+                var raw = Lampa.Storage.get(cacheKey, '');
+                if (raw && typeof raw === 'object' && raw._ts && (Date.now() - raw._ts < 48 * 60 * 60 * 1000)) {
+                    _jacredCache[cacheKey] = raw;
+                    return callback(raw);
                 }
+            } catch (e) { }
 
-                var results = Array.isArray(parsed) ? parsed : (parsed.Results || []);
+            var title = (card.original_title || card.title || card.name || '').toLowerCase();
+            var year = (card.release_date || card.first_air_date || '').substr(0, 4);
 
-                if (!results.length) {
-                    var emptyData = { empty: true, _ts: Date.now() };
-                    _jacredCache[cacheKey] = emptyData;
-                    try { Lampa.Storage.set(cacheKey, emptyData); } catch (e) { }
-                    return callback(null);
-                }
+            if (!title || !year) return callback(null);
 
-                var bestGlobal = { resolution: 'SD', ukr: false, eng: false, hdr: false, dolbyVision: false };
-                var bestUkr = { resolution: 'SD', ukr: false, eng: false, hdr: false, dolbyVision: false };
-                var resOrder = ['SD', 'HD', 'FHD', '2K', '4K'];
+            var releaseDate = new Date(card.release_date || card.first_air_date);
+            if (releaseDate && releaseDate.getTime() > Date.now()) return callback(null);
 
-                results.forEach(function (item) {
-                    var t = (item.title || '').toLowerCase();
+            // Fetch from Jacred
+            var apiUrl = 'https://jr.maxvol.pro/api/v1.0/torrents?search=' + encodeURIComponent(title) + '&year=' + year;
+            fetchWithProxy(apiUrl, function (err, data) {
+                if (err || !data) return callback(null);
 
-                    var currentRes = 'SD';
-                    if (t.indexOf('4k') >= 0 || t.indexOf('2160') >= 0 || t.indexOf('uhd') >= 0) currentRes = '4K';
-                    else if (t.indexOf('2k') >= 0 || t.indexOf('1440') >= 0) currentRes = '2K';
-                    else if (t.indexOf('1080') >= 0 || t.indexOf('fhd') >= 0 || t.indexOf('full hd') >= 0) currentRes = 'FHD';
-                    else if (t.indexOf('720') >= 0 || t.indexOf('hd') >= 0) currentRes = 'HD';
-
-                    var isUkr = false, isEng = false, isHdr = false, isDv = false;
-
-                    if (t.indexOf('ukr') >= 0 || t.indexOf('укр') >= 0 || t.indexOf('ua') >= 0 || t.indexOf('ukrainian') >= 0) isUkr = true;
-                    if (card.original_language === 'uk') isUkr = true;
-                    if (t.indexOf('eng') >= 0 || t.indexOf('english') >= 0 || t.indexOf('multi') >= 0) isEng = true;
-
-                    if (t.indexOf('dolby vision') >= 0 || t.indexOf('dolbyvision') >= 0) {
-                        isHdr = true; isDv = true;
-                    } else if (t.indexOf('hdr') >= 0) {
-                        isHdr = true;
+                try {
+                    var parsed;
+                    try { parsed = JSON.parse(data); } catch (e) { return callback(null); }
+                    if (parsed.contents) {
+                        try { parsed = JSON.parse(parsed.contents); } catch (e) { }
                     }
 
-                    // Update global max resolution
-                    if (resOrder.indexOf(currentRes) > resOrder.indexOf(bestGlobal.resolution)) {
-                        bestGlobal.resolution = currentRes;
-                        bestGlobal.hdr = isHdr;
-                        bestGlobal.dolbyVision = isDv;
-                    }
-                    if (isEng) bestGlobal.eng = true;
+                    var results = Array.isArray(parsed) ? parsed : (parsed.Results || []);
 
-                    // Якщо знайдено український дубляж, записуємо окремо його найкращу якість
-                    if (isUkr) {
-                        bestGlobal.ukr = true;
-                        bestUkr.ukr = true;
-                        if (resOrder.indexOf(currentRes) > resOrder.indexOf(bestUkr.resolution)) {
-                            bestUkr.resolution = currentRes;
-                            bestUkr.hdr = isHdr;
-                            bestUkr.dolbyVision = isDv;
+                    if (!results.length) {
+                        var emptyData = { empty: true, _ts: Date.now() };
+                        _jacredCache[cacheKey] = emptyData;
+                        try { Lampa.Storage.set(cacheKey, emptyData); } catch (e) { }
+                        return callback(null);
+                    }
+
+                    var bestGlobal = { resolution: 'SD', ukr: false, eng: false, hdr: false, dolbyVision: false };
+                    var bestUkr = { resolution: 'SD', ukr: false, eng: false, hdr: false, dolbyVision: false };
+                    var resOrder = ['SD', 'HD', 'FHD', '2K', '4K'];
+
+                    results.forEach(function (item) {
+                        var t = (item.title || '').toLowerCase();
+
+                        var currentRes = 'SD';
+                        if (t.indexOf('4k') >= 0 || t.indexOf('2160') >= 0 || t.indexOf('uhd') >= 0) currentRes = '4K';
+                        else if (t.indexOf('2k') >= 0 || t.indexOf('1440') >= 0) currentRes = '2K';
+                        else if (t.indexOf('1080') >= 0 || t.indexOf('fhd') >= 0 || t.indexOf('full hd') >= 0) currentRes = 'FHD';
+                        else if (t.indexOf('720') >= 0 || t.indexOf('hd') >= 0) currentRes = 'HD';
+
+                        var isUkr = false, isEng = false, isHdr = false, isDv = false;
+
+                        if (t.indexOf('ukr') >= 0 || t.indexOf('укр') >= 0 || t.indexOf('ua') >= 0 || t.indexOf('ukrainian') >= 0) isUkr = true;
+                        if (card.original_language === 'uk') isUkr = true;
+                        if (t.indexOf('eng') >= 0 || t.indexOf('english') >= 0 || t.indexOf('multi') >= 0) isEng = true;
+
+                        if (t.indexOf('dolby vision') >= 0 || t.indexOf('dolbyvision') >= 0) {
+                            isHdr = true; isDv = true;
+                        } else if (t.indexOf('hdr') >= 0) {
+                            isHdr = true;
                         }
-                        if (isEng) bestUkr.eng = true;
-                    }
-                });
 
-                // Правило: якщо є український реліз, використовуємо показники ТІЛЬКИ з нього
-                var finalBest = bestGlobal.ukr ? bestUkr : bestGlobal;
-                if (card.original_language === 'en') finalBest.eng = true;
+                        // Update global max resolution
+                        if (resOrder.indexOf(currentRes) > resOrder.indexOf(bestGlobal.resolution)) {
+                            bestGlobal.resolution = currentRes;
+                            bestGlobal.hdr = isHdr;
+                            bestGlobal.dolbyVision = isDv;
+                        }
+                        if (isEng) bestGlobal.eng = true;
 
-                finalBest._ts = Date.now();
-                finalBest.empty = false;
-                _jacredCache[cacheKey] = finalBest;
-                try { Lampa.Storage.set(cacheKey, finalBest); } catch (e) { }
-                callback(finalBest);
+                        // Якщо знайдено український дубляж, записуємо окремо його найкращу якість
+                        if (isUkr) {
+                            bestGlobal.ukr = true;
+                            bestUkr.ukr = true;
+                            if (resOrder.indexOf(currentRes) > resOrder.indexOf(bestUkr.resolution)) {
+                                bestUkr.resolution = currentRes;
+                                bestUkr.hdr = isHdr;
+                                bestUkr.dolbyVision = isDv;
+                            }
+                            if (isEng) bestUkr.eng = true;
+                        }
+                    });
 
-            } catch (e) {
+                    // Правило: якщо є український реліз, використовуємо показники ТІЛЬКИ з нього
+                    var finalBest = bestGlobal.ukr ? bestUkr : bestGlobal;
+                    if (card.original_language === 'en') finalBest.eng = true;
+
+                    finalBest._ts = Date.now();
+                    finalBest.empty = false;
+                    _jacredCache[cacheKey] = finalBest;
+                    try { Lampa.Storage.set(cacheKey, finalBest); } catch (e) { }
+                    callback(finalBest);
+
+                } catch (e) {
+                    callback(null);
+                }
+            });
+        }
+
+        function checkUafixBandera(movie, callback) {
+            var title = movie.title || movie.name || '';
+            var origTitle = movie.original_title || movie.original_name || '';
+            var imdbId = movie.imdb_id || '';
+            var type = movie.name ? 'series' : 'movie';
+
+            var url = 'https://banderabackend.lampame.v6.rocks/api/v2/search?source=uaflix';
+            if (title) url += '&title=' + encodeURIComponent(title);
+            if (origTitle) url += '&original_title=' + encodeURIComponent(origTitle);
+            if (imdbId) url += '&imdb_id=' + encodeURIComponent(imdbId);
+            url += '&type=' + type;
+
+            var network = new Lampa.Reguest();
+            network.timeout(5000);
+            network.silent(url, function (json) {
+                callback(json && json.ok && json.items && json.items.length > 0);
+            }, function () {
                 callback(null);
-            }
-        });
-    }
+            });
+        }
 
-    function checkUafixBandera(movie, callback) {
-        var title = movie.title || movie.name || '';
-        var origTitle = movie.original_title || movie.original_name || '';
-        var imdbId = movie.imdb_id || '';
-        var type = movie.name ? 'series' : 'movie';
+        function checkUafixDirect(movie, callback) {
+            var query = movie.original_title || movie.original_name || movie.title || movie.name || '';
+            if (!query) return callback(false);
 
-        var url = 'https://banderabackend.lampame.v6.rocks/api/v2/search?source=uaflix';
-        if (title) url += '&title=' + encodeURIComponent(title);
-        if (origTitle) url += '&original_title=' + encodeURIComponent(origTitle);
-        if (imdbId) url += '&imdb_id=' + encodeURIComponent(imdbId);
-        url += '&type=' + type;
+            var searchUrl = 'https://uafix.net/index.php?do=search&subaction=search&story=' + encodeURIComponent(query);
+            fetchWithProxy(searchUrl, function (err, html) {
+                if (err || !html) return callback(false);
+                var hasResults = html.indexOf('знайдено') >= 0 && html.indexOf('0 відповідей') < 0;
+                callback(hasResults);
+            });
+        }
 
-        var network = new Lampa.Reguest();
-        network.timeout(5000);
-        network.silent(url, function (json) {
-            callback(json && json.ok && json.items && json.items.length > 0);
-        }, function () {
-            callback(null);
-        });
-    }
+        function checkUafix(movie, callback) {
+            if (!movie || !movie.id) return callback(false);
+            var key = 'uafix_' + movie.id;
+            if (_uafixCache[key] !== undefined) return callback(_uafixCache[key]);
 
-    function checkUafixDirect(movie, callback) {
-        var query = movie.original_title || movie.original_name || movie.title || movie.name || '';
-        if (!query) return callback(false);
-
-        var searchUrl = 'https://uafix.net/index.php?do=search&subaction=search&story=' + encodeURIComponent(query);
-        fetchWithProxy(searchUrl, function (err, html) {
-            if (err || !html) return callback(false);
-            var hasResults = html.indexOf('знайдено') >= 0 && html.indexOf('0 відповідей') < 0;
-            callback(hasResults);
-        });
-    }
-
-    function checkUafix(movie, callback) {
-        if (!movie || !movie.id) return callback(false);
-        var key = 'uafix_' + movie.id;
-        if (_uafixCache[key] !== undefined) return callback(_uafixCache[key]);
-
-        checkUafixBandera(movie, function (result) {
-            if (result !== null) {
-                _uafixCache[key] = result;
-                callback(result);
-            } else {
-                checkUafixDirect(movie, function (found) {
-                    _uafixCache[key] = found;
-                    callback(found);
-                });
-            }
-        });
-    }
-
-    function processCards() {
-        $('.card:not(.jacred-mark-processed-v3)').each(function () {
-            var card = $(this);
-            card.addClass('jacred-mark-processed-v3');
-
-            var movie = card[0].heroMovieData || card.data('item') || (card[0] && (card[0].card_data || card[0].item)) || null;
-            if (movie && movie.id && !movie.size) {
-                if (card.hasClass('hero-banner')) {
-                    addMarksToContainer(card, movie, null);
+            checkUafixBandera(movie, function (result) {
+                if (result !== null) {
+                    _uafixCache[key] = result;
+                    callback(result);
                 } else {
-                    addMarksToContainer(card, movie, '.card__view');
+                    checkUafixDirect(movie, function (found) {
+                        _uafixCache[key] = found;
+                        callback(found);
+                    });
+                }
+            });
+        }
+
+        function processCards() {
+            $('.card:not(.jacred-mark-processed-v3)').each(function () {
+                var card = $(this);
+                card.addClass('jacred-mark-processed-v3');
+
+                var movie = card[0].heroMovieData || card.data('item') || (card[0] && (card[0].card_data || card[0].item)) || null;
+                if (movie && movie.id && !movie.size) {
+                    if (card.hasClass('hero-banner')) {
+                        addMarksToContainer(card, movie, null);
+                    } else {
+                        addMarksToContainer(card, movie, '.card__view');
+                    }
+                }
+            });
+        }
+
+        function observeCardRows() {
+            var observer = new MutationObserver(function () {
+                processCards();
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+            processCards();
+        }
+
+        function addMarksToContainer(element, movie, viewSelector) {
+            var containerParent = viewSelector ? element.find(viewSelector) : element;
+            var marksContainer = containerParent.find('.card-marks');
+
+            if (!marksContainer.length) {
+                marksContainer = $('<div class="card-marks"></div>');
+                containerParent.append(marksContainer);
+            }
+
+            getBestJacred(movie, function (data) {
+                var bestData = data || { empty: true };
+
+                // Якщо на Jacred немає укр доріжки, або взагалі немає релізу, шукаємо на Uaflix/UaKino
+                if (!bestData.ukr) {
+                    checkUafix(movie, function (hasUafix) {
+                        if (hasUafix) {
+                            if (bestData.empty) bestData = { empty: false, resolution: 'FHD', hdr: false };
+                            bestData.ukr = true; // За правилом: якщо є на uafix, ставимо UA і 1080p
+                            if (!bestData.resolution || bestData.resolution === 'SD' || bestData.resolution === 'HD') {
+                                bestData.resolution = 'FHD';
+                            }
+                        }
+                        if (!bestData.empty) renderBadges(marksContainer, bestData, movie);
+                    });
+                } else {
+                    if (!bestData.empty) renderBadges(marksContainer, bestData, movie);
+                }
+            });
+        }
+
+        function createBadge(cssClass, label) {
+            var badge = document.createElement('div');
+            badge.classList.add('card__mark');
+            badge.classList.add('card__mark--' + cssClass);
+            badge.textContent = label;
+            return badge;
+        }
+
+        function renderBadges(container, data, movie) {
+            container.empty();
+            if (data.ukr && Lampa.Storage.get('likhtar_badge_ua', true)) container.append(createBadge('ua', 'UA'));
+            if (data.eng && Lampa.Storage.get('likhtar_badge_en', true)) container.append(createBadge('en', 'EN'));
+            if (data.resolution && data.resolution !== 'SD') {
+                if (data.resolution === '4K' && Lampa.Storage.get('likhtar_badge_4k', true)) container.append(createBadge('4k', '4K'));
+                else if (data.resolution === 'FHD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('fhd', '1080p'));
+                else if (data.resolution === 'HD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', '720p'));
+                else if (Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', data.resolution));
+            }
+            if (data.hdr && Lampa.Storage.get('likhtar_badge_hdr', true)) container.append(createBadge('hdr', 'HDR'));
+            if (movie) {
+                var rating = parseFloat(movie.imdb_rating || movie.kp_rating || movie.vote_average || 0);
+                if (rating > 0 && String(rating) !== '0.0') {
+                    var rBadge = document.createElement('div');
+                    rBadge.classList.add('card__mark', 'card__mark--rating');
+                    rBadge.innerHTML = '<span class="mark-star">★</span>' + rating.toFixed(1);
+                    container.append(rBadge);
                 }
             }
-        });
-    }
-
-    function observeCardRows() {
-        var observer = new MutationObserver(function () {
-            processCards();
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-        processCards();
-    }
-
-    function addMarksToContainer(element, movie, viewSelector) {
-        var containerParent = viewSelector ? element.find(viewSelector) : element;
-        var marksContainer = containerParent.find('.card-marks');
-
-        if (!marksContainer.length) {
-            marksContainer = $('<div class="card-marks"></div>');
-            containerParent.append(marksContainer);
         }
 
-        getBestJacred(movie, function (data) {
-            var bestData = data || { empty: true };
+        function injectFullCardMarks(movie, renderEl) {
+            if (!movie || !movie.id || !renderEl) return;
+            var $render = $(renderEl);
+            var rateLine = $render.find('.full-start-new__rate-line').first();
+            if (!rateLine.length) return;
+            if (rateLine.find('.jacred-info-marks-v3').length) return;
+            var marksContainer = $('<div class="jacred-info-marks-v3"></div>');
+            rateLine.prepend(marksContainer);
 
-            // Якщо на Jacred немає укр доріжки, або взагалі немає релізу, шукаємо на Uaflix/UaKino
-            if (!bestData.ukr) {
-                checkUafix(movie, function (hasUafix) {
-                    if (hasUafix) {
-                        if (bestData.empty) bestData = { empty: false, resolution: 'FHD', hdr: false };
-                        bestData.ukr = true; // За правилом: якщо є на uafix, ставимо UA і 1080p
-                        if (!bestData.resolution || bestData.resolution === 'SD' || bestData.resolution === 'HD') {
-                            bestData.resolution = 'FHD';
+            getBestJacred(movie, function (data) {
+                var bestData = data || { empty: true };
+                if (!bestData.ukr) {
+                    checkUafix(movie, function (hasUafix) {
+                        if (hasUafix) {
+                            if (bestData.empty) bestData = { empty: false, resolution: 'FHD', hdr: false };
+                            bestData.ukr = true;
+                            if (!bestData.resolution || bestData.resolution === 'SD' || bestData.resolution === 'HD') {
+                                bestData.resolution = 'FHD';
+                            }
                         }
-                    }
-                    if (!bestData.empty) renderBadges(marksContainer, bestData, movie);
-                });
-            } else {
-                if (!bestData.empty) renderBadges(marksContainer, bestData, movie);
-            }
-        });
-    }
-
-    function createBadge(cssClass, label) {
-        var badge = document.createElement('div');
-        badge.classList.add('card__mark');
-        badge.classList.add('card__mark--' + cssClass);
-        badge.textContent = label;
-        return badge;
-    }
-
-    function renderBadges(container, data, movie) {
-        container.empty();
-        if (data.ukr && Lampa.Storage.get('likhtar_badge_ua', true)) container.append(createBadge('ua', 'UA'));
-        if (data.eng && Lampa.Storage.get('likhtar_badge_en', true)) container.append(createBadge('en', 'EN'));
-        if (data.resolution && data.resolution !== 'SD') {
-            if (data.resolution === '4K' && Lampa.Storage.get('likhtar_badge_4k', true)) container.append(createBadge('4k', '4K'));
-            else if (data.resolution === 'FHD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('fhd', '1080p'));
-            else if (data.resolution === 'HD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', '720p'));
-            else if (Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', data.resolution));
+                        if (!bestData.empty) renderInfoRowBadges(marksContainer, bestData);
+                    });
+                } else if (!bestData.empty) {
+                    renderInfoRowBadges(marksContainer, bestData);
+                }
+            });
         }
-        if (data.hdr && Lampa.Storage.get('likhtar_badge_hdr', true)) container.append(createBadge('hdr', 'HDR'));
-        if (movie) {
-            var rating = parseFloat(movie.imdb_rating || movie.kp_rating || movie.vote_average || 0);
-            if (rating > 0 && String(rating) !== '0.0') {
-                var rBadge = document.createElement('div');
-                rBadge.classList.add('card__mark', 'card__mark--rating');
-                rBadge.innerHTML = '<span class="mark-star">★</span>' + rating.toFixed(1);
-                container.append(rBadge);
-            }
-        }
-    }
 
-    function injectFullCardMarks(movie, renderEl) {
-        if (!movie || !movie.id || !renderEl) return;
-        var $render = $(renderEl);
-        var rateLine = $render.find('.full-start-new__rate-line').first();
-        if (!rateLine.length) return;
-        if (rateLine.find('.jacred-info-marks-v3').length) return;
-        var marksContainer = $('<div class="jacred-info-marks-v3"></div>');
-        rateLine.prepend(marksContainer);
-
-        getBestJacred(movie, function (data) {
-            var bestData = data || { empty: true };
-            if (!bestData.ukr) {
-                checkUafix(movie, function (hasUafix) {
-                    if (hasUafix) {
-                        if (bestData.empty) bestData = { empty: false, resolution: 'FHD', hdr: false };
-                        bestData.ukr = true;
-                        if (!bestData.resolution || bestData.resolution === 'SD' || bestData.resolution === 'HD') {
-                            bestData.resolution = 'FHD';
-                        }
-                    }
-                    if (!bestData.empty) renderInfoRowBadges(marksContainer, bestData);
-                });
-            } else if (!bestData.empty) {
-                renderInfoRowBadges(marksContainer, bestData);
-            }
-        });
-    }
-
-    function initFullCardMarks() {
-        if (!Lampa.Listener || !Lampa.Listener.follow) return;
-        Lampa.Listener.follow('full', function (e) {
-            if (e.type !== 'complite') return;
-            var movie = e.data && e.data.movie;
-            var renderEl = e.object && e.object.activity && e.object.activity.render && e.object.activity.render();
-            injectFullCardMarks(movie, renderEl);
-        });
-        setTimeout(function () {
-            try {
-                var act = Lampa.Activity && Lampa.Activity.active && Lampa.Activity.active();
-                if (!act || act.component !== 'full') return;
-                var movie = act.card || act.movie;
-                var renderEl = act.activity && act.activity.render && act.activity.render();
+        function initFullCardMarks() {
+            if (!Lampa.Listener || !Lampa.Listener.follow) return;
+            Lampa.Listener.follow('full', function (e) {
+                if (e.type !== 'complite') return;
+                var movie = e.data && e.data.movie;
+                var renderEl = e.object && e.object.activity && e.object.activity.render && e.object.activity.render();
                 injectFullCardMarks(movie, renderEl);
-            } catch (err) { }
-        }, 300);
-    }
+            });
+            setTimeout(function () {
+                try {
+                    var act = Lampa.Activity && Lampa.Activity.active && Lampa.Activity.active();
+                    if (!act || act.component !== 'full') return;
+                    var movie = act.card || act.movie;
+                    var renderEl = act.activity && act.activity.render && act.activity.render();
+                    injectFullCardMarks(movie, renderEl);
+                } catch (err) { }
+            }, 300);
+        }
 
-    function renderInfoRowBadges(container, data) {
-        container.empty();
-        if (data.ukr) {
-            var uaTag = $('<div class="full-start__pg"></div>');
-            uaTag.text('UA+');
-            container.append(uaTag);
+        function renderInfoRowBadges(container, data) {
+            container.empty();
+            if (data.ukr) {
+                var uaTag = $('<div class="full-start__pg"></div>');
+                uaTag.text('UA+');
+                container.append(uaTag);
+            }
+            if (data.resolution && data.resolution !== 'SD') {
+                var resText = data.resolution;
+                if (resText === 'FHD') resText = '1080p';
+                else if (resText === 'HD') resText = '720p';
+                var qualityTag = $('<div class="full-start__pg"></div>');
+                qualityTag.text(resText);
+                container.append(qualityTag);
+            }
+            if (data.hdr) {
+                var hdrTag = $('<div class="full-start__pg"></div>');
+                hdrTag.text(data.dolbyVision ? 'Dolby Vision' : 'HDR');
+                container.append(hdrTag);
+            }
         }
-        if (data.resolution && data.resolution !== 'SD') {
-            var resText = data.resolution;
-            if (resText === 'FHD') resText = '1080p';
-            else if (resText === 'HD') resText = '720p';
-            var qualityTag = $('<div class="full-start__pg"></div>');
-            qualityTag.text(resText);
-            container.append(qualityTag);
-        }
-        if (data.hdr) {
-            var hdrTag = $('<div class="full-start__pg"></div>');
-            hdrTag.text(data.dolbyVision ? 'Dolby Vision' : 'HDR');
-            container.append(hdrTag);
-        }
-    }
 
-    var style = document.createElement('style');
-    style.innerHTML = \`
+        var style = document.createElement('style');
+        style.innerHTML = `
             /* ====== Card marks ====== */
             .card .card__type { left: -0.2em !important; }
             .card-marks {
@@ -2872,7 +2872,7 @@ function initMarksJacRed() {
                 from { opacity: 0; transform: translateX(-5px) scale(0.95); }
                 to { opacity: 1; transform: translateX(0) scale(1); }
             }
-        \`;
+        `;
         document.body.appendChild(style);
 
         observeCardRows();
