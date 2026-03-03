@@ -2785,7 +2785,10 @@
                         applyLogo(window.LikhtarHeroLogos[movie.id].path, window.LikhtarHeroLogos[movie.id].invert);
                     } else if (!window.LikhtarHeroLogos || !window.LikhtarHeroLogos[movie.id] || !window.LikhtarHeroLogos[movie.id].fail) {
                         var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
-                        Lampa.TMDB.api((movie.name ? 'tv/' : 'movie/') + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=' + requestLang + ',en,null', function (data) {
+                        var type = movie.name ? 'tv' : 'movie';
+                        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=' + requestLang + ',en,null');
+                        var network = new Lampa.Reguest();
+                        network.silent(url, function (data) {
                             var final_logo = null;
                             if (data.logos && data.logos.length > 0) {
                                 var found = data.logos.find(function (l) { return l.iso_639_1 == requestLang; }) ||
@@ -2817,7 +2820,12 @@
                                     } catch (e) { }
                                     window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
                                     window.LikhtarHeroLogos[movie.id] = { path: img_url, invert: invert };
-                                    applyLogo(img_url, invert);
+                                    var currentTitleEl = $('.full-start-new__title, .full-start__title').first();
+                                    if (currentTitleEl.length && currentTitleEl.find('img.likhtar-full-logo').length === 0) {
+                                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="max-height: 4.5em; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
+                                        currentTitleEl.html(newHtml);
+                                        currentTitleEl.css({ fontSize: '1em', marginTop: '1.5em' });
+                                    }
                                 };
                                 img.onerror = function () {
                                     window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
@@ -2934,30 +2942,37 @@
             }
             
             /* Native Lampa Full Movie Tags Redesign */
-            .full-start__pg,
-            .full-start__rate,
+            .full-start-new__rate-line > div:not(.jacred-info-marks-v3),
+            .full-start__rate-line > div:not(.jacred-info-marks-v3),
             .likhtar-full-badge {
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                background: rgba(255,255,255,0.08) !important;
-                color: #e0e0e0 !important;
-                border: 1px solid rgba(255,255,255,0.18) !important;
-                border-radius: 0.35em !important;
-                padding: 0.2em 0.55em !important;
-                font-size: 0.85em !important;
-                font-weight: 600 !important;
+                padding: 0.25em 0.5em !important;
+                border-radius: 0.3em !important;
+                font-weight: 800 !important;
+                font-size: 0.8em !important;
+                color: rgba(255,255,255,0.85) !important;
+                background: linear-gradient(135deg, #37474f, #546e7a) !important;
+                border: 1px solid rgba(84,110,122,0.4) !important;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
                 line-height: 1.2 !important;
                 letter-spacing: 0.03em !important;
                 margin: 0 !important;
                 height: auto !important;
                 min-height: 0 !important;
             }
-            /* Hide empty IMDB / KP labels */
-            .full-start__rate--imdb,
-            .full-start__rate--kp {
-                display: none !important;
+
+            .full-start__rate {
+                background: linear-gradient(135deg, #f57f17, #fbc02d) !important;
+                color: #000 !important;
+                border-color: rgba(251,192,45,0.4) !important;
             }
+            .full-start__pg {
+                background: linear-gradient(135deg, #c62828, #e53935) !important;
+                border-color: rgba(229,57,53,0.4) !important;
+            }
+
             .likhtar-full-badge--ua {
                 background: linear-gradient(135deg, #1565c0, #42a5f5) !important;
                 color: #fff !important;
@@ -2986,9 +3001,9 @@
             }
 
             /* Genres & runtime line */
-            .full-start-new__text {
-                background: rgba(255,255,255,0.06) !important;
-                border: 1px solid rgba(255,255,255,0.12) !important;
+            .full-start-new__text, .full-start__text {
+                background: linear-gradient(135deg, #1f2235, #2c314a) !important;
+                border: 1px solid rgba(44,49,74,0.5) !important;
                 border-radius: 0.4em !important;
                 padding: 0.35em 0.7em !important;
                 display: inline-block !important;
