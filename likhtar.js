@@ -2836,23 +2836,6 @@
                 }
             }
 
-            // Hide IMDB / KP empty badges — global scan
-            (function () {
-                var attempts = 0;
-                var ivl = setInterval(function () {
-                    attempts++;
-                    var found = false;
-                    document.querySelectorAll('.full-start-new__rate-line *, .full-start__rate-line *').forEach(function (node) {
-                        var txt = (node.textContent || '').trim();
-                        if ((txt === 'IMDB' || txt === 'KP') && node.offsetParent !== null) {
-                            node.style.display = 'none';
-                            if (node.parentElement) node.parentElement.style.display = 'none';
-                            found = true;
-                        }
-                    });
-                    if (found || attempts >= 20) clearInterval(ivl);
-                }, 300);
-            })();
             var rateLine = $render.find('.full-start-new__rate-line, .full-start__rate-line').first();
             if (!rateLine.length) return;
             if (rateLine.find('.jacred-info-marks-v3').length) return;
@@ -3074,6 +3057,36 @@
 
         observeCardRows();
         initFullCardMarks();
+
+        // Global IMDB/KP badge hider — completely independent
+        (function initHideImdbKp() {
+            function scanAndHide() {
+                var allElements = document.body.getElementsByTagName('*');
+                for (var i = 0; i < allElements.length; i++) {
+                    var node = allElements[i];
+                    if (node.children && node.children.length > 0) continue;
+                    var t = (node.textContent || '').trim();
+                    if (t === 'IMDB' || t === 'KP' || t === 'imdb' || t === 'kp') {
+                        node.style.setProperty('display', 'none', 'important');
+                        if (node.parentElement) node.parentElement.style.setProperty('display', 'none', 'important');
+                    }
+                }
+            }
+            if (Lampa.Listener && Lampa.Listener.follow) {
+                Lampa.Listener.follow('full', function (e) {
+                    if (e.type === 'complite') {
+                        setTimeout(scanAndHide, 200);
+                        setTimeout(scanAndHide, 800);
+                        setTimeout(scanAndHide, 2000);
+                        setTimeout(scanAndHide, 4000);
+                    }
+                });
+            }
+            // Also run on current page if already on a full card
+            setTimeout(scanAndHide, 500);
+            setTimeout(scanAndHide, 1500);
+            setTimeout(scanAndHide, 3000);
+        })();
     }
 
     function runInit() {
