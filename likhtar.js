@@ -2985,6 +2985,20 @@
                 gap: 0.4em;
             }
 
+            /* Genres & runtime line */
+            .full-start-new__text {
+                background: rgba(255,255,255,0.06) !important;
+                border: 1px solid rgba(255,255,255,0.12) !important;
+                border-radius: 0.4em !important;
+                padding: 0.35em 0.7em !important;
+                display: inline-block !important;
+                color: #ccc !important;
+                font-size: 0.85em !important;
+                letter-spacing: 0.02em !important;
+                backdrop-filter: blur(4px) !important;
+                -webkit-backdrop-filter: blur(4px) !important;
+            }
+
             .card .card__type { left: -0.2em !important; }
             .card-marks {
                 position: absolute;
