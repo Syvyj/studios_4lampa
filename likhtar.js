@@ -2836,12 +2836,21 @@
                 }
             }
 
+            // Hide IMDB / KP empty badges aggressively
+            function hideEmptyRateBadges($el) {
+                $el.find('[class*="rate"]').each(function () {
+                    var txt = $(this).text().trim().toUpperCase();
+                    if (txt === 'IMDB' || txt === 'KP' || txt === 'IMDB 0' || txt === 'KP 0') {
+                        $(this).css('display', 'none');
+                    }
+                });
+            }
             var rateLine = $render.find('.full-start-new__rate-line').first();
             if (rateLine.length) {
-                rateLine.find('.full-start__rate').each(function () {
-                    var txt = $(this).text().trim().toUpperCase();
-                    if (txt === 'IMDB' || txt === 'KP') $(this).hide();
-                });
+                hideEmptyRateBadges(rateLine);
+                // Retry after Lampa populates async
+                setTimeout(function () { hideEmptyRateBadges(rateLine); }, 500);
+                setTimeout(function () { hideEmptyRateBadges(rateLine); }, 1500);
             }
             if (!rateLine.length) return;
             if (rateLine.find('.jacred-info-marks-v3').length) return;
