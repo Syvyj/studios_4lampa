@@ -2934,7 +2934,7 @@
             }
             
             /* Native Lampa Full Movie Tags Redesign */
-            .full-start__pg, .full-start__rate,
+            .full-start__pg,
             .likhtar-full-badge {
                 display: inline-flex !important;
                 align-items: center !important;

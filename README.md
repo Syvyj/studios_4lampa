@@ -61,9 +61,18 @@
 | Логотип замість тексту | TMDB-логотип замість тексту в херо та на сторінці фільму |
 | Кіноогляд | YouTube-канали про кіно у бічному меню |
 
+### 🛠 Встановлення Ліхтаря
+
+1. Відкрийте **Lampa** → **Налаштування** → **Плагіни** → **Додати плагін**
+2. Введіть URL:
+   ```
+   https://syvyj.github.io/studios_4lampa/likhtar.js
+   ```
+3. Перезапустіть застосунок
+
 ---
 
-## 🇬🇧 English Description
+## 🇬🇧 Likhtar — English Description
 
 **Likhtar** is a custom home screen plugin for [Lampa](https://github.com/lampa-app/lampa) that replaces the default interface with a premium, cinema-style experience focused on Ukrainian content.
 
@@ -78,18 +87,68 @@
 - **Full Customization** — All features togglable via the «Likhtar» settings tab
 
 ---
+---
 
-## 🛠 Встановлення / Installation
+# Studios 4Lampa (Legacy)
 
-1. Відкрийте **Lampa** → **Налаштування** → **Плагіни** → **Додати плагін**
-2. Введіть URL:
-   ```
-   https://syvyj.github.io/studios_4lampa/likhtar.js
-   ```
-3. Перезапустіть застосунок
+[🇺🇦 Українська версія](#-опис-українською) | [🇬🇧 English version](#-english-description-1)
 
 ---
 
-## ✍️ Автор
+![Studios Master Logo](./promo_studios_1.png)
 
-Розроблено **Syvyj**.
+## 🇺🇦 Опис (Українською)
+
+Уніфікований плагін для застосунку [Lampa](https://github.com/lampa-app/lampa), що об'єднує колекції провідних світових студій в єдиний зручний інтерфейс.
+
+![Studios Interface](./Promo_studios_2.png)
+
+### 🚀 Можливості
+- **Єдиний інтерфейс**: Доступ до всіх студій через основне меню сайдбару.
+- **Глобальні колекції**: Netflix, Apple TV+, HBO, Disney+, Prime Video, Paramount+, Hulu та Syfy.
+- **Пізнавальний контент**: Добірки від Discovery, National Geographic, BBC Earth та History.
+- **Оптимізація для ТБ**: Спеціальна розмітка карток для зручного перегляду на великих екранах.
+
+![Studios Features](./promo_studios_3.png)
+
+> [!TIP]
+> Вимкнути або змінити порядок каталогів можна через стандартне налаштування «Редагування меню» в Lampa.
+
+---
+
+## 🇬🇧 English Description
+
+Unified plugin for [Lampa](https://github.com/lampa-app/lampa) that integrates multiple streaming studio collections into one interface.
+
+![Studios Interface](./Promo_studios_2.png)
+
+### 🚀 Features
+- **Unified Interface**: Access all major studios from a single sidebar menu.
+- **Global Studio Collections**:
+  - **Netflix**: New movies, series, trends, and genre-specific rows.
+  - **Apple TV+**: High-quality originals and hits.
+  - **HBO / Max**: Warner Bros. blockbusters and premium dramas.
+  - **Prime Video**: Trending Amazon originals and IMDb hits.
+  - **Disney+**: MCU, Star Wars, Pixar, and Disney classics.
+  - **Hulu**: Originals and highly-rated limited series.
+  - **Paramount+**: Studio blockbusters and exclusive originals.
+  - **Syfy**: Sci-fi and mystery collections.
+- **Educational & Reality**: Curated content from Discovery, NatGeo, BBC Earth, etc.
+- **Optimized for TV**: Wide-card layout for better browsing on large screens.
+
+![Studios Features](./promo_studios_3.png)
+
+> [!TIP]
+> You can disable or reorder catalogs via the standard "Menu Editing" setting in Lampa.
+
+## 🛠 Installation / Встановлення
+
+1. Open your Lampa application / Відкрийте застосунок Lampa.
+2. Go to **Settings** -> **Plugins** / Перейдіть у **Налаштування** -> **Плагіни**.
+3. Click **Add Plugin** / Натисніть **Додати плагін**.
+4. Enter the URL of your hosted `studios.js` or use this link: `https://syvyj.github.io/studios_4lampa/studios.js` / Введіть URL-адресу вашого файлу `studios.js` або скористайтеся цим посиланням: `https://syvyj.github.io/studios_4lampa/studios.js`.
+5. Restart the application / Перезапустіть застосунок.
+
+## ✍️ Credits
+
+Developed by **Syvyj**.
