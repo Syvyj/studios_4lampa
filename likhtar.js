@@ -238,6 +238,7 @@
                 if (found) final_logo = found.file_path;
             }
             if (final_logo) {
+                if (!Lampa.Storage.get('likhtar_show_logo_instead_text', true)) return;
                 var img_url = Lampa.TMDB.image('t/p/w500' + final_logo.replace('.svg', '.png'));
                 var img = new Image();
                 img.crossOrigin = 'anonymous';
@@ -1562,7 +1563,14 @@
                             scrollBody.data('likhtar-more-observed', true);
 
                             // Додаємо order: 9999; щоб кнопка завжди була в самому кінці
-                            var moreCard = $('<div class="card selector likhtar-more-btn"><div><img src="' + LIKHTAR_BASE_URL + 'img/' + id + '.svg" onerror="this.src=\'\'" alt="На сторінку"><br>На сторінку<br><span style="color: #90caf9; font-size: 0.85em; display: block; margin-top: 0.4em;">' + config.title + '</span></div></div>');
+                            var serviceLogos = {
+                                'netflix': 'netflix.svg', 'apple': 'apple.svg', 'hbo': 'hbo.svg',
+                                'amazon': 'amazon.png', 'disney': 'disney.svg', 'paramount': 'paramount.svg',
+                                'sky_showtime': 'SkyShowtime.svg', 'hulu': 'Hulu.svg', 'syfy': 'Syfy.svg',
+                                'educational_and_reality': 'Discovery.svg'
+                            };
+                            var imgFile = serviceLogos[id] || (id + '.svg');
+                            var moreCard = $('<div class="card selector likhtar-more-btn"><div><img src="' + LIKHTAR_BASE_URL + 'logos/' + imgFile + '" onerror="this.src=\'\'" alt="На сторінку"><br>На сторінку<br><span style="color: #90caf9; font-size: 0.85em; display: block; margin-top: 0.4em;">' + config.title + '</span></div></div>');
 
                             moreCard.on('hover:enter', (function (serviceId, sTitle) {
                                 return function () {
@@ -1686,6 +1694,25 @@
             component: 'likhtar_plugin',
             param: { name: 'likhtar_kinooglad_enabled', type: 'trigger', default: true },
             field: { name: 'Кіноогляд', description: 'Увімкнути розділ Кіноогляд у бічному меню, підтягує матеріали з YouTube каналів про кіно. Налаштування каналів нижче.' }
+        });
+
+        // === Мітки якості та озвучки ===
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { type: 'title' },
+            field: { name: 'Картки фільмів та серіалів' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_badge_enabled', type: 'trigger', default: true },
+            field: { name: 'Мітки якості/озвучки', description: 'Відображати мітки UA, 1080p, HDR тощо на картках.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_show_logo_instead_text', type: 'trigger', default: true },
+            field: { name: 'Логотип замість тексту', description: 'Завантажувати і показувати логотип фільму замість звичайної назви у повній картці та херо секції.' }
         });
 
 
@@ -2688,6 +2715,7 @@
         }
 
         function addMarksToContainer(element, movie, viewSelector) {
+            if (!Lampa.Storage.get('likhtar_badge_enabled', true)) return;
             var containerParent = viewSelector ? element.find(viewSelector) : element;
             var marksContainer = containerParent.find('.card-marks');
 
@@ -2750,6 +2778,71 @@
         function injectFullCardMarks(movie, renderEl) {
             if (!movie || !movie.id || !renderEl) return;
             var $render = $(renderEl);
+
+            if (Lampa.Storage.get('likhtar_show_logo_instead_text', true)) {
+                var titleEl = $render.find('.full-start-new__title, .full-start__title').first();
+                if (titleEl.length && titleEl.find('img.likhtar-full-logo').length === 0) {
+                    var applyLogo = function (img_url, invert) {
+                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="max-height: 4.5em; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
+                        titleEl.html(newHtml);
+                        titleEl.css({ fontSize: '1em', marginTop: '1.5em' });
+                    };
+
+                    if (window.LikhtarHeroLogos && window.LikhtarHeroLogos[movie.id] && window.LikhtarHeroLogos[movie.id].path) {
+                        applyLogo(window.LikhtarHeroLogos[movie.id].path, window.LikhtarHeroLogos[movie.id].invert);
+                    } else if (!window.LikhtarHeroLogos || !window.LikhtarHeroLogos[movie.id] || !window.LikhtarHeroLogos[movie.id].fail) {
+                        var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
+                        Lampa.TMDB.api((movie.name ? 'tv/' : 'movie/') + movie.id + '/images?api_key=' + getTmdbKey(), function (data) {
+                            var final_logo = null;
+                            if (data.logos && data.logos.length > 0) {
+                                var found = data.logos.find(function (l) { return l.iso_639_1 == requestLang; }) ||
+                                    data.logos.find(function (l) { return l.iso_639_1 == 'en'; }) || data.logos[0];
+                                if (found) final_logo = found.file_path;
+                            }
+                            if (final_logo) {
+                                var img_url = Lampa.TMDB.image('t/p/w500' + final_logo.replace('.svg', '.png'));
+                                var img = new Image();
+                                img.crossOrigin = 'Anonymous';
+                                img.onload = function () {
+                                    var invert = false;
+                                    try {
+                                        var canvas = document.createElement('canvas');
+                                        var ctx = canvas.getContext('2d');
+                                        canvas.width = img.naturalWidth || img.width;
+                                        canvas.height = img.naturalHeight || img.height;
+                                        if (canvas.width > 0 && canvas.height > 0) {
+                                            ctx.drawImage(img, 0, 0);
+                                            var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                                            var darkPixels = 0, totalPixels = 0;
+                                            for (var i = 0; i < imgData.length; i += 4) {
+                                                if (imgData[i + 3] < 10) continue;
+                                                totalPixels++;
+                                                if ((imgData[i] * 299 + imgData[i + 1] * 587 + imgData[i + 2] * 114) / 1000 < 120) darkPixels++;
+                                            }
+                                            if (totalPixels > 0 && (darkPixels / totalPixels) >= 0.85) invert = true;
+                                        }
+                                    } catch (e) { }
+                                    window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
+                                    window.LikhtarHeroLogos[movie.id] = { path: img_url, invert: invert };
+                                    applyLogo(img_url, invert);
+                                };
+                                img.onerror = function () {
+                                    window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
+                                    window.LikhtarHeroLogos[movie.id] = { fail: true };
+                                };
+                                img.src = img_url;
+                            } else {
+                                window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
+                                window.LikhtarHeroLogos[movie.id] = { fail: true };
+                            }
+                        }, function () {
+                            window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
+                            window.LikhtarHeroLogos[movie.id] = { fail: true };
+                        });
+                    }
+                }
+            }
+
             var rateLine = $render.find('.full-start-new__rate-line').first();
             if (!rateLine.length) return;
             if (rateLine.find('.jacred-info-marks-v3').length) return;
@@ -2796,8 +2889,9 @@
 
         function renderInfoRowBadges(container, data) {
             container.empty();
+            container.addClass('jacred-info-marks-v3');
             if (data.ukr) {
-                var uaTag = $('<div class="full-start__pg"></div>');
+                var uaTag = $('<div class="likhtar-full-badge likhtar-full-badge--ua"></div>');
                 uaTag.text('UA+');
                 container.append(uaTag);
             }
@@ -2805,12 +2899,12 @@
                 var resText = data.resolution;
                 if (resText === 'FHD') resText = '1080p';
                 else if (resText === 'HD') resText = '720p';
-                var qualityTag = $('<div class="full-start__pg"></div>');
+                var qualityTag = $('<div class="likhtar-full-badge likhtar-full-badge--quality"></div>');
                 qualityTag.text(resText);
                 container.append(qualityTag);
             }
             if (data.hdr) {
-                var hdrTag = $('<div class="full-start__pg"></div>');
+                var hdrTag = $('<div class="likhtar-full-badge likhtar-full-badge--hdr"></div>');
                 hdrTag.text(data.dolbyVision ? 'Dolby Vision' : 'HDR');
                 container.append(hdrTag);
             }
@@ -2819,6 +2913,59 @@
         var style = document.createElement('style');
         style.innerHTML = `
             /* ====== Card marks ====== */
+            .likhtar-full-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.25em 0.5em !important;
+                font-size: 0.75em !important;
+                font-weight: 800 !important;
+                line-height: 1 !important;
+                letter-spacing: 0.05em !important;
+                border-radius: 0.3em !important;
+                border: 1px solid rgba(255,255,255,0.2) !important;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
+                text-transform: uppercase !important;
+            }
+            .likhtar-full-badge--ua {
+                background: linear-gradient(135deg, #1565c0, #42a5f5) !important;
+                color: #fff !important;
+            }
+            .likhtar-full-badge--quality {
+                background: linear-gradient(135deg, #2e7d32, #66bb6a) !important;
+                color: #fff !important;
+            }
+            .likhtar-full-badge--hdr {
+                background: linear-gradient(135deg, #512da8, #ab47bc) !important;
+                color: #fff !important;
+            }
+            
+            /* Native Lampa Full Movie Tags Redesign */
+            .full-start__pg, .full-start__rate {
+                background: linear-gradient(135deg, #424242, #616161) !important;
+                color: #f5f5f5 !important;
+                border: 1px solid rgba(255,255,255,0.15) !important;
+                border-radius: 0.3em !important;
+                padding: 0.25em 0.5em !important;
+                font-size: 0.75em !important;
+                font-weight: 800 !important;
+                line-height: 1 !important;
+                letter-spacing: 0.05em !important;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
+                margin-right: 0;
+            }
+            .full-start-new__rate-line {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                gap: 0.4em !important;
+            }
+            .jacred-info-marks-v3 {
+                display: flex;
+                align-items: center;
+                gap: 0.4em;
+            }
+
             .card .card__type { left: -0.2em !important; }
             .card-marks {
                 position: absolute;
