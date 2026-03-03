@@ -187,6 +187,11 @@
         return custom || (Lampa.TMDB && Lampa.TMDB.key ? Lampa.TMDB.key() : '');
     }
 
+    function isSettingEnabled(key, defaultVal) {
+        var val = Lampa.Storage.get(key, defaultVal);
+        return val !== false && val !== 'false' && val !== 0 && val !== '0';
+    }
+
     /** Для рядка на головній: HBO/Prime/Paramount через watch_providers (TMDB), щоб отримувати і фільми, і серіали з актуальним контентом. */
     var SERVICE_WATCH_PROVIDERS_FOR_ROW = { hbo: '384', amazon: '119', paramount: '531' };
 
@@ -238,7 +243,7 @@
                 if (found) final_logo = found.file_path;
             }
             if (final_logo) {
-                if (!Lampa.Storage.get('likhtar_show_logo_instead_text', true)) return;
+                if (!isSettingEnabled('likhtar_show_logo_instead_text', true)) return;
                 var img_url = Lampa.TMDB.image('t/p/w500' + final_logo.replace('.svg', '.png'));
                 var img = new Image();
                 img.crossOrigin = 'anonymous';
@@ -2748,15 +2753,16 @@
 
         function renderBadges(container, data, movie) {
             container.empty();
-            if (data.ukr && Lampa.Storage.get('likhtar_badge_ua', true)) container.append(createBadge('ua', 'UA'));
-            if (data.eng && Lampa.Storage.get('likhtar_badge_en', true)) container.append(createBadge('en', 'EN'));
+            if (!isSettingEnabled('likhtar_badge_enabled', true)) return;
+            if (data.ukr && isSettingEnabled('likhtar_badge_ua', true)) container.append(createBadge('ua', 'UA'));
+            if (data.eng && isSettingEnabled('likhtar_badge_en', true)) container.append(createBadge('en', 'EN'));
             if (data.resolution && data.resolution !== 'SD') {
-                if (data.resolution === '4K' && Lampa.Storage.get('likhtar_badge_4k', true)) container.append(createBadge('4k', '4K'));
-                else if (data.resolution === 'FHD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('fhd', '1080p'));
-                else if (data.resolution === 'HD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', '720p'));
-                else if (Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', data.resolution));
+                if (data.resolution === '4K' && isSettingEnabled('likhtar_badge_4k', true)) container.append(createBadge('4k', '4K'));
+                else if (data.resolution === 'FHD' && isSettingEnabled('likhtar_badge_fhd', true)) container.append(createBadge('fhd', '1080p'));
+                else if (data.resolution === 'HD' && isSettingEnabled('likhtar_badge_fhd', true)) container.append(createBadge('hd', '720p'));
+                else if (isSettingEnabled('likhtar_badge_fhd', true)) container.append(createBadge('hd', data.resolution));
             }
-            if (data.hdr && Lampa.Storage.get('likhtar_badge_hdr', true)) container.append(createBadge('hdr', 'HDR'));
+            if (data.hdr && isSettingEnabled('likhtar_badge_hdr', true)) container.append(createBadge('hdr', 'HDR'));
             if (movie) {
                 var rating = parseFloat(movie.imdb_rating || movie.kp_rating || movie.vote_average || 0);
                 if (rating > 0 && String(rating) !== '0.0') {
@@ -2772,7 +2778,7 @@
             if (!movie || !movie.id || !renderEl) return;
             var $render = $(renderEl);
 
-            if (Lampa.Storage.get('likhtar_show_logo_instead_text', true)) {
+            if (isSettingEnabled('likhtar_show_logo_instead_text', true)) {
                 var titleEl = $render.find('.full-start-new__title, .full-start__title').first();
                 if (titleEl.length && titleEl.find('img.likhtar-full-logo').length === 0) {
                     var applyLogo = function (img_url, invert) {
