@@ -2896,8 +2896,9 @@
 
         function renderInfoRowBadges(container, data) {
             container.empty();
+            if (!isSettingEnabled('likhtar_badge_enabled', true)) return;
             container.addClass('jacred-info-marks-v3');
-            if (data.ukr) {
+            if (data.ukr && isSettingEnabled('likhtar_badge_ua', true)) {
                 var uaTag = $('<div class="likhtar-full-badge likhtar-full-badge--ua"></div>');
                 uaTag.text('UA+');
                 container.append(uaTag);
@@ -2906,11 +2907,18 @@
                 var resText = data.resolution;
                 if (resText === 'FHD') resText = '1080p';
                 else if (resText === 'HD') resText = '720p';
-                var qualityTag = $('<div class="likhtar-full-badge likhtar-full-badge--quality"></div>');
-                qualityTag.text(resText);
-                container.append(qualityTag);
+
+                var showQuality = false;
+                if (data.resolution === '4K' && isSettingEnabled('likhtar_badge_4k', true)) showQuality = true;
+                else if ((data.resolution === 'FHD' || data.resolution === 'HD') && isSettingEnabled('likhtar_badge_fhd', true)) showQuality = true;
+
+                if (showQuality) {
+                    var qualityTag = $('<div class="likhtar-full-badge likhtar-full-badge--quality"></div>');
+                    qualityTag.text(resText);
+                    container.append(qualityTag);
+                }
             }
-            if (data.hdr) {
+            if (data.hdr && isSettingEnabled('likhtar_badge_hdr', true)) {
                 var hdrTag = $('<div class="likhtar-full-badge likhtar-full-badge--hdr"></div>');
                 hdrTag.text(data.dolbyVision ? 'Dolby Vision' : 'HDR');
                 container.append(hdrTag);
