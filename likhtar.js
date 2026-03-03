@@ -2935,36 +2935,43 @@
             
             /* Native Lampa Full Movie Tags Redesign */
             .full-start__pg,
+            .full-start__rate,
             .likhtar-full-badge {
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                background: linear-gradient(135deg, #424242, #616161) !important;
-                color: #f5f5f5 !important;
-                border: 1px solid rgba(255,255,255,0.15) !important;
-                border-radius: 0.3em !important;
+                background: rgba(255,255,255,0.08) !important;
+                color: #e0e0e0 !important;
+                border: 1px solid rgba(255,255,255,0.18) !important;
+                border-radius: 0.35em !important;
                 padding: 0.2em 0.55em !important;
                 font-size: 0.85em !important;
-                font-weight: 700 !important;
+                font-weight: 600 !important;
                 line-height: 1.2 !important;
                 letter-spacing: 0.03em !important;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
                 margin: 0 !important;
-                text-transform: uppercase !important;
                 height: auto !important;
                 min-height: 0 !important;
+            }
+            /* Hide empty IMDB / KP labels */
+            .full-start__rate--imdb,
+            .full-start__rate--kp {
+                display: none !important;
             }
             .likhtar-full-badge--ua {
                 background: linear-gradient(135deg, #1565c0, #42a5f5) !important;
                 color: #fff !important;
+                border-color: rgba(66,165,245,0.3) !important;
             }
             .likhtar-full-badge--quality {
                 background: linear-gradient(135deg, #2e7d32, #66bb6a) !important;
                 color: #fff !important;
+                border-color: rgba(102,187,106,0.3) !important;
             }
             .likhtar-full-badge--hdr {
                 background: linear-gradient(135deg, #512da8, #ab47bc) !important;
                 color: #fff !important;
+                border-color: rgba(171,71,188,0.3) !important;
             }
             .full-start-new__rate-line {
                 display: flex !important;
