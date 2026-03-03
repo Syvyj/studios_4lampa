@@ -1852,7 +1852,6 @@
                             });
 
                             if (items.length) {
-                                // console.log('Kinoohlyad: Success via ' + currentProxy);
                                 oncomplite(items);
                             } else {
                                 tryFetch(index + 1);
@@ -2088,7 +2087,7 @@
                 var _this = this;
                 this.activity.loader(true);
 
-                var head = $('<div class="kino-head" style="/* padding: 1.5em 2em; */ display: flex; justify-content: space-between; align-items: center;"></div>');
+                var head = $('<div class="kino-head" style="display: flex; justify-content: space-between; align-items: center;"></div>');
                 // head.append('<div class="kino-title" style="font-size: 2em;">Кіноогляд</div>');
 
                 html.append(head);
@@ -2419,7 +2418,7 @@
                 // Тут лише перевірка увімкнення плагіна для меню та панелі.
             }
 
-            if (Lampa.Storage.get('likhtar_kinooglad_enabled', true)) {
+            if (isSettingEnabled('likhtar_kinooglad_enabled', true)) {
                 if (window.appready) {
                     addMenu();
                     addSettings();
@@ -2456,13 +2455,13 @@
 
         addHeroRow();
 
-        if (Lampa.Storage.get('likhtar_section_streamings', true)) {
+        if (isSettingEnabled('likhtar_section_streamings', true)) {
             addStudioRow();
         }
 
         addUkrainianContentRow();
 
-        if (Lampa.Storage.get('likhtar_section_mood', true)) {
+        if (isSettingEnabled('likhtar_section_mood', true)) {
             addMoodRow();
         }
 
@@ -2713,7 +2712,7 @@
         }
 
         function addMarksToContainer(element, movie, viewSelector) {
-            if (!Lampa.Storage.get('likhtar_badge_enabled', true)) return;
+            if (!isSettingEnabled('likhtar_badge_enabled', true)) return;
             var containerParent = viewSelector ? element.find(viewSelector) : element;
             var marksContainer = containerParent.find('.card-marks');
 
