@@ -2465,8 +2465,222 @@
         }, 1000);
     }
 
+    // =================================================================
+    // LIKHTAR QUALITY MARKS
+    // =================================================================
+    function initMarksJacRed() {
+        function processCards() {
+            $('.card:not(.jacred-mark-processed-v2)').each(function () {
+                var card = $(this);
+                card.addClass('jacred-mark-processed-v2');
+
+                var movie = card[0].heroMovieData || card.data('item') || (card[0] && (card[0].card_data || card[0].item)) || null;
+                if (movie && movie.id && !movie.size) {
+                    if (card.hasClass('hero-banner')) {
+                        addMarksToContainer(card, movie, null);
+                    } else {
+                        addMarksToContainer(card, movie, '.card__view');
+                    }
+                }
+            });
+        }
+
+        function observeCardRows() {
+            var observer = new MutationObserver(function () {
+                processCards();
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+            processCards();
+        }
+
+        function addMarksToContainer(element, movie, viewSelector) {
+            var containerParent = viewSelector ? element.find(viewSelector) : element;
+            var marksContainer = containerParent.find('.card-marks');
+
+            if (!marksContainer.length) {
+                marksContainer = $('<div class="card-marks"></div>');
+                containerParent.append(marksContainer);
+            }
+
+            // Швидка вставка міток (замість API) якщо вони є в JSON об'єкті
+            if (movie.has_ua !== undefined || movie.quality !== undefined) {
+                var staticData = {
+                    ukr: movie.has_ua === true,
+                    resolution: movie.quality || 'SD',
+                    hdr: movie.is_hdr === true,
+                    eng: false
+                };
+                renderBadges(marksContainer, staticData, movie);
+            }
+        }
+
+        function createBadge(cssClass, label) {
+            var badge = document.createElement('div');
+            badge.classList.add('card__mark');
+            badge.classList.add('card__mark--' + cssClass);
+            badge.textContent = label;
+            return badge;
+        }
+
+        function renderBadges(container, data, movie) {
+            container.empty();
+            if (data.ukr && Lampa.Storage.get('likhtar_badge_ua', true)) container.append(createBadge('ua', 'UA'));
+            if (data.eng && Lampa.Storage.get('likhtar_badge_en', true)) container.append(createBadge('en', 'EN'));
+            if (data.resolution && data.resolution !== 'SD') {
+                if (data.resolution === '4K' && Lampa.Storage.get('likhtar_badge_4k', true)) container.append(createBadge('4k', '4K'));
+                else if (data.resolution === 'FHD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('fhd', '1080p'));
+                else if (data.resolution === 'HD' && Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', '720p'));
+                else if (Lampa.Storage.get('likhtar_badge_fhd', true)) container.append(createBadge('hd', data.resolution));
+            }
+            if (data.hdr && Lampa.Storage.get('likhtar_badge_hdr', true)) container.append(createBadge('hdr', 'HDR'));
+            // Рейтинг
+            if (movie) {
+                var rating = parseFloat(movie.imdb_rating || movie.kp_rating || movie.vote_average || 0);
+                if (rating > 0 && String(rating) !== '0.0') {
+                    var rBadge = document.createElement('div');
+                    rBadge.classList.add('card__mark', 'card__mark--rating');
+                    rBadge.innerHTML = '<span class="mark-star">★</span>' + rating.toFixed(1);
+                    container.append(rBadge);
+                }
+            }
+        }
+
+        function injectFullCardMarks(movie, renderEl) {
+            if (!movie || !movie.id || !renderEl) return;
+            var $render = $(renderEl);
+            var rateLine = $render.find('.full-start-new__rate-line').first();
+            if (!rateLine.length) return;
+            if (rateLine.find('.jacred-info-marks-v2').length) return;
+            var marksContainer = $('<div class="jacred-info-marks-v2"></div>');
+            rateLine.prepend(marksContainer);
+            if (movie.has_ua !== undefined || movie.quality !== undefined) {
+                var staticData = {
+                    ukr: movie.has_ua === true,
+                    resolution: movie.quality || 'SD',
+                    hdr: movie.is_hdr === true,
+                    eng: false
+                };
+                renderInfoRowBadges(marksContainer, staticData);
+            }
+        }
+
+        function initFullCardMarks() {
+            if (!Lampa.Listener || !Lampa.Listener.follow) return;
+            Lampa.Listener.follow('full', function (e) {
+                if (e.type !== 'complite') return;
+                var movie = e.data && e.data.movie;
+                var renderEl = e.object && e.object.activity && e.object.activity.render && e.object.activity.render();
+                injectFullCardMarks(movie, renderEl);
+            });
+            setTimeout(function () {
+                try {
+                    var act = Lampa.Activity && Lampa.Activity.active && Lampa.Activity.active();
+                    if (!act || act.component !== 'full') return;
+                    var movie = act.card || act.movie;
+                    var renderEl = act.activity && act.activity.render && act.activity.render();
+                    injectFullCardMarks(movie, renderEl);
+                } catch (err) { }
+            }, 300);
+        }
+
+        function renderInfoRowBadges(container, data) {
+            container.empty();
+            if (data.ukr) {
+                var uaTag = $('<div class="full-start__pg"></div>');
+                uaTag.text('UA+');
+                container.append(uaTag);
+            }
+            if (data.resolution && data.resolution !== 'SD') {
+                var resText = data.resolution;
+                if (resText === 'FHD') resText = '1080p';
+                else if (resText === 'HD') resText = '720p';
+                var qualityTag = $('<div class="full-start__pg"></div>');
+                qualityTag.text(resText);
+                container.append(qualityTag);
+            }
+            if (data.hdr) {
+                var hdrTag = $('<div class="full-start__pg"></div>');
+                hdrTag.text(data.dolbyVision ? 'Dolby Vision' : 'HDR');
+                container.append(hdrTag);
+            }
+        }
+
+        var style = document.createElement('style');
+        style.innerHTML = `
+            /* ====== Вирівнюємо нативну TV мітку з нашими ====== */
+            .card .card__type {
+                left: -0.2em !important;
+            }
+
+            /* ====== Card marks — зліва, стовпчиком під TV ====== */
+            .card-marks {
+                position: absolute;
+                top: 2.7em;
+                left: -0.2em;
+                display: flex;
+                flex-direction: column;
+                gap: 0.15em;
+                z-index: 10;
+                pointer-events: none;
+            }
+            .card:not(.card--tv):not(.card--movie) .card-marks,
+            .card--movie .card-marks {
+                top: 1.4em;
+            }
+            .card__mark {
+                padding: 0.35em 0.45em;
+                font-size: 0.8em;
+                font-weight: 800;
+                line-height: 1;
+                letter-spacing: 0.03em;
+                border-radius: 0.3em;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                align-self: flex-start;
+                opacity: 0;
+                animation: mark-fade-in 0.35s ease-out forwards;
+                border: 1px solid rgba(255,255,255,0.15);
+            }
+            .card__mark--ua  { background: linear-gradient(135deg, #1565c0, #42a5f5); color: #fff; border-color: rgba(66,165,245,0.4); }
+            .card__mark--4k  { background: linear-gradient(135deg, #e65100, #ff9800); color: #fff; border-color: rgba(255,152,0,0.4); }
+            .card__mark--fhd { background: linear-gradient(135deg, #4a148c, #ab47bc); color: #fff; border-color: rgba(171,71,188,0.4); }
+            .card__mark--hd  { background: linear-gradient(135deg, #1b5e20, #66bb6a); color: #fff; border-color: rgba(102,187,106,0.4); }
+            .card__mark--en  { background: linear-gradient(135deg, #37474f, #78909c); color: #fff; border-color: rgba(120,144,156,0.4); }
+            .card__mark--hdr { background: linear-gradient(135deg, #f57f17, #ffeb3b); color: #000; border-color: rgba(255,235,59,0.4); }
+            .card__mark--rating { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #ffd700; border-color: rgba(255,215,0,0.3); font-size: 0.75em; white-space: nowrap; }
+            .card__mark--rating .mark-star { margin-right: 0.15em; font-size: 0.9em; }
+
+            .card.jacred-mark-processed-v2 .card__vote { display: none !important; }
+
+            .hero-banner .card-marks {
+                top: 1.5em !important;
+                left: 1.2em !important;
+                gap: 0.3em !important;
+            }
+            .hero-banner .card__mark {
+                font-size: 1em;
+                padding: 0.4em 0.6em;
+            }
+            .jacred-info-marks-v2 {
+                display: flex;
+                flex-direction: row;
+                gap: 0.5em;
+                margin-right: 1em;
+                align-items: center;
+            }
+
+            @keyframes mark-fade-in { to { opacity: 1; } }
+        `;
+        document.head.appendChild(style);
+
+        initFullCardMarks();
+        observeCardRows();
+    }
+
     function runInit() {
         try {
+            initMarksJacRed();
             init();
             window.LIKHTAR_STUDIOS_LOADED = true;
         } catch (err) {
