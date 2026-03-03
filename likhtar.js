@@ -128,7 +128,7 @@
         },
         'paramount': {
             title: 'Paramount+',
-            icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22H22L12 2ZM12 6.5L18.5 19.5H5.5L12 6.5Z"/></svg>',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-161.599 -100.544 1000 622.214"><path fill="currentColor" d="M337.935-100.544c-135.92,0-246.104,110.13-246.104,245.983c-0.072,52.591,16.8,103.807,48.115,146.058c10.324-4.456,16.061-11.117,20.159-16.218l45.823-58.576c0.965-1.235,2.225-2.206,3.665-2.825l6.898-2.967l75.345-95.524l10.925-8.549l22.45-31.233c0.58-0.808,1.287-1.519,2.094-2.104l9.795-7.117c2.42-1.758,5.688-1.786,8.136-0.068l11.886,8.339c6.306,4.423,11.417,10.338,14.88,17.217l47.61,83.586c0.777,1.595,2.098,2.86,3.724,3.568c9.337,4.646,15.041,5.467,27.261,18.735c5.702,6.186,30.688,34.117,65.705,77.526c5.089,6.964,11.902,12.484,19.769,16.02c31.22-42.219,48.034-93.359,47.96-145.868C584.031,9.585,473.852-100.544,337.935-100.544z M787.559,394.747l20.212-46.649h-23.92l-20.213,46.649h-50.841l-8.481,19.563h50.856l-20.212,46.649h23.92l20.214-46.649h50.84l8.467-19.563H787.559z"/></svg>',
             categories: [
                 { "title": "Блокбастери Paramount Pictures", "url": "discover/movie", "params": { "with_companies": "4", "sort_by": "revenue.desc" } },
                 { "title": "Paramount+ Originals", "url": "discover/tv", "params": { "with_networks": "4330", "sort_by": "popularity.desc" } },
@@ -139,7 +139,7 @@
         },
         'sky_showtime': {
             title: 'Sky Showtime',
-            icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 22h20L12 2zm0 3.5l6.5 13H5.5L12 5.5z"/></svg>',
+            icon: '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><text y="18" font-size="14" font-family="Arial,sans-serif" font-weight="bold" fill="currentColor">Sky</text></svg>',
             categories: [
                 { "title": "Нові фільми Sky Showtime", "url": "discover/movie", "params": { "with_watch_providers": "1773", "watch_region": "PL", "sort_by": "primary_release_date.desc", "primary_release_date.lte": "{current_date}", "vote_count.gte": "5" } },
                 { "title": "Серіали Sky Showtime", "url": "discover/tv", "params": { "with_watch_providers": "1773", "watch_region": "PL", "sort_by": "popularity.desc" } },
@@ -149,7 +149,7 @@
         },
         'hulu': {
             title: 'Hulu',
-            icon: '<svg viewBox="0 0 24 24" fill="#3DBB3D"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 33"><path fill="currentColor" d="M29.6,2L18.7,2L18.7,10.1C17.3,9.5 15.7,9.2 13.9,9.2L4.7,9.2L4.7,2L0,2L0,31L4.7,31L4.7,19.8C4.7,18.7 5.6,17.8 6.7,17.8L13.3,17.8C14.4,17.8 15.3,18.7 15.3,19.8L15.3,31L29.6,31L29.6,2ZM68.3,9.2L59.1,9.2C57.3,9.2 55.7,9.5 54.3,10.1L54.3,2L43.4,2L43.4,31L54.3,31L54.3,19.8C54.3,18.7 55.2,17.8 56.3,17.8L62.9,17.8C64,17.8 64.9,18.7 64.9,19.8L64.9,31L79.2,31L79.2,9.2L68.3,9.2ZM41.1,9.2L30.2,9.2L30.2,31L41.1,31L41.1,9.2ZM95.3,9.2L84.4,9.2C82.6,9.2 81,9.5 79.6,10.1L79.6,2L79.6,9.2L79.6,31L89.2,31L89.2,19.8C89.2,18.7 90.1,17.8 91.2,17.8L95.3,17.8C96.4,17.8 97.3,18.7 97.3,19.8L97.3,31L100,31L100,9.2L95.3,9.2Z"/></svg>',
             categories: [
                 { "title": "Hulu Originals: У тренді", "url": "discover/tv", "params": { "with_networks": "453", "sort_by": "popularity.desc" } },
                 { "title": "Драми та Трилери Hulu", "url": "discover/tv", "params": { "with_networks": "453", "with_genres": "18,9648", "sort_by": "vote_average.desc" } },
@@ -159,7 +159,7 @@
         },
         'syfy': {
             title: 'Syfy',
-            icon: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L4.5 20.29L5.21 21L12 18L18.79 21L19.5 20.29L12 2Z"/></svg>',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="-326.5 140.209 1000 245.582"><g fill="currentColor"><path d="M155.556,140.209H57.469c-2.189,2.19-3.416,3.418-5.604,5.605v116.616H27.187V145.815l-5.604-5.605h-96.964c-2.189,2.19-3.415,3.418-5.604,5.605v117.738l66.425,67.021v49.611c2.189,2.188,3.415,3.412,5.604,5.604H88.01c2.189-2.191,3.415-3.416,5.604-5.604v-50.188l67.546-67.567V145.815C158.972,143.627,157.745,142.4,155.556,140.209"/><path d="M667.896,140.212h-98.088c-2.189,2.189-3.415,3.419-5.604,5.607v116.616h-24.678V145.819c-2.189-2.188-3.414-3.417-5.604-5.607h-96.964c-2.189,2.189-3.416,3.419-5.605,5.607v117.734l66.426,67.021v49.611c2.189,2.189,3.414,3.416,5.604,5.605h96.967c2.189-2.189,3.416-3.416,5.604-5.605v-50.184l67.547-67.567V145.819C671.311,143.631,670.084,142.401,667.896,140.212"/><path d="M-111.27,140.209h-166.187l-49.044,49.058v67.573c2.19,2.19,3.417,3.416,5.604,5.59h104.813v-24.106h104.813c2.19-2.19,3.415-3.418,5.604-5.609v-86.9C-107.854,143.627-109.079,142.4-111.27,140.209"/><path d="M-320.895,286.539c-2.189,2.189-3.417,3.418-5.604,5.607v88.037c2.188,2.188,3.415,3.416,5.604,5.605h166.187l49.042-49.057v-68.693c-2.188-2.191-3.415-3.42-5.604-5.607h-104.813v24.107H-320.895z"/><path d="M401.07,140.212H234.883l-49.043,49.059v190.915c2.189,2.189,3.417,3.416,5.604,5.605h96.967c2.188-2.189,3.415-3.416,5.604-5.605v-30.553H401.07c2.189-2.193,3.414-3.42,5.604-5.609v-75.982c-2.189-2.191-3.414-3.416-5.604-5.606H294.016v-24.109H401.07c2.189-2.189,3.414-3.417,5.604-5.606v-86.9C404.484,143.631,403.26,142.401,401.07,140.212"/></g></svg>',
             categories: [
                 { "title": "Хіти телеканалу Syfy", "url": "discover/tv", "params": { "with_networks": "77", "sort_by": "popularity.desc" } },
                 { "title": "Космічні подорожі та Наукова Фантастика", "url": "discover/tv", "params": { "with_networks": "77", "with_genres": "10765", "with_keywords": "3801", "sort_by": "vote_average.desc" } },
@@ -1570,7 +1570,7 @@
                 });
 
                 if (el.length) {
-                    var iconHtml = '<div style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 0.4em; margin-bottom: 0.1em; color: inherit;">' + config.icon + '</div>';
+                    var iconHtml = '<div style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 0.4em; margin-bottom: 0.1em; color: inherit; filter: invert(1) brightness(2);">' + config.icon + '</div>';
                     el.html(iconHtml + '<span style="vertical-align: middle;">Сьогодні на ' + config.title + '</span>');
 
                     // Hide Lampa's default grey circle — our SVG is already in the title
