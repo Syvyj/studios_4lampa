@@ -2837,6 +2837,12 @@
             }
 
             var rateLine = $render.find('.full-start-new__rate-line').first();
+            if (rateLine.length) {
+                rateLine.find('.full-start__rate').each(function () {
+                    var txt = $(this).text().trim().toUpperCase();
+                    if (txt === 'IMDB' || txt === 'KP') $(this).hide();
+                });
+            }
             if (!rateLine.length) return;
             if (rateLine.find('.jacred-info-marks-v3').length) return;
             var marksContainer = $('<div class="jacred-info-marks-v3"></div>');
