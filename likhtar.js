@@ -2836,30 +2836,24 @@
                 }
             }
 
-            // Hide IMDB / KP empty badges — traverse ALL children
-            function hideEmptyRateBadges(rootEl) {
-                $(rootEl).find('*').each(function () {
-                    var el = $(this);
-                    // Only check leaf-level text nodes
-                    if (el.children().length > 0) return;
-                    var txt = el.text().trim().toUpperCase();
-                    if (txt === 'IMDB' || txt === 'KP') {
-                        // Hide the badge element (may be parent)
-                        var badge = el.closest('[class*="rate"], [class*="pg"]');
-                        if (badge.length) {
-                            badge.css('display', 'none');
-                        } else {
-                            el.parent().css('display', 'none');
+            // Hide IMDB / KP empty badges — global scan
+            (function () {
+                var attempts = 0;
+                var ivl = setInterval(function () {
+                    attempts++;
+                    var found = false;
+                    document.querySelectorAll('.full-start-new__rate-line *, .full-start__rate-line *').forEach(function (node) {
+                        var txt = (node.textContent || '').trim();
+                        if ((txt === 'IMDB' || txt === 'KP') && node.offsetParent !== null) {
+                            node.style.display = 'none';
+                            if (node.parentElement) node.parentElement.style.display = 'none';
+                            found = true;
                         }
-                    }
-                });
-            }
+                    });
+                    if (found || attempts >= 20) clearInterval(ivl);
+                }, 300);
+            })();
             var rateLine = $render.find('.full-start-new__rate-line, .full-start__rate-line').first();
-            if (rateLine.length) {
-                hideEmptyRateBadges(rateLine[0]);
-                setTimeout(function () { hideEmptyRateBadges(rateLine[0]); }, 500);
-                setTimeout(function () { hideEmptyRateBadges(rateLine[0]); }, 2000);
-            }
             if (!rateLine.length) return;
             if (rateLine.find('.jacred-info-marks-v3').length) return;
             var marksContainer = $('<div class="jacred-info-marks-v3"></div>');
