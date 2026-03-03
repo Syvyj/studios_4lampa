@@ -278,6 +278,15 @@
         });
     }
 
+    // Додаємо CSS для фокусу героя (оскільки Lampa використовує клас .focus замість псевдокласів)
+    if (!$('style#likhtar-hero-css').length) {
+        $('head').append('<style id="likhtar-hero-css">' +
+            '.hero-banner { transition: transform 0.2s, box-shadow 0.2s; }' +
+            '.hero-banner.focus { transform: scale(1.02); outline: 4px solid #fff; outline-offset: -4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 10; }' +
+            '.hero-meta span { text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }' +
+            '</style>');
+    }
+
     // Кеш для додаткових деталей геро-банеру
     window.LikhtarHeroDetails = window.LikhtarHeroDetails || {};
 
@@ -351,10 +360,10 @@
         var rating = movie.vote_average ? movie.vote_average.toFixed(1) : '';
         var typeStr = movie.name ? 'Серіал' : 'Фільм';
 
-        var metaHtml = '<div class="hero-meta" style="font-size: ' + metaEm + 'em; color: #bbb; margin-bottom: 0.5em; display: flex; gap: 0.6em; align-items: center; font-weight: 500;">';
-        if (rating && rating !== '0.0') metaHtml += '<span style="background: rgba(255,255,255,0.2); padding: 0.1em 0.4em; border-radius: 0.2em; color: #fff;">Оцінка: ' + rating + '</span>';
+        var metaHtml = '<div class="hero-meta" style="font-size: ' + metaEm + 'em; color: #ddd; margin-bottom: 0.8em; display: flex; gap: 0.6em; align-items: center; font-weight: 500;">';
+        if (rating && rating !== '0.0') metaHtml += '<span style="background: rgba(255,255,255,0.25); padding: 0.1em 0.5em; border-radius: 0.2em; color: #fff;">Оцінка: ' + rating + '</span>';
         if (year) metaHtml += '<span>' + year + '</span>';
-        metaHtml += '<span>•</span><span>' + typeStr + '</span>';
+        metaHtml += '<span style="color: #999">•</span><span>' + typeStr + '</span>';
         metaHtml += '<div class="hero-meta-dynamic" style="display: flex; gap: 0.6em; align-items: center;"></div>';
         metaHtml += '</div>';
 
@@ -381,15 +390,12 @@
                                 'position': 'relative',
                                 'box-shadow': '0 0 20px rgba(0,0,0,0.5)',
                                 'margin-bottom': '10px',
-                                'transition': 'transform 0.2s, background 0.2s, outline 0.2s',
-                                'outline': '4px solid transparent',
-                                'outline-offset': '2px',
                                 'cursor': 'pointer'
                             });
-                            item.append('<div class="hero-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: ' + pad + 'em; border-radius: 0 0 1em 1em;">' +
+                            item.append('<div class="hero-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 40%, transparent 100%); padding: ' + (pad * 1.2) + 'em; border-radius: 0 0 1em 1em;">' +
                                 '<div class="hero-title" style="font-size: ' + titleEm + 'em; font-weight: bold; color: #fff; margin-bottom: 0.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">' + (movie.title || movie.name) + '</div>' +
                                 metaHtml +
-                                '<div class="hero-desc" style="font-size: ' + descEm + 'em; color: #ddd; max-width: 60%; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">' + (movie.overview || '') + '</div></div>');
+                                '<div class="hero-desc" style="font-size: ' + descEm + 'em; color: #eee; max-width: 65%; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 1px 1px 3px rgba(0,0,0,0.9);">' + (movie.overview || '') + '</div></div>');
                             item.find('.card__view').remove();
                             item.find('.card__title').remove();
                             item.find('.card__age').remove();
@@ -417,15 +423,12 @@
                                     'position': 'relative',
                                     'box-shadow': '0 0 20px rgba(0,0,0,0.5)',
                                     'margin-bottom': '10px',
-                                    'transition': 'transform 0.2s, background 0.2s, outline 0.2s',
-                                    'outline': '4px solid transparent',
-                                    'outline-offset': '2px',
                                     'cursor': 'pointer'
                                 });
-                                item.append('<div class="hero-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: ' + pad + 'em; border-radius: 0 0 1em 1em;">' +
+                                item.append('<div class="hero-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 40%, transparent 100%); padding: ' + (pad * 1.2) + 'em; border-radius: 0 0 1em 1em;">' +
                                     '<div class="hero-title" style="font-size: ' + titleEm + 'em; font-weight: bold; color: #fff; margin-bottom: 0.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">' + (movie.title || movie.name) + '</div>' +
                                     metaHtml +
-                                    '<div class="hero-desc" style="font-size: ' + descEm + 'em; color: #ddd; max-width: 60%; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">' + (movie.overview || '') + '</div></div>');
+                                    '<div class="hero-desc" style="font-size: ' + descEm + 'em; color: #eee; max-width: 65%; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-shadow: 1px 1px 3px rgba(0,0,0,0.9);">' + (movie.overview || '') + '</div></div>');
 
                                 item.find('.card__view').remove();
                                 item.find('.card__title').remove();
