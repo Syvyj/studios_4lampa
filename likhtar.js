@@ -194,6 +194,90 @@
     // UTILS & COMPONENTS
     // =================================================================
 
+    window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
+
+    function fetchHeroLogo(movie, jqItem, heightEm) {
+        var titleElem = jqItem.find('.hero-title');
+
+        function renderLogo(img_url, invert) {
+            var img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.src = img_url;
+            img.onload = function () {
+                if (invert) img.style.filter = 'brightness(0) invert(1)';
+                img.style.maxHeight = (heightEm / 35 * 6) + 'em';
+                img.style.maxWidth = '60%';
+                img.style.objectFit = 'contain';
+                img.style.objectPosition = 'left bottom';
+                img.style.filter = (img.style.filter || '') + ' drop-shadow(3px 3px 6px rgba(0,0,0,0.8))';
+
+                titleElem.empty().append(img);
+                titleElem.css({ 'margin-bottom': '0.5em', 'display': 'flex', 'align-items': 'flex-end', 'text-shadow': 'none' });
+            };
+        }
+
+        if (window.LikhtarHeroLogos[movie.id]) {
+            if (window.LikhtarHeroLogos[movie.id].path) {
+                renderLogo(window.LikhtarHeroLogos[movie.id].path, window.LikhtarHeroLogos[movie.id].invert);
+            }
+            return;
+        }
+
+        window.LikhtarHeroLogos[movie.id] = { fetching: true };
+
+        var type = movie.name ? 'tv' : 'movie';
+        var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
+        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=' + requestLang + ',en,null');
+
+        var network = new Lampa.Reguest();
+        network.silent(url, function (data) {
+            var final_logo = null;
+            if (data.logos && data.logos.length > 0) {
+                var found = data.logos.find(function (l) { return l.iso_639_1 == requestLang; }) ||
+                    data.logos.find(function (l) { return l.iso_639_1 == 'en'; }) || data.logos[0];
+                if (found) final_logo = found.file_path;
+            }
+            if (final_logo) {
+                var img_url = Lampa.TMDB.image('t/p/w500' + final_logo.replace('.svg', '.png'));
+                var img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.src = img_url;
+                img.onload = function () {
+                    var invert = false;
+                    try {
+                        var canvas = document.createElement('canvas');
+                        var ctx = canvas.getContext('2d');
+                        canvas.width = img.naturalWidth || img.width;
+                        canvas.height = img.naturalHeight || img.height;
+                        if (canvas.width > 0 && canvas.height > 0) {
+                            ctx.drawImage(img, 0, 0);
+                            var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                            var darkPixels = 0, totalPixels = 0;
+                            for (var i = 0; i < imgData.length; i += 4) {
+                                if (imgData[i + 3] < 10) continue;
+                                totalPixels++;
+                                if ((imgData[i] * 299 + imgData[i + 1] * 587 + imgData[i + 2] * 114) / 1000 < 120) darkPixels++;
+                            }
+                            if (totalPixels > 0 && (darkPixels / totalPixels) >= 0.85) {
+                                invert = true;
+                            }
+                        }
+                    } catch (e) { }
+
+                    window.LikhtarHeroLogos[movie.id] = { path: img_url, invert: invert };
+                    renderLogo(img_url, invert);
+                };
+                img.onerror = function () {
+                    window.LikhtarHeroLogos[movie.id] = { fail: true };
+                };
+            } else {
+                window.LikhtarHeroLogos[movie.id] = { fail: true };
+            }
+        }, function () {
+            window.LikhtarHeroLogos[movie.id] = { fail: true };
+        });
+    }
+
     // Один елемент геро-рядка (backdrop + overlay). heightEm — висота банеру (напр. 28).
     function makeHeroResultItem(movie, heightEm) {
         heightEm = heightEm || 22.5;
@@ -231,6 +315,9 @@
                             item.find('.card__title').remove();
                             item.find('.card__age').remove();
                             item[0].heroMovieData = movie;
+
+                            // Завантажуємо крутий логотип замість тексту:
+                            fetchHeroLogo(movie, item, heightEm);
                         } catch (e) { console.log('Hero onCreate error:', e); }
                     },
                     onVisible: function () {
@@ -257,6 +344,9 @@
                                 item.find('.card__title').remove();
                                 item.find('.card__age').remove();
                                 item[0].heroMovieData = movie;
+
+                                // Перезавантажуємо лого після відновлення віртуального DOM Lampa
+                                fetchHeroLogo(movie, item, heightEm);
                             }
                             // Stop default image loading
                             if (this.img) this.img.onerror = function () { };
