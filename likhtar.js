@@ -1243,9 +1243,6 @@
                     scroll-snap-type: x mandatory;
                     padding-left: 1.5em !important;
                 }
-                .scroll--mask .scroll__content {
-                    padding: 1.2em 1em 1em;
-                }
                 
                 /* Global Row Spacing Reduction */
                 .row--card {
@@ -1452,6 +1449,20 @@
     function addServiceRows() {
         var services = ['netflix', 'apple', 'hbo', 'amazon', 'disney', 'paramount', 'sky_showtime', 'hulu', 'syfy', 'educational_and_reality'];
 
+        // Logo URLs for section header icons
+        var SERVICE_LOGOS = {
+            'netflix': LIKHTAR_BASE_URL + 'logos/netflix.svg',
+            'apple': LIKHTAR_BASE_URL + 'logos/apple.svg',
+            'hbo': LIKHTAR_BASE_URL + 'logos/hbo.svg',
+            'amazon': LIKHTAR_BASE_URL + 'logos/amazon.png',
+            'disney': LIKHTAR_BASE_URL + 'logos/disney.svg',
+            'paramount': LIKHTAR_BASE_URL + 'logos/paramount.svg',
+            'sky_showtime': LIKHTAR_BASE_URL + 'logos/SkyShowtime.svg',
+            'hulu': LIKHTAR_BASE_URL + 'logos/Hulu.svg',
+            'syfy': LIKHTAR_BASE_URL + 'logos/Syfy.svg',
+            'educational_and_reality': LIKHTAR_BASE_URL + 'logos/Discovery.svg'
+        };
+
         services.forEach(function (id, index) {
             // Починаємо стрімінги після "Кіно під настрій" (0, 1, 2)
             var rowIndex = index + 3;
@@ -1463,6 +1474,7 @@
                 index: rowIndex,
                 name: 'service_row_' + id,
                 title: rowTitle,
+                icon: SERVICE_LOGOS[id] || '',
 
                 screen: ['main'],
                 call: function (params) {
