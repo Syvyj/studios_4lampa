@@ -212,7 +212,7 @@
                 img.style.filter = (img.style.filter || '') + ' drop-shadow(3px 3px 6px rgba(0,0,0,0.8))';
 
                 titleElem.empty().append(img);
-                titleElem.css({ 'margin-bottom': '0.5em', 'display': 'flex', 'align-items': 'flex-end', 'text-shadow': 'none' });
+                titleElem.css({ 'margin-bottom': '0.3em', 'display': 'flex', 'align-items': 'flex-end', 'text-shadow': 'none' });
             };
         }
 
@@ -278,12 +278,86 @@
         });
     }
 
+    // Кеш для додаткових деталей геро-банеру
+    window.LikhtarHeroDetails = window.LikhtarHeroDetails || {};
+
+    function fetchHeroDetails(movie, jqItem, metaEm) {
+        var metaContainer = jqItem.find('.hero-meta-dynamic');
+        if (!metaContainer.length) return;
+
+        function renderDetails(details) {
+            var html = '';
+            if (details.age) html += '<span style="border: 1px solid rgba(255,255,255,0.4); padding: 0.1em 0.3em; border-radius: 0.2em; font-size: 0.9em;">' + details.age + '</span>';
+            if (details.country) html += '<span>' + details.country + '</span>';
+            if (details.time) html += '<span>' + details.time + '</span>';
+            metaContainer.html(html);
+        }
+
+        if (window.LikhtarHeroDetails[movie.id]) {
+            renderDetails(window.LikhtarHeroDetails[movie.id]);
+            return;
+        }
+
+        var type = movie.name ? 'tv' : 'movie';
+        var lang = Lampa.Storage.get('language', 'uk');
+        var append = type === 'movie' ? 'release_dates' : 'content_ratings';
+        var url = Lampa.TMDB.api(type + '/' + movie.id + '?api_key=' + getTmdbKey() + '&language=' + lang + '&append_to_response=' + append);
+
+        var network = new Lampa.Reguest();
+        network.silent(url, function (data) {
+            var details = { age: '', country: '', time: '' };
+
+            // Тривалість
+            if (type === 'movie' && data.runtime) {
+                var h = Math.floor(data.runtime / 60);
+                var m = data.runtime % 60;
+                details.time = (h > 0 ? h + ' год ' : '') + m + ' хв';
+            } else if (type === 'tv' && data.episode_run_time && data.episode_run_time.length) {
+                details.time = '~' + data.episode_run_time[0] + ' хв';
+            }
+
+            // Країна
+            if (data.production_countries && data.production_countries.length > 0) {
+                details.country = data.production_countries[0].iso_3166_1;
+            }
+
+            // Віковий рейтинг
+            if (type === 'movie' && data.release_dates && data.release_dates.results) {
+                var usRelease = data.release_dates.results.find(function (r) { return r.iso_3166_1 === 'US'; });
+                if (usRelease && usRelease.release_dates.length > 0) {
+                    details.age = usRelease.release_dates[0].certification;
+                }
+            } else if (type === 'tv' && data.content_ratings && data.content_ratings.results) {
+                var usRating = data.content_ratings.results.find(function (r) { return r.iso_3166_1 === 'US'; });
+                if (usRating) details.age = usRating.rating;
+            }
+
+            if (!details.age) details.age = ''; // Fallback
+
+            window.LikhtarHeroDetails[movie.id] = details;
+            renderDetails(details);
+        });
+    }
+
     // Один елемент геро-рядка (backdrop + overlay). heightEm — висота банеру (напр. 28).
     function makeHeroResultItem(movie, heightEm) {
         heightEm = heightEm || 22.5;
         var pad = (heightEm / 35 * 2).toFixed(1);
         var titleEm = (heightEm / 35 * 2.5).toFixed(2);
         var descEm = (heightEm / 35 * 1.1).toFixed(2);
+        var metaEm = (heightEm / 35 * 1.0).toFixed(2);
+
+        var year = (movie.release_date || movie.first_air_date || '').substr(0, 4);
+        var rating = movie.vote_average ? movie.vote_average.toFixed(1) : '';
+        var typeStr = movie.name ? 'Серіал' : 'Фільм';
+
+        var metaHtml = '<div class="hero-meta" style="font-size: ' + metaEm + 'em; color: #bbb; margin-bottom: 0.5em; display: flex; gap: 0.6em; align-items: center; font-weight: 500;">';
+        if (rating && rating !== '0.0') metaHtml += '<span style="background: rgba(255,255,255,0.2); padding: 0.1em 0.4em; border-radius: 0.2em; color: #fff;">Оцінка: ' + rating + '</span>';
+        if (year) metaHtml += '<span>' + year + '</span>';
+        metaHtml += '<span>•</span><span>' + typeStr + '</span>';
+        metaHtml += '<div class="hero-meta-dynamic" style="display: flex; gap: 0.6em; align-items: center;"></div>';
+        metaHtml += '</div>';
+
         return {
             title: 'Hero',
             params: {
@@ -306,10 +380,15 @@
                                 'border-radius': '1em',
                                 'position': 'relative',
                                 'box-shadow': '0 0 20px rgba(0,0,0,0.5)',
-                                'margin-bottom': '10px'
+                                'margin-bottom': '10px',
+                                'transition': 'transform 0.2s, background 0.2s, outline 0.2s',
+                                'outline': '4px solid transparent',
+                                'outline-offset': '2px',
+                                'cursor': 'pointer'
                             });
                             item.append('<div class="hero-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: ' + pad + 'em; border-radius: 0 0 1em 1em;">' +
-                                '<div class="hero-title" style="font-size: ' + titleEm + 'em; font-weight: bold; color: #fff; margin-bottom: 0.25em; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">' + (movie.title || movie.name) + '</div>' +
+                                '<div class="hero-title" style="font-size: ' + titleEm + 'em; font-weight: bold; color: #fff; margin-bottom: 0.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">' + (movie.title || movie.name) + '</div>' +
+                                metaHtml +
                                 '<div class="hero-desc" style="font-size: ' + descEm + 'em; color: #ddd; max-width: 60%; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">' + (movie.overview || '') + '</div></div>');
                             item.find('.card__view').remove();
                             item.find('.card__title').remove();
@@ -318,6 +397,8 @@
 
                             // Завантажуємо крутий логотип замість тексту:
                             fetchHeroLogo(movie, item, heightEm);
+                            // Підтягуємо деталі (тривалість, вік, країна)
+                            fetchHeroDetails(movie, item, metaEm);
                         } catch (e) { console.log('Hero onCreate error:', e); }
                     },
                     onVisible: function () {
@@ -335,11 +416,17 @@
                                     'border-radius': '1em',
                                     'position': 'relative',
                                     'box-shadow': '0 0 20px rgba(0,0,0,0.5)',
-                                    'margin-bottom': '10px'
+                                    'margin-bottom': '10px',
+                                    'transition': 'transform 0.2s, background 0.2s, outline 0.2s',
+                                    'outline': '4px solid transparent',
+                                    'outline-offset': '2px',
+                                    'cursor': 'pointer'
                                 });
                                 item.append('<div class="hero-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: ' + pad + 'em; border-radius: 0 0 1em 1em;">' +
-                                    '<div class="hero-title" style="font-size: ' + titleEm + 'em; font-weight: bold; color: #fff; margin-bottom: 0.25em; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">' + (movie.title || movie.name) + '</div>' +
+                                    '<div class="hero-title" style="font-size: ' + titleEm + 'em; font-weight: bold; color: #fff; margin-bottom: 0.2em; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">' + (movie.title || movie.name) + '</div>' +
+                                    metaHtml +
                                     '<div class="hero-desc" style="font-size: ' + descEm + 'em; color: #ddd; max-width: 60%; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">' + (movie.overview || '') + '</div></div>');
+
                                 item.find('.card__view').remove();
                                 item.find('.card__title').remove();
                                 item.find('.card__age').remove();
@@ -347,6 +434,7 @@
 
                                 // Перезавантажуємо лого після відновлення віртуального DOM Lampa
                                 fetchHeroLogo(movie, item, heightEm);
+                                fetchHeroDetails(movie, item, metaEm);
                             }
                             // Stop default image loading
                             if (this.img) this.img.onerror = function () { };
