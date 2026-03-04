@@ -3087,6 +3087,9 @@
             .full-start-new__body {
                 align-items: center !important;
             }
+            .cardify .full-start-new__body {
+                align-items: flex-end !important;
+            }
 
             /* ====== Wide card: quality row appended to rate-line (bottom-right) ====== */
             .likhtar-quality-row {
