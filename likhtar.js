@@ -2820,7 +2820,7 @@
                     var applyLogo = function (img_url, invert) {
                         var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="width: 25vw; max-width: 15em; min-width: 10em; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
                         titleEl.html(newHtml);
-                        titleEl.css({ fontSize: '1em', marginTop: '0' });
+                        titleEl.css({ fontSize: '3em', marginTop: '0', marginBottom: '0' });
                     };
 
                     if (window.LikhtarHeroLogos && window.LikhtarHeroLogos[movie.id] && window.LikhtarHeroLogos[movie.id].path) {
@@ -2866,7 +2866,7 @@
                                     if (currentTitleEl.length && currentTitleEl.find('img.likhtar-full-logo').length === 0) {
                                         var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="width: 25vw; max-width: 15em; min-width: 10em; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
                                         currentTitleEl.html(newHtml);
-                                        currentTitleEl.css({ fontSize: '1em', marginTop: '0' });
+                                        currentTitleEl.css({ fontSize: '3em', marginTop: '0', marginBottom: '0' });
                                     }
                                 };
                                 img.onerror = function () {
@@ -3071,14 +3071,25 @@
             /* ====== Poster overlay badges (regular card, top-left) ====== */
             .likhtar-poster-badges {
                 position: absolute;
-                top: 0.5em;
-                left: 0.5em;
+                top: 2.8em;
+                left: 0.2em;
                 display: flex;
-                flex-direction: row;
+                flex-direction: column;
                 flex-wrap: wrap;
                 gap: 0.3em;
                 z-index: 20;
                 pointer-events: none;
+                align-items: stretch;
+            }
+
+            .full-start__poster .card__type, .full-start-new__poster .card__type {
+                position: absolute !important;
+                left: 0.2em !important;
+                top: 1.4em !important;
+            }
+
+            .full-start-new__body {
+                align-items: center !important;
             }
 
             /* ====== Wide card: quality row appended to rate-line (bottom-right) ====== */
