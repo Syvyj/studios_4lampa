@@ -232,14 +232,20 @@
 
         var type = movie.name ? 'tv' : 'movie';
         var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
-        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=' + requestLang + ',en,null');
+        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=uk,' + requestLang + ',en,null');
 
         var network = new Lampa.Reguest();
         network.silent(url, function (data) {
             var final_logo = null;
             if (data.logos && data.logos.length > 0) {
-                var found = data.logos.find(function (l) { return l.iso_639_1 == requestLang; }) ||
-                    data.logos.find(function (l) { return l.iso_639_1 == 'en'; }) || data.logos[0];
+                // Ensure the found logo is actually an image path
+                var validLogo = function (l) { return l && l.file_path; };
+
+                var found = data.logos.find(function (l) { return l.iso_639_1 == 'uk' && validLogo(l); }) ||
+                    data.logos.find(function (l) { return l.iso_639_1 == requestLang && validLogo(l); }) ||
+                    data.logos.find(function (l) { return l.iso_639_1 == 'en' && validLogo(l); }) ||
+                    data.logos.find(validLogo);
+
                 if (found) final_logo = found.file_path;
             }
             if (final_logo) {
@@ -1411,7 +1417,7 @@
         window.LikhtarFeedsCache = window.LikhtarFeedsCache || {};
 
         Lampa.ContentRows.add({
-            index: 99, // Place it at the end
+            index: 2, // Right after Studios and Mood rows, before Netflix
             name: 'custom_ua_feed_row',
             title: '🇺🇦 Українська стрічка',
             screen: ['main'],
@@ -1570,7 +1576,23 @@
                 });
 
                 if (el.length) {
-                    var iconHtml = '<div style="width: 1.2em; height: 1.2em; display: inline-block; vertical-align: middle; margin-right: 0.4em; margin-bottom: 0.1em; color: inherit; filter: invert(1) brightness(2);">' + config.icon + '</div>';
+                    // Map service ID to mini logo URL
+                    var miniLogos = {
+                        'netflix': LIKHTAR_BASE_URL + 'logos/netflix_mini.svg',
+                        'apple': LIKHTAR_BASE_URL + 'logos/apple_mini.svg',
+                        'hbo': LIKHTAR_BASE_URL + 'logos/hbo_mini.svg',
+                        'amazon': LIKHTAR_BASE_URL + 'logos/prime_mini.svg',
+                        'disney': LIKHTAR_BASE_URL + 'logos/disney_mini.svg',
+                        'paramount': LIKHTAR_BASE_URL + 'logos/paramount_mini.svg',
+                        'sky_showtime': LIKHTAR_BASE_URL + 'logos/sky_mini.svg',
+                        'hulu': LIKHTAR_BASE_URL + 'logos/hulu_mini.svg',
+                        'syfy': LIKHTAR_BASE_URL + 'logos/syfy_mini.svg',
+                        'educational_and_reality': LIKHTAR_BASE_URL + 'logos/discovery_mini.svg'
+                    };
+                    var miniLogoUrl = miniLogos[id];
+                    var iconHtml = miniLogoUrl
+                        ? '<img src="' + miniLogoUrl + '" style="width: 1.4em; height: 1.4em; object-fit: contain; vertical-align: middle; margin-right: 0.4em; margin-bottom: 0.1em;">'
+                        : '';
                     el.html(iconHtml + '<span style="vertical-align: middle;">Сьогодні на ' + config.title + '</span>');
 
                     // Hide Lampa's default grey circle — our SVG is already in the title
@@ -2796,9 +2818,9 @@
                 var titleEl = $render.find('.full-start-new__title, .full-start__title').first();
                 if (titleEl.length && titleEl.find('img.likhtar-full-logo').length === 0) {
                     var applyLogo = function (img_url, invert) {
-                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="max-height: 4.5em; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
+                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="width: 25vw; max-width: 15em; min-width: 10em; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
                         titleEl.html(newHtml);
-                        titleEl.css({ fontSize: '1em', marginTop: '1.5em' });
+                        titleEl.css({ fontSize: '1em', marginTop: '0' });
                     };
 
                     if (window.LikhtarHeroLogos && window.LikhtarHeroLogos[movie.id] && window.LikhtarHeroLogos[movie.id].path) {
@@ -2806,7 +2828,7 @@
                     } else if (!window.LikhtarHeroLogos || !window.LikhtarHeroLogos[movie.id] || !window.LikhtarHeroLogos[movie.id].fail) {
                         var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
                         var type = movie.name ? 'tv' : 'movie';
-                        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=' + requestLang + ',en,null');
+                        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=uk,' + requestLang + ',en,null');
                         var network = new Lampa.Reguest();
                         network.silent(url, function (data) {
                             var final_logo = null;
@@ -2842,9 +2864,9 @@
                                     window.LikhtarHeroLogos[movie.id] = { path: img_url, invert: invert };
                                     var currentTitleEl = $('.full-start-new__title, .full-start__title').first();
                                     if (currentTitleEl.length && currentTitleEl.find('img.likhtar-full-logo').length === 0) {
-                                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="max-height: 4.5em; width: auto; max-width: 100%; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
+                                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="width: 25vw; max-width: 15em; min-width: 10em; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
                                         currentTitleEl.html(newHtml);
-                                        currentTitleEl.css({ fontSize: '1em', marginTop: '1.5em' });
+                                        currentTitleEl.css({ fontSize: '1em', marginTop: '0' });
                                     }
                                 };
                                 img.onerror = function () {
@@ -2864,16 +2886,52 @@
                 }
             }
 
+            // Move the Year/Country block (.full-start-new__head) to the poster
+            var headEl = $render.find('.full-start-new__head').first();
+            var posterWrapEl = $render.find('.full-start__poster, .full-start-new__poster').first();
+
+            if (headEl.length && posterWrapEl.length && !posterWrapEl.find('.full-start-new__head').length) {
+                headEl.detach().appendTo(posterWrapEl);
+                headEl.addClass('likhtar-poster-head');
+            }
+
+            // Ensure our dynamic styles exist
+            if (!$('style:contains("likhtar-poster-head")').length) {
+                var posterHeadCSS = `
+                    .likhtar-poster-head {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        background: rgba(0, 0, 0, 0.7);
+                        backdrop-filter: blur(5px);
+                        color: #fff !important;
+                        font-size: 0.9em;
+                        padding: 0.6em 0.8em;
+                        text-align: center;
+                        z-index: 10;
+                        margin: 0 !important;
+                        box-sizing: border-box;
+                    }
+                    .likhtar-poster-head * {
+                        color: #fff !important;
+                    }
+                    .full-start__poster, .full-start-new__poster {
+                        position: relative;
+                        overflow: hidden;
+                    }
+                `;
+                $('head').append('<style>' + posterHeadCSS + '</style>');
+            }
+
             // Co-existence guard: if QualityUA.js is active, skip our badge injection
             if ($('.quality-badges-container').length) return;
 
-            // Detect layout: wide card = full-start-new with no separate poster column
-            var isWide = $render.find('.full-start-new').length > 0 && !$render.find('.full-start__poster').length;
+            // Detect layout: try to find poster
+            var poster = $render.find('.full-start__poster, .full-start-new__poster').first();
 
-            if (!isWide) {
-                // ── REGULAR CARD: overlay badges on the poster image (bottom-left) ──────
-                var poster = $render.find('.full-start__poster, .full-start-new__poster').first();
-                if (!poster.length) return;
+            if (poster.length) {
+                // ── REGULAR CARD: overlay badges on the poster image (top-left) ──────
                 if ($render.find('.likhtar-poster-badges').length) return;
 
                 // Ensure poster wrapper is position:relative so our absolute badges work
@@ -2900,7 +2958,7 @@
                 });
 
             } else {
-                // ── WIDE CARD: append badges at the end of rate-line (bottom-right) ────
+                // ── FALLBACK CARD (no poster): append badges at the end of rate-line ────
                 var rateLine = $render.find('.full-start-new__rate-line, .full-start__rate-line').first();
                 if (!rateLine.length) return;
                 if ($render.find('.likhtar-quality-row').length) return;
@@ -3010,13 +3068,14 @@
                 color: #fff !important;
             }
             
-            /* ====== Poster overlay badges (regular card, bottom-left) ====== */
+            /* ====== Poster overlay badges (regular card, top-left) ====== */
             .likhtar-poster-badges {
                 position: absolute;
-                bottom: 0.5em;
+                top: 0.5em;
                 left: 0.5em;
                 display: flex;
-                flex-direction: column;
+                flex-direction: row;
+                flex-wrap: wrap;
                 gap: 0.3em;
                 z-index: 20;
                 pointer-events: none;
@@ -3028,6 +3087,11 @@
                 flex-wrap: wrap;
                 align-items: center;
                 gap: 0.4em;
+            }
+
+            /* Hide tagline to clean up UI */
+            .full-start-new__tagline, .full--tagline {
+                display: none !important;
             }
 
             /* Only style OUR badges — never override Lampa's native ones */
