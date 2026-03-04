@@ -2886,12 +2886,12 @@
                 }
             }
 
-            // Move the Year/Country block (.full-start-new__head) to the poster
+            // Move the Year/Country block (.full-start-new__head) to the details block
             var headEl = $render.find('.full-start-new__head').first();
-            var posterWrapEl = $render.find('.full-start__poster, .full-start-new__poster').first();
+            var detailsEl = $render.find('.full-start-new__details, .full-start__details').first();
 
-            if (headEl.length && posterWrapEl.length && !posterWrapEl.find('.full-start-new__head').length) {
-                headEl.detach().appendTo(posterWrapEl);
+            if (headEl.length && detailsEl.length && !detailsEl.find('.full-start-new__head').length) {
+                headEl.detach().appendTo(detailsEl);
                 headEl.addClass('likhtar-poster-head');
             }
 
@@ -2899,19 +2899,15 @@
             if (!$('style:contains("likhtar-poster-head")').length) {
                 var posterHeadCSS = `
                     .likhtar-poster-head {
-                        position: absolute;
                         bottom: 0;
                         left: 0;
                         width: 100%;
-                        background: rgba(0, 0, 0, 0.7);
                         backdrop-filter: blur(5px);
                         color: #fff !important;
                         font-size: 0.9em;
-                        padding: 0.6em 0.8em;
-                        text-align: center;
-                        z-index: 10;
-                        margin: 0 !important;
-                        box-sizing: border-box;
+                        display: flex;
+                        align-items: center;
+                        flex-direction: row;
                     }
                     .likhtar-poster-head * {
                         color: #fff !important;
@@ -3068,11 +3064,11 @@
                 color: #fff !important;
             }
             
-            /* ====== Poster overlay badges (regular card, top-left) ====== */
+            /* ====== Poster overlay badges (regular card, top-right) ====== */
             .likhtar-poster-badges {
                 position: absolute;
-                top: 2.8em;
-                left: 0.2em;
+                top: 0.8em;
+                right: 0.2em;
                 display: flex;
                 flex-direction: column;
                 flex-wrap: wrap;
