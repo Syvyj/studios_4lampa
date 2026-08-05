@@ -2024,7 +2024,8 @@
 
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
-            param: { name: 'likhtar_worker_url', type: 'input', default: '' },
+            // values: '' обов'язкове для input — без нього Lampa падає, будуючи список
+            param: { name: 'likhtar_worker_url', type: 'input', placeholder: 'http://192.168.0.70:8787', values: '', default: '' },
             field: {
                 name: 'Адреса сервера',
                 description: 'Свій Worker замість публічних проксі: швидше й надійніше для міток якості та Кіноогляду. Наприклад http://192.168.0.70:8787'
@@ -2033,7 +2034,7 @@
 
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
-            param: { type: 'button' },
+            param: { name: 'likhtar_pair_phone', type: 'button' },
             field: {
                 name: 'Налаштувати з телефона',
                 description: 'Показати код і QR, щоб змінити налаштування у браузері смартфона. Потрібна вказана вище адреса сервера.'
