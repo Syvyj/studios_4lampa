@@ -201,92 +201,167 @@
 
     window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
 
-    function fetchHeroLogo(movie, jqItem, heightEm) {
-        var titleElem = jqItem.find('.hero-title');
+    /**
+     * Єдине джерело логотипів TMDB для геро-банера і сторінки фільму.
+     * Головне завдання — не дати «кривим» лого (квадратним, вертикальним, крихітним)
+     * потрапити в інтерфейс: TMDB віддає їх упереміш із нормальними горизонтальними.
+     */
+    var LikhtarLogo = (function () {
+        // Прийнятні пропорції ширина/висота для горизонтального лого-напису.
+        var RATIO_MIN = 1.4;
+        var RATIO_MAX = 8;
+        var RATIO_IDEAL = 3;
+        var MIN_WIDTH = 200;
 
-        function renderLogo(img_url, invert) {
-            var img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.src = img_url;
-            img.onload = function () {
-                if (invert) img.style.filter = 'brightness(0) invert(1)';
-                img.style.maxHeight = (heightEm / 35 * 6) + 'em';
-                img.style.maxWidth = '60%';
-                img.style.objectFit = 'contain';
-                img.style.objectPosition = 'left bottom';
-                img.style.filter = (img.style.filter || '') + ' drop-shadow(3px 3px 6px rgba(0,0,0,0.8))';
-
-                titleElem.empty().append(img);
-                titleElem.css({ 'margin-bottom': '0.3em', 'display': 'flex', 'align-items': 'flex-end', 'text-shadow': 'none' });
-            };
+        function cacheKey(movie) {
+            return (movie.name || movie.first_air_date ? 'tv' : 'movie') + '_' + movie.id;
         }
 
-        if (window.LikhtarHeroLogos[movie.id]) {
-            if (window.LikhtarHeroLogos[movie.id].path) {
-                renderLogo(window.LikhtarHeroLogos[movie.id].path, window.LikhtarHeroLogos[movie.id].invert);
-            }
-            return;
+        function ratioOf(logo) {
+            if (logo.aspect_ratio) return logo.aspect_ratio;
+            if (logo.width && logo.height) return logo.width / logo.height;
+            return 0;
         }
 
-        window.LikhtarHeroLogos[movie.id] = { fetching: true };
+        /**
+         * Бал кандидата: чим менший, тим краще. Пріоритети в порядку спадання —
+         * придатність пропорцій, мова, близькість до ідеальних пропорцій, розмір.
+         * Придатність стоїть вище за мову свідомо: квадратне українське лого
+         * виглядає в інтерфейсі гірше, ніж нормальне англійське.
+         */
+        function score(logo, langRank) {
+            var ratio = ratioOf(logo);
+            var penalty = langRank * 1000;
 
-        var type = movie.name ? 'tv' : 'movie';
-        var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
-        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=uk,' + requestLang + ',en,null');
+            if (!ratio) penalty += 50;                                    // невідомі пропорції — ризик, але не вирок
+            else if (ratio < RATIO_MIN || ratio > RATIO_MAX) penalty += 10000; // квадратні/вертикальні/надто витягнуті
+            else penalty += Math.abs(ratio - RATIO_IDEAL) * 10;
 
-        var network = new Lampa.Reguest();
-        network.silent(url, function (data) {
-            var final_logo = null;
-            if (data.logos && data.logos.length > 0) {
-                // Ensure the found logo is actually an image path
-                var validLogo = function (l) { return l && l.file_path; };
+            if (logo.width && logo.width < MIN_WIDTH) penalty += 100;     // замалі — розмиються на ТВ
+            return penalty;
+        }
 
-                var found = data.logos.find(function (l) { return l.iso_639_1 == 'uk' && validLogo(l); }) ||
-                    data.logos.find(function (l) { return l.iso_639_1 == requestLang && validLogo(l); }) ||
-                    data.logos.find(function (l) { return l.iso_639_1 == 'en' && validLogo(l); }) ||
-                    data.logos.find(validLogo);
+        /** Вибирає найкраще лого: спочатку за мовою (uk → мова інтерфейсу → en → без мови), потім за пропорціями. */
+        function pickBest(logos, requestLang) {
+            if (!logos || !logos.length) return null;
 
-                if (found) final_logo = found.file_path;
+            var langOrder = ['uk', requestLang, 'en', null];
+            var best = null, bestScore = Infinity;
+
+            logos.forEach(function (logo) {
+                if (!logo || !logo.file_path) return;
+
+                var langRank = langOrder.indexOf(logo.iso_639_1);
+                if (langRank === -1) langRank = langOrder.length;        // інша мова — останній пріоритет, але не відкидаємо
+
+                var s = score(logo, langRank);
+                if (s < bestScore) {
+                    bestScore = s;
+                    best = logo;
+                }
+            });
+
+            return best;
+        }
+
+        /** SVG конвертуємо в PNG (canvas його не прочитає), і беремо максимальний розмір — CSS все одно обмежить. */
+        function buildUrl(filePath) {
+            var isSvg = /\.svg$/i.test(filePath);
+            return Lampa.TMDB.image('t/p/' + (isSvg ? 'original' : 'w500') + filePath.replace(/\.svg$/i, '.png'));
+        }
+
+        /** Темні лого на темному фоні не видно — визначаємо це по пікселях і інвертуємо в білий. */
+        function detectInvert(img) {
+            try {
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                canvas.width = img.naturalWidth || img.width;
+                canvas.height = img.naturalHeight || img.height;
+                if (!canvas.width || !canvas.height) return false;
+
+                ctx.drawImage(img, 0, 0);
+                var data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                var dark = 0, total = 0;
+                for (var i = 0; i < data.length; i += 4) {
+                    if (data[i + 3] < 10) continue;
+                    total++;
+                    if ((data[i] * 299 + data[i + 1] * 587 + data[i + 2] * 114) / 1000 < 120) dark++;
+                }
+                return total > 0 && (dark / total) >= 0.85;
+            } catch (e) {
+                return false;
             }
-            if (final_logo) {
-                if (!isSettingEnabled('likhtar_show_logo_instead_text', true)) return;
-                var img_url = Lampa.TMDB.image('t/p/w500' + final_logo.replace('.svg', '.png'));
+        }
+
+        /**
+         * Віддає { path, invert, ratio } через callback або null, якщо придатного лого немає.
+         * Результат кешується (у т.ч. негативний), тож повторні виклики безкоштовні.
+         */
+        function get(movie, callback) {
+            if (!movie || !movie.id) return callback(null);
+
+            var key = cacheKey(movie);
+            var cached = window.LikhtarHeroLogos[key];
+
+            if (cached) {
+                if (cached.path) return callback(cached);
+                if (cached.fail) return callback(null);
+                if (cached.fetching) {
+                    (cached.waiting = cached.waiting || []).push(callback);
+                    return;
+                }
+            }
+
+            var pending = { fetching: true, waiting: [] };
+            window.LikhtarHeroLogos[key] = pending;
+
+            function resolve(result) {
+                window.LikhtarHeroLogos[key] = result || { fail: true };
+                callback(result);
+                pending.waiting.forEach(function (cb) { cb(result); });
+            }
+
+            var type = movie.name || movie.first_air_date ? 'tv' : 'movie';
+            var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
+            var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() +
+                '&include_image_language=uk,' + requestLang + ',en,null');
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var best = pickBest(data && data.logos, requestLang);
+                if (!best) return resolve(null);
+
+                var img_url = buildUrl(best.file_path);
                 var img = new Image();
                 img.crossOrigin = 'anonymous';
-                img.src = img_url;
                 img.onload = function () {
-                    var invert = false;
-                    try {
-                        var canvas = document.createElement('canvas');
-                        var ctx = canvas.getContext('2d');
-                        canvas.width = img.naturalWidth || img.width;
-                        canvas.height = img.naturalHeight || img.height;
-                        if (canvas.width > 0 && canvas.height > 0) {
-                            ctx.drawImage(img, 0, 0);
-                            var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                            var darkPixels = 0, totalPixels = 0;
-                            for (var i = 0; i < imgData.length; i += 4) {
-                                if (imgData[i + 3] < 10) continue;
-                                totalPixels++;
-                                if ((imgData[i] * 299 + imgData[i + 1] * 587 + imgData[i + 2] * 114) / 1000 < 120) darkPixels++;
-                            }
-                            if (totalPixels > 0 && (darkPixels / totalPixels) >= 0.85) {
-                                invert = true;
-                            }
-                        }
-                    } catch (e) { }
+                    resolve({ path: img_url, invert: detectInvert(img), ratio: ratioOf(best) });
+                };
+                img.onerror = function () { resolve(null); };
+                img.src = img_url;
+            }, function () {
+                resolve(null);
+            });
+        }
 
-                    window.LikhtarHeroLogos[movie.id] = { path: img_url, invert: invert };
-                    renderLogo(img_url, invert);
-                };
-                img.onerror = function () {
-                    window.LikhtarHeroLogos[movie.id] = { fail: true };
-                };
-            } else {
-                window.LikhtarHeroLogos[movie.id] = { fail: true };
-            }
-        }, function () {
-            window.LikhtarHeroLogos[movie.id] = { fail: true };
+        return { get: get, pickBest: pickBest };
+    })();
+
+    function fetchHeroLogo(movie, jqItem, heightEm) {
+        if (!isSettingEnabled('likhtar_show_logo_instead_text', true)) return;
+
+        LikhtarLogo.get(movie, function (logo) {
+            if (!logo) return;
+
+            var titleElem = jqItem.find('.hero-title');
+            if (!titleElem.length || titleElem.find('img.likhtar-hero-logo').length) return;
+
+            var img = $('<img class="likhtar-hero-logo">');
+            img.css('max-height', (heightEm / 35 * 6).toFixed(2) + 'em');
+            if (logo.invert) img.addClass('likhtar-logo--invert');
+            img.attr('src', logo.path);
+
+            titleElem.empty().append(img);
+            titleElem.addClass('hero-title--logo');
         });
     }
 
@@ -296,6 +371,14 @@
             '.hero-banner { transition: transform 0.2s, box-shadow 0.2s; }' +
             '.hero-banner.focus { transform: scale(1.02); outline: 4px solid #fff; outline-offset: -4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 10; }' +
             '.hero-meta span { text-shadow: 1px 1px 2px rgba(0,0,0,0.8); }' +
+            /* Лого: обмежуємо рамкою по обох осях, розміри лишаємо авто — тоді будь-які пропорції вписуються без спотворення */
+            '.likhtar-hero-logo, .likhtar-full-logo { width: auto; height: auto; object-fit: contain; display: block; }' +
+            '.likhtar-hero-logo { max-width: 60%; object-position: left bottom; filter: drop-shadow(3px 3px 6px rgba(0,0,0,0.8)); }' +
+            '.likhtar-logo--invert { filter: brightness(0) invert(1) drop-shadow(3px 3px 6px rgba(0,0,0,0.8)); }' +
+            '.hero-title--logo { margin-bottom: 0.3em; display: flex; align-items: flex-end; text-shadow: none; }' +
+            /* em, а не vw: у Lampa кегль масштабується під екран, тож лого лишається пропорційним інтерфейсу
+               (і не ламається на старих ТВ-браузерах, які не знають min()) */
+            '.likhtar-full-logo { max-width: 15em; max-height: 4.5em; margin-bottom: 0.2em; }' +
             '</style>');
     }
 
@@ -2817,72 +2900,22 @@
             if (isSettingEnabled('likhtar_show_logo_instead_text', true)) {
                 var titleEl = $render.find('.full-start-new__title, .full-start__title').first();
                 if (titleEl.length && titleEl.find('img.likhtar-full-logo').length === 0) {
-                    var applyLogo = function (img_url, invert) {
-                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="width: 25vw; max-width: 15em; min-width: 10em; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
-                        titleEl.html(newHtml);
-                        titleEl.css({ fontSize: '3em', marginTop: '0', marginBottom: '0' });
-                    };
+                    LikhtarLogo.get(movie, function (logo) {
+                        if (!logo) return;
 
-                    if (window.LikhtarHeroLogos && window.LikhtarHeroLogos[movie.id] && window.LikhtarHeroLogos[movie.id].path) {
-                        applyLogo(window.LikhtarHeroLogos[movie.id].path, window.LikhtarHeroLogos[movie.id].invert);
-                    } else if (!window.LikhtarHeroLogos || !window.LikhtarHeroLogos[movie.id] || !window.LikhtarHeroLogos[movie.id].fail) {
-                        var requestLang = Lampa.Storage.get('logo_lang') || Lampa.Storage.get('language', 'uk');
-                        var type = movie.name ? 'tv' : 'movie';
-                        var url = Lampa.TMDB.api(type + '/' + movie.id + '/images?api_key=' + getTmdbKey() + '&include_image_language=uk,' + requestLang + ',en,null');
-                        var network = new Lampa.Reguest();
-                        network.silent(url, function (data) {
-                            var final_logo = null;
-                            if (data.logos && data.logos.length > 0) {
-                                var found = data.logos.find(function (l) { return l.iso_639_1 == requestLang; }) ||
-                                    data.logos.find(function (l) { return l.iso_639_1 == 'en'; }) || data.logos[0];
-                                if (found) final_logo = found.file_path;
-                            }
-                            if (final_logo) {
-                                var img_url = Lampa.TMDB.image('t/p/w500' + final_logo.replace('.svg', '.png'));
-                                var img = new Image();
-                                img.crossOrigin = 'Anonymous';
-                                img.onload = function () {
-                                    var invert = false;
-                                    try {
-                                        var canvas = document.createElement('canvas');
-                                        var ctx = canvas.getContext('2d');
-                                        canvas.width = img.naturalWidth || img.width;
-                                        canvas.height = img.naturalHeight || img.height;
-                                        if (canvas.width > 0 && canvas.height > 0) {
-                                            ctx.drawImage(img, 0, 0);
-                                            var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                                            var darkPixels = 0, totalPixels = 0;
-                                            for (var i = 0; i < imgData.length; i += 4) {
-                                                if (imgData[i + 3] < 10) continue;
-                                                totalPixels++;
-                                                if ((imgData[i] * 299 + imgData[i + 1] * 587 + imgData[i + 2] * 114) / 1000 < 120) darkPixels++;
-                                            }
-                                            if (totalPixels > 0 && (darkPixels / totalPixels) >= 0.85) invert = true;
-                                        }
-                                    } catch (e) { }
-                                    window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
-                                    window.LikhtarHeroLogos[movie.id] = { path: img_url, invert: invert };
-                                    var currentTitleEl = $('.full-start-new__title, .full-start__title').first();
-                                    if (currentTitleEl.length && currentTitleEl.find('img.likhtar-full-logo').length === 0) {
-                                        var newHtml = '<img class="likhtar-full-logo" src="' + img_url + '" style="width: 25vw; max-width: 15em; min-width: 10em; object-fit: contain; margin-bottom: 0.2em;' + (invert ? ' filter: brightness(0) invert(1);' : '') + '">';
-                                        currentTitleEl.html(newHtml);
-                                        currentTitleEl.css({ fontSize: '3em', marginTop: '0', marginBottom: '0' });
-                                    }
-                                };
-                                img.onerror = function () {
-                                    window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
-                                    window.LikhtarHeroLogos[movie.id] = { fail: true };
-                                };
-                                img.src = img_url;
-                            } else {
-                                window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
-                                window.LikhtarHeroLogos[movie.id] = { fail: true };
-                            }
-                        }, function () {
-                            window.LikhtarHeroLogos = window.LikhtarHeroLogos || {};
-                            window.LikhtarHeroLogos[movie.id] = { fail: true };
-                        });
-                    }
+                        // Сторінку могли встигнути закрити — шукаємо заголовок ще раз у поточному DOM
+                        var target = $render.closest('body').length
+                            ? $render.find('.full-start-new__title, .full-start__title').first()
+                            : $('.full-start-new__title, .full-start__title').first();
+                        if (!target.length || target.find('img.likhtar-full-logo').length) return;
+
+                        var img = $('<img class="likhtar-full-logo">');
+                        if (logo.invert) img.addClass('likhtar-logo--invert');
+                        img.attr('src', logo.path);
+
+                        target.empty().append(img);
+                        target.css({ fontSize: '3em', marginTop: '0', marginBottom: '0' });
+                    });
                 }
             }
 
