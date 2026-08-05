@@ -1,0 +1,12 @@
+name = "likhtar"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# Локально сховище не потрібне: Worker тримає сесії в пам'яті процесу.
+# Перед деплоєм у Cloudflare створіть KV і розкоментуйте прив'язку:
+#
+#   npx wrangler kv namespace create LIKHTAR
+#
+# [[kv_namespaces]]
+# binding = "LIKHTAR"
+# id = "сюди-id-з-команди-вище"
