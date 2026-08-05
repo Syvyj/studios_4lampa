@@ -13,6 +13,7 @@
 
 import QRCode from 'qrcode';
 import { CONFIG_HTML } from './config-page.js';
+import { ROULETTE_HTML } from './roulette-page.js';
 
 // Літери й цифри, які неможливо сплутати на екрані телевізора:
 // без O/0, I/1, S/5 — інакше код доводиться вгадувати.
@@ -130,7 +131,13 @@ async function readSession(code, env) {
     return json(JSON.parse(raw));
 }
 
-/** Телефон зберігає конфіг. */
+/**
+ * Оновлення сесії. Приймає три різні речі, бо сесія обслуговує два сценарії:
+ *   config — телефон зберіг налаштування;
+ *   deck   — телевізор поклав колоду фільмів для рулетки;
+ *   action — телефон попросив телевізор щось відкрити.
+ * Передані поля замінюються, решта лишається як була.
+ */
 async function writeSession(code, request, env) {
     if (!validCode(code)) return json({ error: 'bad_code' }, 400);
 
@@ -141,25 +148,43 @@ async function writeSession(code, request, env) {
     const text = await request.text();
     if (text.length > MAX_CONFIG_BYTES) return json({ error: 'too_large' }, 413);
 
-    let config;
+    let body;
     try {
-        const body = JSON.parse(text);
-        config = body && body.config;
+        body = JSON.parse(text);
     } catch (e) {
         return json({ error: 'bad_json' }, 400);
     }
+    if (typeof body !== 'object' || body === null) return json({ error: 'bad_json' }, 400);
 
-    if (typeof config !== 'object' || config === null || Array.isArray(config)) {
-        return json({ error: 'bad_config' }, 400);
+    const isPlainObject = (v) => typeof v === 'object' && v !== null && !Array.isArray(v);
+    const session = JSON.parse(raw);
+    let touched = false;
+
+    if ('config' in body) {
+        if (!isPlainObject(body.config)) return json({ error: 'bad_config' }, 400);
+        session.config = body.config;
+        session.updated = Date.now();
+        touched = true;
     }
 
-    const session = JSON.parse(raw);
-    session.config = config;
-    session.updated = Date.now();
+    if ('deck' in body) {
+        if (!Array.isArray(body.deck)) return json({ error: 'bad_deck' }, 400);
+        session.deck = body.deck;
+        touched = true;
+    }
+
+    if ('action' in body) {
+        if (body.action !== null && !isPlainObject(body.action)) return json({ error: 'bad_action' }, 400);
+        session.action = body.action;
+        session.actionAt = body.action ? Date.now() : 0;
+        touched = true;
+    }
+
+    if (!touched) return json({ error: 'nothing_to_update' }, 400);
 
     await store.put(sessionKey(code), JSON.stringify(session), { expirationTtl: SESSION_TTL_SECONDS });
 
-    return json({ ok: true, updated: session.updated });
+    return json({ ok: true, updated: session.updated || 0, actionAt: session.actionAt || 0 });
 }
 
 /** Проксі для джерел без CORS. Відповіді кешуються — вигода спільна для всіх користувачів. */
@@ -403,6 +428,12 @@ export default {
 
         if (path === '/config') {
             return new Response(CONFIG_HTML, {
+                headers: { 'Content-Type': 'text/html; charset=utf-8', ...CORS_HEADERS }
+            });
+        }
+
+        if (path === '/roulette') {
+            return new Response(ROULETTE_HTML, {
                 headers: { 'Content-Type': 'text/html; charset=utf-8', ...CORS_HEADERS }
             });
         }

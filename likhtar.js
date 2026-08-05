@@ -2058,6 +2058,12 @@
 
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
+            param: { name: 'likhtar_roulette_enabled', type: 'trigger', default: true },
+            field: { name: 'Кінорулетка', description: 'Гортати фільми свайпами на телефоні, обраний відкривається на телевізорі. Потрібна адреса сервера. Потрібен перезапуск.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
             param: { name: 'likhtar_section_digital', type: 'trigger', default: true },
             field: { name: 'Релізи в цифрі', description: 'Кінопрокатні фільми, що вже вийшли або скоро вийдуть у цифрі. Потрібен перезапуск.' }
         });
@@ -4145,6 +4151,182 @@
     })();
 
     // =================================================================
+    // КІНОРУЛЕТКА
+    // =================================================================
+    /**
+     * Телевізор готує колоду фільмів і показує QR, далі все відбувається
+     * на телефоні: гортати великі постери пальцем набагато приємніше, ніж
+     * клацати пультом. Обраний фільм відкривається на телевізорі.
+     */
+    var LikhtarRoulette = (function () {
+        var DECK_SIZE = 30;
+        var RANDOM_PAGES = 5;
+        var POLL_INTERVAL = 2000;
+        var POLL_LIMIT = 300;          // ~10 хвилин, як і сесія на сервері
+
+        /** Колоду тримаємо компактною: у сесії обмежений розмір, а телефону вистачить постера й короткого опису. */
+        function toCard(movie) {
+            return {
+                id: movie.id,
+                method: movie.name || movie.first_air_date ? 'tv' : 'movie',
+                title: movie.title || movie.name || '',
+                year: (movie.release_date || movie.first_air_date || '').substr(0, 4),
+                rating: movie.vote_average ? movie.vote_average.toFixed(1) : '',
+                overview: (movie.overview || '').substr(0, 240),
+                poster: movie.poster_path ? Lampa.TMDB.image('t/p/w500' + movie.poster_path) : ''
+            };
+        }
+
+        function buildDeck(callback) {
+            // Випадкова сторінка щоразу — інакше рулетка показувала б те саме
+            var page = Math.floor(Math.random() * RANDOM_PAGES) + 1;
+            var url = Lampa.TMDB.api('discover/movie?api_key=' + getTmdbKey() +
+                '&language=' + Lampa.Storage.get('language', 'uk') +
+                '&sort_by=popularity.desc&vote_count.gte=200&page=' + page);
+
+            new Lampa.Reguest().silent(url, function (json) {
+                var results = (json && json.results) || [];
+                var deck = results.filter(function (m) { return m.poster_path; })
+                    .sort(function () { return Math.random() - 0.5; })
+                    .slice(0, DECK_SIZE)
+                    .map(toCard);
+
+                callback(deck.length ? deck : null);
+            }, function () {
+                callback(null);
+            });
+        }
+
+        function start() {
+            var worker = LikhtarNet.workerUrl();
+            if (!worker) return Lampa.Noty.show('Спершу вкажіть адресу сервера Ліхтаря в налаштуваннях');
+
+            Lampa.Noty.show('Готуємо колоду…');
+
+            buildDeck(function (deck) {
+                if (!deck) return Lampa.Noty.show('Не вдалося отримати фільми');
+
+                $.ajax({
+                    url: worker + '/api/session',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ config: {} })
+                }).done(function (data) {
+                    if (!data || !data.code) return Lampa.Noty.show('Сервер не видав код');
+
+                    $.ajax({
+                        url: worker + '/api/session/' + data.code,
+                        method: 'PUT',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ deck: deck })
+                    }).done(function () {
+                        showModal(worker, data.code);
+                    }).fail(function () {
+                        Lampa.Noty.show('Не вдалося надіслати колоду на сервер');
+                    });
+                }).fail(function () {
+                    Lampa.Noty.show('Не вдалося зв\'язатися із сервером Ліхтаря');
+                });
+            });
+        }
+
+        function showModal(worker, code) {
+            var target = worker + '/roulette?s=' + code;
+            var html = $('<div class="likhtar-pair"></div>');
+
+            html.append('<div class="likhtar-pair__hint">Наведіть камеру та гортайте фільми на телефоні</div>');
+            html.append($('<img class="likhtar-pair__qr">').attr('src', worker + '/api/qr?text=' + encodeURIComponent(target)));
+            html.append($('<div class="likhtar-pair__code"></div>').text(code));
+
+            var status = $('<div class="likhtar-pair__status">Очікуємо на вибір…</div>');
+            html.append(status);
+
+            var polls = 0, timer = null, closed = false;
+
+            function stop() {
+                closed = true;
+                if (timer) clearTimeout(timer);
+            }
+
+            function open(movie) {
+                stop();
+                Lampa.Modal.close();
+
+                Lampa.Activity.push({
+                    url: '',
+                    component: 'full',
+                    id: movie.id,
+                    method: movie.method === 'tv' ? 'tv' : 'movie',
+                    card: { id: movie.id },
+                    source: 'tmdb'
+                });
+            }
+
+            function poll() {
+                if (closed) return;
+
+                if (++polls > POLL_LIMIT) {
+                    status.text('Час сесії вичерпано — запустіть рулетку ще раз');
+                    return;
+                }
+
+                $.get(worker + '/api/session/' + code).done(function (data) {
+                    if (closed) return;
+
+                    if (data && data.action && data.action.open && data.action.open.id) {
+                        open(data.action.open);
+                        return;
+                    }
+
+                    timer = setTimeout(poll, POLL_INTERVAL);
+                }).fail(function () {
+                    if (!closed) timer = setTimeout(poll, POLL_INTERVAL);
+                });
+            }
+
+            Lampa.Modal.open({
+                title: 'Кінорулетка',
+                html: html,
+                size: 'medium',
+                onBack: function () {
+                    stop();
+                    Lampa.Modal.close();
+                    Lampa.Controller.toggle('menu');
+                }
+            });
+
+            timer = setTimeout(poll, POLL_INTERVAL);
+        }
+
+        function addMenu() {
+            if (!isSettingEnabled('likhtar_roulette_enabled', true)) return;
+            if (!LikhtarNet.hasWorker()) return;          // без сервера телефон нізвідки взяти колоду
+            if ($('[data-action="likhtar_roulette"]').length) return;
+
+            var list = $('.menu .menu__list').eq(0);
+            if (!list.length) return;
+
+            var item = $('<li class="menu__item selector" data-action="likhtar_roulette">' +
+                '<div class="menu__ico" style="font-size:1.4em;line-height:1">🎲</div>' +
+                '<div class="menu__text">Кінорулетка</div></li>');
+
+            item.on('hover:enter click', start);
+            list.append(item);
+        }
+
+        return {
+            init: function () {
+                if (window.appready) addMenu();
+                else Lampa.Listener.follow('app', function (e) {
+                    if (e.type === 'ready') addMenu();
+                });
+            },
+            buildDeck: buildDeck,
+            toCard: toCard
+        };
+    })();
+
+    // =================================================================
     // INIT FUNCTION
     // =================================================================
     function init() {
@@ -4163,6 +4345,7 @@
         LikhtarSections.init();
         LikhtarAssistant.init();
         LikhtarPairing.init();
+        LikhtarRoulette.init();
 
         addStyles();
 
