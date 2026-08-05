@@ -29,7 +29,13 @@ export const ROULETTE_HTML = `<!doctype html>
   .card{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#1d1d26 center/cover no-repeat;
         box-shadow:0 10px 30px rgba(0,0,0,.5);display:flex;flex-direction:column;justify-content:flex-end;
         will-change:transform}
-  .card .shade{background:linear-gradient(to top,rgba(0,0,0,.95),rgba(0,0,0,.5) 45%,transparent);padding:18px}
+  /* Постери часто самі містять велику назву — без підкладки наш текст
+     накладається на неї і обидва стають нечитабельними */
+  .card::after{content:"";position:absolute;left:0;right:0;bottom:0;height:60%;pointer-events:none;
+       background:linear-gradient(to top,rgba(0,0,0,.8),rgba(0,0,0,.35) 45%,transparent)}
+  .card .shade{position:relative;z-index:1;margin:12px;padding:14px 16px;border-radius:14px;
+       background:rgba(10,10,14,.76);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+       box-shadow:0 6px 24px rgba(0,0,0,.45)}
   .card h2{font-size:22px;margin:0 0 4px}
   .card .meta{font-size:13px;opacity:.8;margin-bottom:8px}
   .card p{font-size:13px;line-height:1.45;margin:0;opacity:.85;
