@@ -1828,6 +1828,24 @@
 
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
+            param: { name: 'likhtar_full_info', type: 'trigger', default: true },
+            field: { name: 'Дата наступної серії', description: 'Показувати на сторінці серіалу дату нової серії та статус (виходить, завершено, скасовано), а для фільмів — час завершення перегляду.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_full_trailer_ua', type: 'trigger', default: true },
+            field: { name: 'Український трейлер', description: 'Додавати кнопку «Трейлер UA», якщо для фільму є україномовний трейлер.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_full_franchise', type: 'trigger', default: true },
+            field: { name: 'Франшиза', description: 'Кнопка з усіма частинами франшизи на сторінці фільму.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
             param: { name: 'likhtar_kinooglad_enabled', type: 'trigger', default: true },
             field: { name: 'Кіноогляд', description: 'Увімкнути розділ Кіноогляд у бічному меню, підтягує матеріали з YouTube каналів про кіно. Налаштування каналів нижче.' }
         });
@@ -2555,6 +2573,316 @@
         startPlugin();
     }
     // =================================================================
+    // СТОРІНКА ФІЛЬМУ / СЕРІАЛУ (повна картка)
+    // =================================================================
+    /**
+     * Додає на сторінку фільму те, за чим зазвичай лізуть у пошук:
+     * коли вийде наступна серія, чи продовжено серіал, о котрій закінчиться
+     * фільм, український трейлер і перехід до інших частин франшизи.
+     */
+    var LikhtarFullCard = (function () {
+        var SERIES_STATUS = {
+            'Returning Series': { text: 'Виходить', mod: 'live' },
+            'Ended': { text: 'Завершено', mod: 'ended' },
+            'Canceled': { text: 'Скасовано', mod: 'canceled' },
+            'Cancelled': { text: 'Скасовано', mod: 'canceled' },
+            'In Production': { text: 'У виробництві', mod: 'live' },
+            'Post Production': { text: 'На постпродакшені', mod: 'live' },
+            'Planned': { text: 'Заплановано', mod: 'live' },
+            'Pilot': { text: 'Пілот', mod: 'live' }
+        };
+
+        var _details = {};
+
+        function typeOf(movie) {
+            return (movie.name || movie.first_air_date || movie.number_of_seasons) ? 'tv' : 'movie';
+        }
+
+        function lang() {
+            return Lampa.Storage.get('language', 'uk');
+        }
+
+        /** Деталі TMDB із кешем на сесію. Lampa часто вже має все потрібне — тоді запит не робимо. */
+        function getDetails(movie, callback) {
+            var type = typeOf(movie);
+            var hasAll = type === 'tv'
+                ? movie.status !== undefined && movie.next_episode_to_air !== undefined
+                : movie.runtime !== undefined && movie.belongs_to_collection !== undefined;
+
+            if (hasAll) return callback(movie);
+
+            var key = type + '_' + movie.id;
+            if (_details[key]) return callback(_details[key]);
+
+            var url = Lampa.TMDB.api(type + '/' + movie.id + '?api_key=' + getTmdbKey() + '&language=' + lang());
+            new Lampa.Reguest().silent(url, function (data) {
+                _details[key] = data || movie;
+                callback(_details[key]);
+            }, function () {
+                callback(movie);
+            });
+        }
+
+        function formatDate(iso) {
+            if (!iso) return '';
+            var parts = String(iso).split('-');
+            if (parts.length !== 3) return iso;
+            return parts[2] + '.' + parts[1] + '.' + parts[0];
+        }
+
+        /** Скільки днів лишилось: «сьогодні» / «завтра» читається краще за дату. */
+        function relativeDay(iso) {
+            var target = new Date(iso + 'T00:00:00');
+            if (isNaN(target.getTime())) return '';
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            var days = Math.round((target - today) / 86400000);
+            if (days < 0) return '';
+            if (days === 0) return 'сьогодні';
+            if (days === 1) return 'завтра';
+            if (days < 7) return 'через ' + days + ' дн.';
+            return '';
+        }
+
+        /** «Закінчиться о 22:47» — рахуємо від поточного часу з урахуванням тривалості. */
+        function endsAt(runtime) {
+            if (!runtime || runtime < 5) return '';
+            var end = new Date(Date.now() + runtime * 60000);
+            return 'Закінчиться о ' + ('0' + end.getHours()).slice(-2) + ':' + ('0' + end.getMinutes()).slice(-2);
+        }
+
+        function chip(text, mod) {
+            return $('<div class="likhtar-chip' + (mod ? ' likhtar-chip--' + mod : '') + '"></div>').text(text);
+        }
+
+        function buildInfoLine(details) {
+            var line = $('<div class="likhtar-info-line"></div>');
+            var type = typeOf(details);
+
+            if (type === 'tv') {
+                var next = details.next_episode_to_air;
+                if (next && next.air_date) {
+                    var when = relativeDay(next.air_date);
+                    var code = 'S' + ('0' + (next.season_number || 0)).slice(-2) + 'E' + ('0' + (next.episode_number || 0)).slice(-2);
+                    line.append(chip('Нова серія ' + (when || formatDate(next.air_date)) + ' • ' + code, 'next'));
+                }
+
+                var status = SERIES_STATUS[details.status];
+                if (status) {
+                    var text = status.text;
+                    if (details.number_of_seasons) {
+                        text += ' • ' + details.number_of_seasons + ' сез.';
+                    }
+                    line.append(chip(text, status.mod));
+                }
+            } else {
+                var ends = endsAt(details.runtime);
+                if (ends) line.append(chip(ends, 'time'));
+            }
+
+            return line.children().length ? line : null;
+        }
+
+        function injectInfoLine(details, $render) {
+            if (!isSettingEnabled('likhtar_full_info', true)) return;
+            if ($render.find('.likhtar-info-line').length) return;
+
+            var line = buildInfoLine(details);
+            if (!line) return;
+
+            var anchor = $render.find('.full-start-new__details, .full-start__details').first();
+            if (!anchor.length) anchor = $render.find('.full-start-new__rate-line, .full-start__rate-line').first();
+            if (!anchor.length) return;
+
+            anchor.after(line);
+        }
+
+        /** Кнопки Lampa — це .selector'и в спільному контейнері; додаємо свою в тому ж стилі. */
+        function buttonsContainer($render) {
+            return $render.find('.full-start-new__buttons, .full-start__buttons').first();
+        }
+
+        function makeButton(iconSvg, label, onEnter) {
+            var btn = $('<div class="full-start__button selector likhtar-full-button"></div>');
+            btn.append(iconSvg);
+            btn.append($('<span></span>').text(label));
+            btn.on('hover:enter click', onEnter);
+            return btn;
+        }
+
+        function playYoutube(videoKey, title) {
+            var item = {
+                title: Lampa.Utils.shortText(title || 'Трейлер', 50),
+                id: videoKey,
+                youtube: true,
+                url: 'https://www.youtube.com/watch?v=' + videoKey,
+                icon: '<img class="size-youtube" src="https://img.youtube.com/vi/' + videoKey + '/default.jpg" />',
+                template: 'selectbox_icon'
+            };
+
+            if (Lampa.Manifest.app_digital >= 183) {
+                Lampa.Player.play(item);
+                Lampa.Player.playlist([item]);
+            } else {
+                Lampa.YouTube.play(videoKey);
+            }
+        }
+
+        /** Шукає україномовний трейлер; англійський Lampa показує й сама, тож дублювати його не треба. */
+        function injectUkrainianTrailer(movie, $render) {
+            if (!isSettingEnabled('likhtar_full_trailer_ua', true)) return;
+
+            var holder = buttonsContainer($render);
+            if (!holder.length || holder.find('.likhtar-trailer-ua').length) return;
+
+            var url = Lampa.TMDB.api(typeOf(movie) + '/' + movie.id + '/videos?api_key=' + getTmdbKey() + '&language=uk');
+            new Lampa.Reguest().silent(url, function (data) {
+                var videos = (data && data.results) || [];
+                var trailer = videos.filter(function (v) {
+                    return v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser');
+                }).sort(function (a, b) {
+                    // Офіційний трейлер важливіший за тизер
+                    var rank = function (v) { return (v.type === 'Trailer' ? 0 : 1) + (v.official ? 0 : 0.5); };
+                    return rank(a) - rank(b);
+                })[0];
+
+                if (!trailer) return;
+
+                // Поки чекали на відповідь, сторінку могли закрити або кнопку вже додали
+                var current = buttonsContainer($render);
+                if (!current.length || current.find('.likhtar-trailer-ua').length) return;
+
+                var icon = '<svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M8 5v14l11-7z"/></svg>';
+                var btn = makeButton(icon, 'Трейлер UA', function () {
+                    playYoutube(trailer.key, trailer.name);
+                });
+                btn.addClass('likhtar-trailer-ua');
+                current.append(btn);
+            });
+        }
+
+        function injectFranchise(details, $render) {
+            if (!isSettingEnabled('likhtar_full_franchise', true)) return;
+
+            var collection = details.belongs_to_collection;
+            if (!collection || !collection.id) return;
+
+            var holder = buttonsContainer($render);
+            if (!holder.length || holder.find('.likhtar-franchise').length) return;
+
+            var icon = '<svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M4 6H2v14a2 2 0 002 2h14v-2H4V6zm16-4H8a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2z"/></svg>';
+            var btn = makeButton(icon, 'Франшиза', function () {
+                Lampa.Activity.push({
+                    url: '',
+                    title: collection.name || 'Франшиза',
+                    component: 'likhtar_collection',
+                    collection_id: collection.id,
+                    page: 1
+                });
+            });
+            btn.addClass('likhtar-franchise');
+            holder.append(btn);
+        }
+
+        /** Усі частини франшизи одним списком, у хронології виходу. */
+        function CollectionComponent(object) {
+            var comp = new Lampa.InteractionMain(object);
+            var network = new Lampa.Reguest();
+
+            comp.create = function () {
+                var _this = this;
+                this.activity.loader(true);
+
+                var url = Lampa.TMDB.api('collection/' + object.collection_id + '?api_key=' + getTmdbKey() + '&language=' + lang());
+
+                network.silent(url, function (data) {
+                    var parts = (data && data.parts) || [];
+
+                    parts.forEach(function (item) {
+                        if (!item.poster_path && item.backdrop_path) item.poster_path = item.backdrop_path;
+                    });
+
+                    parts.sort(function (a, b) {
+                        return String(a.release_date || '9999').localeCompare(String(b.release_date || '9999'));
+                    });
+
+                    if (!parts.length) return _this.empty();
+
+                    _this.build([{
+                        title: (data.name || object.title) + ' — ' + parts.length + ' ч.',
+                        results: parts
+                    }]);
+                    _this.activity.loader(false);
+                }, function () {
+                    _this.empty();
+                });
+
+                return this.render();
+            };
+
+            return comp;
+        }
+
+        function addStyles() {
+            if ($('style#likhtar-fullcard-css').length) return;
+
+            $('head').append('<style id="likhtar-fullcard-css">' +
+                '.likhtar-info-line { display: flex; flex-wrap: wrap; gap: 0.6em; margin: 0.8em 0 0.2em; }' +
+                '.likhtar-chip { display: inline-flex; align-items: center; padding: 0.35em 0.8em; border-radius: 0.4em;' +
+                ' font-size: 1.1em; font-weight: 600; background: rgba(255,255,255,0.14); color: #fff; }' +
+                '.likhtar-chip--next { background: linear-gradient(135deg, #0057b7, #0072e8); }' +
+                '.likhtar-chip--live { background: rgba(46,160,67,0.85); }' +
+                '.likhtar-chip--ended { background: rgba(255,255,255,0.18); }' +
+                '.likhtar-chip--canceled { background: rgba(218,54,51,0.85); }' +
+                '.likhtar-chip--time { background: rgba(255,255,255,0.14); }' +
+                '.likhtar-full-button span { margin-left: 0.6em; }' +
+                /* Кольоровий рейтинг: зелений/жовтий/червоний читається з дивана швидше за цифру */
+                '.card__mark--rating.likhtar-rating--high { background: rgba(46,160,67,0.9); }' +
+                '.card__mark--rating.likhtar-rating--mid { background: rgba(210,153,34,0.9); }' +
+                '.card__mark--rating.likhtar-rating--low { background: rgba(218,54,51,0.9); }' +
+                '</style>');
+        }
+
+        function apply(movie, renderEl) {
+            if (!movie || !movie.id || !renderEl) return;
+            var $render = $(renderEl);
+
+            getDetails(movie, function (details) {
+                try {
+                    injectInfoLine(details, $render);
+                    injectFranchise(details, $render);
+                } catch (e) { }
+            });
+
+            try {
+                injectUkrainianTrailer(movie, $render);
+            } catch (e) { }
+        }
+
+        return {
+            init: function () {
+                addStyles();
+                Lampa.Component.add('likhtar_collection', CollectionComponent);
+
+                if (!Lampa.Listener || !Lampa.Listener.follow) return;
+                Lampa.Listener.follow('full', function (e) {
+                    if (e.type !== 'complite') return;
+                    var movie = e.data && e.data.movie;
+                    var renderEl = e.object && e.object.activity && e.object.activity.render && e.object.activity.render();
+                    apply(movie, renderEl);
+                });
+            },
+            ratingClass: function (rating) {
+                if (rating >= 7) return 'likhtar-rating--high';
+                if (rating >= 5.5) return 'likhtar-rating--mid';
+                return 'likhtar-rating--low';
+            }
+        };
+    })();
+
+    // =================================================================
     // INIT FUNCTION
     // =================================================================
     function init() {
@@ -2566,6 +2894,7 @@
         Lampa.Component.add('studios_view', StudiosView);
         Lampa.Component.add('ukrainian_feed', UkrainianFeedMain);
         LikhtarStudioSubscription.init();
+        LikhtarFullCard.init();
 
         addStyles();
 
@@ -2886,7 +3215,7 @@
                 var rating = parseFloat(movie.imdb_rating || movie.kp_rating || movie.vote_average || 0);
                 if (rating > 0 && String(rating) !== '0.0') {
                     var rBadge = document.createElement('div');
-                    rBadge.classList.add('card__mark', 'card__mark--rating');
+                    rBadge.classList.add('card__mark', 'card__mark--rating', LikhtarFullCard.ratingClass(rating));
                     rBadge.innerHTML = '<span class="mark-star">★</span>' + rating.toFixed(1);
                     container.append(rBadge);
                 }
