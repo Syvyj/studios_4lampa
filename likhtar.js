@@ -4210,8 +4210,9 @@
     var LikhtarCard = (function () {
         var PANEL_CONTROLLER = 'likhtar_panel';
 
-        // Розділи, які й так живуть у власних кнопках або нічого не дають
-        var SKIP_SECTIONS = /^(shots|shot)$/i;
+        // Розділи, які вже покриті власними кнопками або нічого не дають.
+        // Без цього поруч стоять наші «Актори та автори» і рідні «Актори».
+        var SKIP_SECTIONS = /^(shots?|актори|акторський склад|у ролях|режисер|детально|деталі|cast|actors|director|details|description)$/i;
 
         var moved = [];        // що саме ми перенесли в панель — щоб повернути на місце
         var panel = null;
@@ -4251,6 +4252,12 @@
             Lampa.Controller.toggle('full_start');
         }
 
+        /** Панель наповнюється асинхронно — коли рядки з'явились, фокус треба поставити ще раз. */
+        function refocusPanel() {
+            if (!panel || !panel.find('.selector').length) return;
+            Lampa.Controller.toggle(PANEL_CONTROLLER);
+        }
+
         /** Перемальовує вміст відкритої панелі, не закриваючи її. */
         function fillPanel(title, subtitle, fill, onBack) {
             if (!panel) return;
@@ -4286,8 +4293,11 @@
 
             Lampa.Controller.add(PANEL_CONTROLLER, {
                 toggle: function () {
+                    if (!panel) return;
                     Lampa.Controller.collectionSet(panel[0]);
-                    Lampa.Controller.collectionFocus(false, panel[0]);
+                    // Явно передаємо перший рядок: інакше на порожній ще панелі
+                    // фокус нікуди не стає, і вона лишається неклікабельною
+                    Lampa.Controller.collectionFocus(panel.find('.selector').first()[0] || false, panel[0]);
                 },
                 up: function () { Navigator.move('up'); },
                 down: function () { Navigator.move('down'); },
@@ -4376,6 +4386,7 @@
                     group('Режисер', credits.directors, function () { return 'Режисер'; });
                     group('Сценарій', credits.writers, function (p) { return p.job || 'Сценарій'; });
                     group('У ролях', credits.cast, function (p) { return p.character || ''; });
+                    refocusPanel();
                 });
             });
         }
@@ -4484,6 +4495,7 @@
                     }
 
                     episodes.forEach(function (ep) { body.append(episodeRow(ep)); });
+                    refocusPanel();
                 });
             }, backToSeasons);
         }
@@ -4524,12 +4536,58 @@
 
                             body.append(row);
                         });
+
+                        refocusPanel();
                     });
                 }, null);
             }
 
             openPanel('Серії', 'Дати виходу за сезонами', function () { });
             render();
+        }
+
+        /** Колекція фільму: беремо з готових даних, інакше питаємо TMDB. */
+        function collectionOf(movie, callback) {
+            if (movie.belongs_to_collection !== undefined) return callback(movie.belongs_to_collection);
+            if (isSeries(movie)) return callback(null);
+
+            var key = 'collection_' + movie.id;
+            var cached = LikhtarCache.get(key);
+            if (cached !== undefined) return callback(cached);
+
+            var url = Lampa.TMDB.api('movie/' + movie.id + '?api_key=' + getTmdbKey() +
+                '&language=' + Lampa.Storage.get('language', 'uk'));
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var collection = (data && data.belongs_to_collection) || null;
+                LikhtarCache.set(key, collection, LikhtarCache.TTL.WEEK);
+                callback(collection);
+            }, function () {
+                callback(null);
+            });
+        }
+
+        /** «Деталі» — це блок опису Lampa, перенесений у панель цілком. */
+        function openDetails(scope) {
+            var block = scope.find('.full-descr').first();
+
+            openPanel('Деталі', '', function (body) {
+                if (!block.length) {
+                    body.append('<div class="likhtar-panel__loading">Даних немає</div>');
+                    return;
+                }
+
+                var anchor = block.data('likhtar-anchor');
+                if (!anchor) {
+                    anchor = $('<div class="likhtar-card__anchor"></div>').insertBefore(block);
+                    block.data('likhtar-anchor', anchor);
+                }
+
+                block.removeClass('likhtar-card__hidden');
+                block.detach().appendTo(body);
+                moved.push({ node: block, anchor: anchor });
+                refocusPanel();
+            });
         }
 
         // ===== Секції Lampa, перенесені в панель =====
@@ -4539,6 +4597,7 @@
                 node.removeClass('likhtar-card__hidden');
                 node.detach().appendTo(body);
                 moved.push({ node: node, anchor: anchor });
+                refocusPanel();
             });
         }
 
@@ -4559,12 +4618,12 @@
             return $(line).find('.items-line__title').first().text().trim();
         }
 
-        function buildModules($render, movie) {
-            var holder = $render.find('.likhtar-modules').first();
+        function buildModules(hero, movie, scopeRef) {
+            var holder = hero.find('.likhtar-modules').first();
 
             if (!holder.length) {
                 holder = $('<div class="likhtar-modules"></div>');
-                var after = $render.find('.full-start-new__buttons, .full-start__buttons').first();
+                var after = hero.find('.full-start-new__buttons, .full-start__buttons').first();
                 if (!after.length) return null;
                 after.after(holder);
             }
@@ -4578,6 +4637,23 @@
                 holder.append(moduleButton('Серії', movie.number_of_seasons ? movie.number_of_seasons + ' сез.' : '',
                     function () { openSeasons(movie); }).addClass('likhtar-module--seasons'));
             }
+
+            if (!holder.find('.likhtar-module--details').length) {
+                holder.append(moduleButton('Деталі', '', function () { openDetails(scopeRef); })
+                    .addClass('likhtar-module--details'));
+            }
+
+            // Франшизу показуємо, лише коли колекція справді існує
+            collectionOf(movie, function (collection) {
+                if (!collection || !holder.length || holder.find('.likhtar-module--franchise').length) return;
+
+                holder.append(moduleButton('Франшиза', '', function () {
+                    Lampa.Activity.push({
+                        url: '', title: collection.name || 'Франшиза',
+                        component: 'likhtar_collection', collection_id: collection.id, page: 1
+                    });
+                }).addClass('likhtar-module--franchise'));
+            });
 
             return holder;
         }
@@ -4593,10 +4669,14 @@
                 if (line.data('likhtar-module')) return;
 
                 var title = sectionTitle(line);
-                if (!title || SKIP_SECTIONS.test(title)) return;
+                if (!title) return;
 
                 line.data('likhtar-module', true);
+
+                // Ховаємо будь-який розділ — сторінка має лишитись в один екран.
+                // Кнопку робимо лише для того, що не покрито власною панеллю.
                 line.addClass('likhtar-card__hidden');
+                if (SKIP_SECTIONS.test(title)) return;
 
                 // Запам'ятовуємо сусіда, щоб повернути секцію рівно на її місце
                 var anchor = $('<div class="likhtar-card__anchor"></div>');
@@ -4606,6 +4686,33 @@
                     openSection(title, line, anchor);
                 }));
             });
+        }
+
+        /**
+         * Оцінка, вік, статус, тривалість, жанри, рік і наші мітки живуть
+         * окремими рядками під логотипом і розтягують перший екран.
+         * Складаємо їх в одну картку збоку — там вони читаються як довідка,
+         * а не як стіна тексту.
+         */
+        function buildMetrics(hero) {
+            if (hero.find('.likhtar-metrics').length) return;
+
+            var body = hero.find('.full-start-new__body, .full-start__body').first();
+            if (!body.length) return;
+
+            var card = $('<div class="likhtar-metrics"></div>');
+
+            [
+                '.full-start-new__rate-line', '.full-start__rate-line',
+                '.full-start-new__head',
+                '.full-start-new__details', '.full-start__details'
+            ].forEach(function (sel) {
+                var node = hero.find(sel).first();
+                if (node.length) card.append(node.detach());
+            });
+
+            if (!card.children().length) return;
+            body.append(card);
         }
 
         /**
@@ -4664,11 +4771,16 @@
             scope.addClass('likhtar-card');
             hero.addClass('likhtar-card__hero');
 
-            // Кадр із фільму замість глухого фону — головна відмінність нового вигляду
-            if (movie.backdrop_path && !hero.find('.likhtar-card__bg').length) {
-                var bg = $('<div class="likhtar-card__bg"></div>');
-                bg.css('background-image', 'url(' + Lampa.TMDB.image('t/p/w1280' + movie.backdrop_path) + ')');
-                hero.prepend($('<div class="likhtar-card__bgwrap"></div>').append(bg));
+            // Lampa вже поклала кадр із фільму фоном сторінки — свій не малюємо,
+            // інакше зображень стає два. Розтягуємо її власний і затемнюємо.
+            var nativeBg = scope.find('.full-start__background').first();
+            if (nativeBg.length) {
+                var bgRoot = nativeBg.parent();
+                bgRoot.addClass('likhtar-card__bgroot');
+
+                if (!bgRoot.children('.likhtar-card__scrim').length) {
+                    $('<div class="likhtar-card__scrim"></div>').insertAfter(nativeBg);
+                }
             }
 
             // Опис живе окремим блоком нижче — піднімаємо його в перший екран
@@ -4678,7 +4790,9 @@
                 descr.clone().removeAttr('class').addClass('likhtar-card__descr').insertAfter(details);
             }
 
-            var holder = buildModules(hero, movie);
+            buildMetrics(hero);
+
+            var holder = buildModules(hero, movie, scope);
             if (!holder) return;
 
             scope.find('.full-descr').addClass('likhtar-card__hidden');
@@ -4699,25 +4813,39 @@
                 /* Герой */
                 'body.likhtar-card-on .full-start-new__body, body.likhtar-card-on .full-start__body' +
                 ' { position: relative; min-height: 26em; }' +
-                '.likhtar-card__bgwrap { position: absolute; top: -3em; right: -3em; bottom: 0; left: 0;' +
-                ' overflow: hidden; border-radius: 0 0 1em 1em; pointer-events: none; }' +
-                '.likhtar-card__bg { position: absolute; inset: 0; background-size: cover;' +
-                ' background-position: center 20%; }' +
-                '.likhtar-card__bgwrap:after { content: ""; position: absolute; inset: 0;' +
+                /* Рідний фон Lampa: знімаємо маску й зсув, розтягуємо на всю сторінку */
+                'body.likhtar-card-on .full-start__background { left: 0 !important; top: 0 !important;' +
+                ' width: 100% !important; height: 100% !important; opacity: 1 !important;' +
+                ' object-fit: cover; -webkit-mask-image: none !important; mask-image: none !important; }' +
+                '.likhtar-card__bgroot { position: relative; }' +
+                '.likhtar-card__scrim { position: absolute; left: 0; top: 0; right: 0; height: 100%;' +
+                ' z-index: -1; pointer-events: none;' +
                 ' background: linear-gradient(100deg, rgba(7,9,15,.97) 0%, rgba(7,9,15,.9) 32%,' +
-                ' rgba(7,9,15,.5) 58%, rgba(7,9,15,.05) 85%, transparent 100%); }' +
+                ' rgba(7,9,15,.55) 58%, rgba(7,9,15,.1) 85%, rgba(7,9,15,.05) 100%),' +
+                ' linear-gradient(to top, rgba(7,9,15,.95) 0%, rgba(7,9,15,.2) 40%, transparent 70%); }' +
+
+                /* Картка з метриками збоку */
+                '.likhtar-metrics { position: absolute; top: 0; right: 0; width: 19em;' +
+                ' background: rgba(12,14,20,.66); border: 1px solid rgba(255,255,255,.1);' +
+                ' border-radius: .9em; padding: 1em 1.1em; display: flex; flex-direction: column;' +
+                ' gap: .55em; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }' +
+                '.likhtar-metrics > * { margin: 0 !important; }' +
+                '.likhtar-metrics .full-start-new__rate-line { flex-wrap: wrap; }' +
                 'body.likhtar-card-on .full-start-new__left, body.likhtar-card-on .full-start__left' +
                 ' { display: none !important; }' +
                 'body.likhtar-card-on .full-start-new__right, body.likhtar-card-on .full-start__right' +
-                ' { position: relative; z-index: 1; max-width: 64%; }' +
+                ' { position: relative; z-index: 1; max-width: 60%; padding-right: 1em; }' +
                 /* Рідні кнопки під новий вигляд: головна — світла пігулка, решта круглі */
                 'body.likhtar-card-on .full-start__button { border-radius: 999px !important;' +
                 ' background: rgba(255,255,255,.14) !important; }' +
                 'body.likhtar-card-on .full-start__button.focus { background: #fff !important; color: #000 !important; }' +
                 'body.likhtar-card-on .full-start__button.focus svg { fill: #000 !important; }' +
                 'body.likhtar-card-on .full-start-new__reactions { display: none !important; }' +
-                '.likhtar-card__descr { font-size: 1.05em; line-height: 1.5; opacity: .85; max-width: 40em;' +
-                ' margin: .6em 0 .2em; display: -webkit-box; -webkit-line-clamp: 2;' +
+                '.likhtar-card__descr { font-size: 1.02em; line-height: 1.5; max-width: 36em;' +
+                ' margin: .7em 0 .2em; padding: .75em .95em; border-radius: .8em;' +
+                ' background: rgba(12,14,20,.6); border: 1px solid rgba(255,255,255,.08);' +
+                ' backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);' +
+                ' display: -webkit-box; -webkit-line-clamp: 3;' +
                 ' -webkit-box-orient: vertical; overflow: hidden; }' +
 
                 /* Кнопки розділів */
