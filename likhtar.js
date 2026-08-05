@@ -4567,29 +4567,6 @@
             });
         }
 
-        /** «Деталі» — це блок опису Lampa, перенесений у панель цілком. */
-        function openDetails(scope) {
-            var block = scope.find('.full-descr').first();
-
-            openPanel('Деталі', '', function (body) {
-                if (!block.length) {
-                    body.append('<div class="likhtar-panel__loading">Даних немає</div>');
-                    return;
-                }
-
-                var anchor = block.data('likhtar-anchor');
-                if (!anchor) {
-                    anchor = $('<div class="likhtar-card__anchor"></div>').insertBefore(block);
-                    block.data('likhtar-anchor', anchor);
-                }
-
-                block.removeClass('likhtar-card__hidden');
-                block.detach().appendTo(body);
-                moved.push({ node: block, anchor: anchor });
-                refocusPanel();
-            });
-        }
-
         // ===== Секції Lampa, перенесені в панель =====
 
         function openSection(title, node, anchor) {
@@ -4618,7 +4595,7 @@
             return $(line).find('.items-line__title').first().text().trim();
         }
 
-        function buildModules(hero, movie, scopeRef) {
+        function buildModules(hero, movie) {
             var holder = hero.find('.likhtar-modules').first();
 
             if (!holder.length) {
@@ -4636,11 +4613,6 @@
             if (isSeries(movie) && !holder.find('.likhtar-module--seasons').length) {
                 holder.append(moduleButton('Серії', movie.number_of_seasons ? movie.number_of_seasons + ' сез.' : '',
                     function () { openSeasons(movie); }).addClass('likhtar-module--seasons'));
-            }
-
-            if (!holder.find('.likhtar-module--details').length) {
-                holder.append(moduleButton('Деталі', '', function () { openDetails(scopeRef); })
-                    .addClass('likhtar-module--details'));
             }
 
             // Франшизу показуємо, лише коли колекція справді існує
@@ -4705,7 +4677,8 @@
             [
                 '.full-start-new__rate-line', '.full-start__rate-line',
                 '.full-start-new__head',
-                '.full-start-new__details', '.full-start__details'
+                '.full-start-new__details', '.full-start__details',
+                '.likhtar-info-line'
             ].forEach(function (sel) {
                 var node = hero.find(sel).first();
                 if (node.length) card.append(node.detach());
@@ -4713,6 +4686,49 @@
 
             if (!card.children().length) return;
             body.append(card);
+
+            // Факти з блоку «Детально» (дата, бюджет, країни) — теж сюди.
+            // Вони рендеряться пізніше за подію, тому чекаємо на них.
+            fillFacts(card);
+        }
+
+        /**
+         * Дата релізу, бюджет і країни живуть у блоці опису, який ми ховаємо.
+         * Переносимо самі факти в картку метрик — решта блоку (жанри, теги,
+         * виробництво) відкривається кнопкою «Деталі».
+         */
+        function fillFacts(card) {
+            var scope = card.closest('.likhtar-card');
+            if (!scope.length) scope = $('body');
+
+            var attempts = 0;
+            var timer = setInterval(function () {
+                var details = scope.find('.full-descr__details .full-descr__info, .full-descr__info');
+
+                if (!details.length) {
+                    if (++attempts > 20) clearInterval(timer);
+                    return;
+                }
+
+                clearInterval(timer);
+                if (card.find('.likhtar-metrics__facts').length) return;
+
+                var facts = $('<div class="likhtar-metrics__facts"></div>');
+
+                details.each(function () {
+                    var name = $(this).find('.full-descr__info-name').text().trim();
+                    var value = $(this).find('.full-descr__info-body').text().trim();
+                    if (!name || !value) return;
+
+                    var row = $('<div class="likhtar-fact"><span class="likhtar-fact__name"></span>' +
+                        '<span class="likhtar-fact__value"></span></div>');
+                    row.find('.likhtar-fact__name').text(name);
+                    row.find('.likhtar-fact__value').text(value);
+                    facts.append(row);
+                });
+
+                if (facts.children().length) card.append(facts);
+            }, 400);
         }
 
         /**
@@ -4792,7 +4808,7 @@
 
             buildMetrics(hero);
 
-            var holder = buildModules(hero, movie, scope);
+            var holder = buildModules(hero, movie);
             if (!holder) return;
 
             scope.find('.full-descr').addClass('likhtar-card__hidden');
@@ -4812,13 +4828,16 @@
 
                 /* Герой */
                 'body.likhtar-card-on .full-start-new__body, body.likhtar-card-on .full-start__body' +
-                ' { position: relative; min-height: 26em; }' +
-                /* Рідний фон Lampa: знімаємо маску й зсув, розтягуємо на всю сторінку */
-                'body.likhtar-card-on .full-start__background { left: 0 !important; top: 0 !important;' +
-                ' width: 100% !important; height: 100% !important; opacity: 1 !important;' +
-                ' object-fit: cover; -webkit-mask-image: none !important; mask-image: none !important; }' +
+                ' { position: relative; min-height: 78vh; }' +
+                /* Рідний фон Lampa прив'язаний до вмісту сторінки, тому під шапкою
+                   лишалася сіра смуга. Кріпимо його до екрана — тоді кадр
+                   заходить і під шапку, і на всю висоту. */
+                'body.likhtar-card-on .full-start__background { position: fixed !important;' +
+                ' left: 0 !important; top: 0 !important; width: 100vw !important;' +
+                ' height: 100vh !important; opacity: 1 !important; object-fit: cover;' +
+                ' -webkit-mask-image: none !important; mask-image: none !important; }' +
                 '.likhtar-card__bgroot { position: relative; }' +
-                '.likhtar-card__scrim { position: absolute; left: 0; top: 0; right: 0; height: 100%;' +
+                '.likhtar-card__scrim { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh;' +
                 ' z-index: -1; pointer-events: none;' +
                 ' background: linear-gradient(100deg, rgba(7,9,15,.97) 0%, rgba(7,9,15,.9) 32%,' +
                 ' rgba(7,9,15,.55) 58%, rgba(7,9,15,.1) 85%, rgba(7,9,15,.05) 100%),' +
@@ -4831,6 +4850,12 @@
                 ' gap: .55em; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }' +
                 '.likhtar-metrics > * { margin: 0 !important; }' +
                 '.likhtar-metrics .full-start-new__rate-line { flex-wrap: wrap; }' +
+                '.likhtar-metrics__facts { border-top: 1px solid rgba(255,255,255,.12);' +
+                ' padding-top: .6em; margin-top: .15em; display: flex; flex-direction: column; gap: .35em; }' +
+                '.likhtar-fact { display: flex; justify-content: space-between; gap: 1em;' +
+                ' font-size: .88em; }' +
+                '.likhtar-fact__name { opacity: .55; white-space: nowrap; }' +
+                '.likhtar-fact__value { text-align: right; }' +
                 'body.likhtar-card-on .full-start-new__left, body.likhtar-card-on .full-start__left' +
                 ' { display: none !important; }' +
                 'body.likhtar-card-on .full-start-new__right, body.likhtar-card-on .full-start__right' +
@@ -4841,12 +4866,15 @@
                 'body.likhtar-card-on .full-start__button.focus { background: #fff !important; color: #000 !important; }' +
                 'body.likhtar-card-on .full-start__button.focus svg { fill: #000 !important; }' +
                 'body.likhtar-card-on .full-start-new__reactions { display: none !important; }' +
+                /* Рідна кнопка «Деталі» дублює нашу панель */
+                'body.likhtar-card-on .full-start__button.view--category,' +
+                ' body.likhtar-card-on .button--details { display: none !important; }' +
                 '.likhtar-card__descr { font-size: 1.02em; line-height: 1.5; max-width: 36em;' +
                 ' margin: .7em 0 .2em; padding: .75em .95em; border-radius: .8em;' +
                 ' background: rgba(12,14,20,.6); border: 1px solid rgba(255,255,255,.08);' +
                 ' backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);' +
-                ' display: -webkit-box; -webkit-line-clamp: 3;' +
-                ' -webkit-box-orient: vertical; overflow: hidden; }' +
+                ' display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;' +
+                ' max-height: 7.2em; overflow: hidden; }' +
 
                 /* Кнопки розділів */
                 '.likhtar-modules { display: flex; flex-wrap: wrap; gap: .7em; margin-top: 1.2em;' +
