@@ -2,6 +2,13 @@ name = "likhtar"
 main = "src/index.js"
 compatibility_date = "2026-01-01"
 
+[vars]
+# Локальна Gemma через Ollama. Адреса тут — з домашньої мережі (Tailscale),
+# тож ендпоінт /api/ai працює, поки Worker крутиться на цьому ж комп'ютері.
+# Після деплою в Cloudflare потрібен тунель до Ollama, інакше хост недосяжний.
+OLLAMA_URL = "http://100.114.237.121:11434"
+OLLAMA_MODEL = "gemma4:e4b"
+
 # Локально сховище не потрібне: Worker тримає сесії в пам'яті процесу.
 # Перед деплоєм у Cloudflare створіть KV і розкоментуйте прив'язку:
 #

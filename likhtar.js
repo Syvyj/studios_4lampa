@@ -3463,6 +3463,11 @@
             });
         }
 
+        /**
+         * Показує впорядкований список фільмів, заданий назвами.
+         * Використовується і для хронологій (з нумерацією), і для підказок
+         * Ліхтарика (без неї, ще й із перевіркою року — див. object.verify_year).
+         */
         function ChronologyComponent(object) {
             var comp = new Lampa.InteractionMain(object);
 
@@ -3471,6 +3476,7 @@
                 this.activity.loader(true);
 
                 var items = object.chronology_items || [];
+                var numbered = object.numbered !== false;
                 var resolved = new Array(items.length);
                 var pending = items.length;
 
@@ -3481,16 +3487,16 @@
 
                 items.forEach(function (entry, index) {
                     resolveTitle(entry[0], entry[1], function (movie) {
-                        if (movie) {
+                        if (movie && accept(movie, entry)) {
                             if (!movie.poster_path && movie.backdrop_path) movie.poster_path = movie.backdrop_path;
                             // Номер у хронології — головна цінність списку, показуємо його в назві
-                            movie.title = (index + 1) + '. ' + (movie.title || entry[0]);
+                            if (numbered) movie.title = (index + 1) + '. ' + (movie.title || entry[0]);
                             resolved[index] = movie;
                         }
 
                         if (--pending > 0) return;
 
-                        var results = resolved.filter(Boolean);
+                        var results = dedupe(resolved.filter(Boolean));
                         if (!results.length) return _this.empty();
 
                         _this.build([{ title: object.title, results: results }]);
@@ -3500,6 +3506,30 @@
 
                 return this.render();
             };
+
+            /**
+             * Для підказок моделі рік — головний запобіжник: вигадана назва або
+             * знайде щось геть інше, або не збіжиться роком. Розбіжність у рік-два
+             * прощаємо: дати прем'єр у різних країнах не збігаються.
+             */
+            function accept(movie, entry) {
+                if (!object.verify_year || !entry[1]) return true;
+
+                var found = parseInt((movie.release_date || '').substr(0, 4), 10);
+                if (!found) return false;
+
+                return Math.abs(found - entry[1]) <= 2;
+            }
+
+            /** Модель полюбляє видати той самий фільм двічі під різними назвами. */
+            function dedupe(list) {
+                var seen = {};
+                return list.filter(function (movie) {
+                    if (seen[movie.id]) return false;
+                    seen[movie.id] = true;
+                    return true;
+                });
+            }
 
             return comp;
         }
@@ -3854,6 +3884,15 @@
                     }));
                 });
 
+                // Питання картками покриває типові випадки; коли треба щось
+                // конкретніше — на першому кроці пропонуємо спитати словами
+                if (stepIndex === 0 && LikhtarNet.hasWorker()) {
+                    grid.append(answerCard(
+                        { emoji: '🔮', text: 'Запитати своїми словами' },
+                        function () { LikhtarAsk.start(); }
+                    ));
+                }
+
                 body.append(grid);
 
                 // Набір .selector змінився — переспрямовуємо на нього фокус пульта
@@ -4148,6 +4187,104 @@
             importConfig: importConfig,
             PORTABLE_KEYS: PORTABLE_KEYS
         };
+    })();
+
+    // =================================================================
+    // ЛІХТАРИК: ВІЛЬНИЙ ЗАПИТ ДО МОДЕЛІ
+    // =================================================================
+    /**
+     * Питання ставиться з телефона — набирати текст пультом мука, — а модель
+     * повертає лише назви. Шукає їх у TMDB телевізор: у нього є ключ, і саме
+     * там відсіюються вигадані фільми, яких база не знає.
+     */
+    var LikhtarAsk = (function () {
+        var POLL_INTERVAL = 2000;
+        var POLL_LIMIT = 300;
+
+        function start() {
+            var worker = LikhtarNet.workerUrl();
+            if (!worker) return Lampa.Noty.show('Спершу вкажіть адресу сервера Ліхтаря в налаштуваннях');
+
+            $.ajax({
+                url: worker + '/api/session',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ config: {} })
+            }).done(function (data) {
+                if (!data || !data.code) return Lampa.Noty.show('Сервер не видав код');
+                showModal(worker, data.code);
+            }).fail(function () {
+                Lampa.Noty.show('Не вдалося зв\'язатися із сервером Ліхтаря');
+            });
+        }
+
+        function showModal(worker, code) {
+            var target = worker + '/ask?s=' + code;
+            var html = $('<div class="likhtar-pair"></div>');
+
+            html.append('<div class="likhtar-pair__hint">Наведіть камеру й опишіть, що хочеться подивитись</div>');
+            html.append($('<img class="likhtar-pair__qr">').attr('src', worker + '/api/qr?text=' + encodeURIComponent(target)));
+            html.append($('<div class="likhtar-pair__code"></div>').text(code));
+
+            var status = $('<div class="likhtar-pair__status">Очікуємо на запитання…</div>');
+            html.append(status);
+
+            var polls = 0, timer = null, closed = false;
+
+            function stop() {
+                closed = true;
+                if (timer) clearTimeout(timer);
+            }
+
+            function poll() {
+                if (closed) return;
+
+                if (++polls > POLL_LIMIT) {
+                    status.text('Час сесії вичерпано — спробуйте ще раз');
+                    return;
+                }
+
+                $.get(worker + '/api/session/' + code).done(function (data) {
+                    if (closed) return;
+
+                    var ai = data && data.action && data.action.ai;
+                    if (ai && ai.titles && ai.titles.length) {
+                        stop();
+                        Lampa.Modal.close();
+
+                        Lampa.Activity.push({
+                            url: '',
+                            title: ai.query || 'Підказка Ліхтарика',
+                            component: 'likhtar_chronology',
+                            chronology_items: ai.titles,
+                            numbered: false,
+                            verify_year: true,     // вигадані моделлю фільми відсіються на пошуку
+                            page: 1
+                        });
+                        return;
+                    }
+
+                    timer = setTimeout(poll, POLL_INTERVAL);
+                }).fail(function () {
+                    if (!closed) timer = setTimeout(poll, POLL_INTERVAL);
+                });
+            }
+
+            Lampa.Modal.open({
+                title: 'Запитати Ліхтарика',
+                html: html,
+                size: 'medium',
+                onBack: function () {
+                    stop();
+                    Lampa.Modal.close();
+                    Lampa.Controller.toggle('content');
+                }
+            });
+
+            timer = setTimeout(poll, POLL_INTERVAL);
+        }
+
+        return { start: start };
     })();
 
     // =================================================================

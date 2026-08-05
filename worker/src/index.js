@@ -14,6 +14,7 @@
 import QRCode from 'qrcode';
 import { CONFIG_HTML } from './config-page.js';
 import { ROULETTE_HTML } from './roulette-page.js';
+import { ASK_HTML } from './ask-page.js';
 
 // Літери й цифри, які неможливо сплутати на екрані телевізора:
 // без O/0, I/1, S/5 — інакше код доводиться вгадувати.
@@ -369,6 +370,128 @@ async function quality(request, env) {
     return json({ results });
 }
 
+// ==== Ліхтарик: вільні запити до локальної моделі ====
+
+const AI_TIMEOUT_MS = 90 * 1000;
+const AI_MAX_QUERY = 300;
+const AI_WANT_TITLES = 8;
+
+const AI_SYSTEM = [
+    'Ти кінознавець. За описом користувача добираєш фільми та серіали.',
+    'Відповідай ВИКЛЮЧНО масивом JSON, без пояснень і без markdown.',
+    'Формат: [{"title":"Оригінальна назва латиницею","year":2010}]',
+    'Рівно ' + AI_WANT_TITLES + ' позицій. Назва — саме оригінальна, англійською або мовою оригіналу,',
+    'бо за нею шукатимемо у базі фільмів. Рік — число, рік виходу.',
+    'Не вигадуй неіснуючих фільмів. Не додавай уточнень у дужках і не повторюй',
+    'той самий фільм двічі. Не включай фільм, який користувач назвав як приклад.'
+].join(' ');
+
+/** Модель любить обгортати JSON у ```json — дістаємо масив звідки б він не був. */
+function extractTitles(text) {
+    if (!text) return [];
+
+    let payload = String(text).trim();
+    const fence = payload.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fence) payload = fence[1].trim();
+
+    const start = payload.indexOf('[');
+    const end = payload.lastIndexOf(']');
+    if (start === -1 || end === -1 || end < start) return [];
+
+    let parsed;
+    try {
+        parsed = JSON.parse(payload.slice(start, end + 1));
+    } catch (e) {
+        return [];
+    }
+    if (!Array.isArray(parsed)) return [];
+
+    const seen = new Set();
+    const titles = [];
+
+    for (const item of parsed) {
+        if (!item) continue;
+        const title = typeof item === 'string' ? item : item.title;
+        if (typeof title !== 'string' || !title.trim()) continue;
+
+        const year = Number(item && item.year) || null;
+        const key = title.trim().toLowerCase() + '|' + (year || '');
+        if (seen.has(key)) continue;
+
+        seen.add(key);
+        titles.push([title.trim(), year]);
+    }
+
+    return titles;
+}
+
+async function askModel(query, env) {
+    const url = (env && env.OLLAMA_URL) || '';
+    const model = (env && env.OLLAMA_MODEL) || '';
+    if (!url || !model) return { error: 'ai_not_configured' };
+
+    const body = {
+        model,
+        messages: [
+            { role: 'system', content: AI_SYSTEM },
+            { role: 'user', content: query }
+        ],
+        stream: false,
+        // Gemma вміє «думати», і без цього у відповідь ідуть роздуми замість JSON
+        think: false,
+        options: { temperature: 0.8, num_ctx: 8192 }
+    };
+
+    let response;
+    try {
+        response = await fetch(url.replace(/\/+$/, '') + '/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(AI_TIMEOUT_MS)
+        });
+    } catch (e) {
+        return { error: 'ai_unreachable' };
+    }
+
+    if (!response.ok) return { error: 'ai_failed', status: response.status };
+
+    let data;
+    try {
+        data = await response.json();
+    } catch (e) {
+        return { error: 'ai_bad_response' };
+    }
+
+    const text = data && data.message && data.message.content;
+    const titles = extractTitles(text);
+
+    if (!titles.length) return { error: 'ai_no_titles', raw: String(text || '').slice(0, 200) };
+    return { titles };
+}
+
+/**
+ * Вільний запит до моделі. Назви лише повертаємо — шукати їх у TMDB
+ * буде телевізор: ключ до бази є саме в нього.
+ */
+async function ai(request, env) {
+    let query;
+    try {
+        const body = await request.json();
+        query = body && body.query;
+    } catch (e) {
+        return json({ error: 'bad_json' }, 400);
+    }
+
+    if (typeof query !== 'string' || !query.trim()) return json({ error: 'no_query' }, 400);
+    if (query.length > AI_MAX_QUERY) return json({ error: 'query_too_long', max: AI_MAX_QUERY }, 413);
+
+    const result = await askModel(query.trim(), env);
+    if (result.error) return json(result, result.error === 'ai_not_configured' ? 501 : 502);
+
+    return json({ query: query.trim(), titles: result.titles });
+}
+
 /** QR для екрана телевізора: SVG масштабується без розмиття на будь-якій діагоналі. */
 async function qr(text) {
     if (!text) return json({ error: 'no_text' }, 400);
@@ -426,8 +549,18 @@ export default {
             return quality(request, env);
         }
 
+        if (path === '/api/ai' && request.method === 'POST') {
+            return ai(request, env);
+        }
+
         if (path === '/config') {
             return new Response(CONFIG_HTML, {
+                headers: { 'Content-Type': 'text/html; charset=utf-8', ...CORS_HEADERS }
+            });
+        }
+
+        if (path === '/ask') {
+            return new Response(ASK_HTML, {
                 headers: { 'Content-Type': 'text/html; charset=utf-8', ...CORS_HEADERS }
             });
         }
