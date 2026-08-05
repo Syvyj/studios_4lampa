@@ -4216,6 +4216,7 @@
         var moved = [];        // що саме ми перенесли в панель — щоб повернути на місце
         var panel = null;
         var panelBack = null;  // куди веде «Назад» усередині панелі (з епізодів — до сезонів)
+        var sectionObserver = null;
 
         function isEnabled() {
             return isSettingEnabled('likhtar_new_card', true);
@@ -4607,43 +4608,85 @@
             });
         }
 
+        /**
+         * Lampa передає різні вузли залежно від збірки: іноді всю сторінку,
+         * іноді лише обгортку героя. Секції — опис, актори, коментарі —
+         * можуть лежати не всередині нього, а поруч, тож область пошуку
+         * розширюємо, поки не знайдемо їх.
+         */
+        function scopeFor($render, hero) {
+            var candidates = [
+                $render,
+                hero.closest('.activity__body'),
+                hero.closest('.activity'),
+                $('.activity--active').first(),
+                $('body')
+            ];
+
+            for (var i = 0; i < candidates.length; i++) {
+                var node = candidates[i];
+                if (node && node.length && node.find('.items-line, .full-descr').length) return node;
+            }
+
+            return $render;
+        }
+
+        function watchSections(scope, holder) {
+            if (sectionObserver) sectionObserver.disconnect();
+            if (typeof MutationObserver === 'undefined' || !scope.length) return;
+
+            var timer = null;
+
+            // Секції довантажуються по черзі — чекаємо, поки Lampa домалює
+            sectionObserver = new MutationObserver(function () {
+                if (timer) return;
+                timer = setTimeout(function () {
+                    timer = null;
+                    try { collectSections(scope, holder); } catch (e) { }
+                }, 300);
+            });
+
+            sectionObserver.observe(scope[0], { childList: true, subtree: true });
+        }
+
         function apply(movie, renderEl) {
             if (!isEnabled() || !movie || !renderEl) return;
 
             var $render = $(renderEl);
-            var start = $render.find('.full-start-new, .full-start').first();
-            if (!start.length) return;
 
-            $render.addClass('likhtar-card');
+            // Вузол може і сам бути блоком героя, і містити його
+            var hero = $render.filter('.full-start-new, .full-start');
+            if (!hero.length) hero = $render.find('.full-start-new, .full-start').first();
+            if (!hero.length) return;
+
+            var scope = scopeFor($render, hero);
+
+            scope.addClass('likhtar-card');
+            hero.addClass('likhtar-card__hero');
 
             // Кадр із фільму замість глухого фону — головна відмінність нового вигляду
-            if (movie.backdrop_path && !start.find('.likhtar-card__bg').length) {
+            if (movie.backdrop_path && !hero.find('.likhtar-card__bg').length) {
                 var bg = $('<div class="likhtar-card__bg"></div>');
                 bg.css('background-image', 'url(' + Lampa.TMDB.image('t/p/w1280' + movie.backdrop_path) + ')');
-                start.prepend($('<div class="likhtar-card__bgwrap"></div>').append(bg));
+                hero.prepend($('<div class="likhtar-card__bgwrap"></div>').append(bg));
             }
 
             // Опис живе окремим блоком нижче — піднімаємо його в перший екран
-            var descr = $render.find('.full-descr__text').first();
-            var details = $render.find('.full-start-new__details, .full-start__details').first();
-            if (descr.length && details.length && !$render.find('.likhtar-card__descr').length) {
-                descr.clone().removeClass().addClass('likhtar-card__descr').insertAfter(details);
+            var descr = scope.find('.full-descr__text').first();
+            var details = hero.find('.full-start-new__details, .full-start__details').first();
+            if (descr.length && details.length && !hero.find('.likhtar-card__descr').length) {
+                descr.clone().removeAttr('class').addClass('likhtar-card__descr').insertAfter(details);
             }
 
-            var holder = buildModules($render, movie);
+            var holder = buildModules(hero, movie);
             if (!holder) return;
 
-            $render.find('.full-descr').addClass('likhtar-card__hidden');
-            collectSections($render, holder);
+            scope.find('.full-descr').addClass('likhtar-card__hidden');
+            collectSections(scope, holder);
+            watchSections(scope, holder);
 
-            // Секції довантажуються по черзі — переглядаємо ще кілька разів
-            [700, 1800, 3500].forEach(function (delay) {
-                setTimeout(function () {
-                    try {
-                        if ($render.closest('body').length) collectSections($render, holder);
-                    } catch (e) { }
-                }, delay);
-            });
+            console.log('Ліхтар: нова картка — розділів', scope.find('.items-line').length,
+                '· опис', descr.length ? 'знайдено' : 'немає');
         }
 
         function addStyles() {
@@ -4654,7 +4697,8 @@
                 '.likhtar-card__anchor { display: none; }' +
 
                 /* Герой */
-                '.likhtar-card .full-start-new__body { position: relative; min-height: 26em; }' +
+                '.likhtar-card__hero .full-start-new__body, .likhtar-card__hero .full-start__body' +
+                ' { position: relative; min-height: 26em; }' +
                 '.likhtar-card__bgwrap { position: absolute; top: -3em; right: -3em; bottom: 0; left: 0;' +
                 ' overflow: hidden; border-radius: 0 0 1em 1em; pointer-events: none; }' +
                 '.likhtar-card__bg { position: absolute; inset: 0; background-size: cover;' +
@@ -4662,8 +4706,16 @@
                 '.likhtar-card__bgwrap:after { content: ""; position: absolute; inset: 0;' +
                 ' background: linear-gradient(100deg, rgba(7,9,15,.97) 0%, rgba(7,9,15,.9) 32%,' +
                 ' rgba(7,9,15,.5) 58%, rgba(7,9,15,.05) 85%, transparent 100%); }' +
-                '.likhtar-card .full-start-new__left { display: none; }' +
-                '.likhtar-card .full-start-new__right { position: relative; z-index: 1; max-width: 64%; }' +
+                '.likhtar-card__hero .full-start-new__left, .likhtar-card__hero .full-start__left' +
+                ' { display: none !important; }' +
+                '.likhtar-card__hero .full-start-new__right, .likhtar-card__hero .full-start__right' +
+                ' { position: relative; z-index: 1; max-width: 64%; }' +
+                /* Рідні кнопки під новий вигляд: головна — світла пігулка, решта круглі */
+                '.likhtar-card__hero .full-start__button { border-radius: 999px;' +
+                ' background: rgba(255,255,255,.14); }' +
+                '.likhtar-card__hero .full-start__button.focus { background: #fff; color: #000; }' +
+                '.likhtar-card__hero .full-start__button.focus svg { fill: #000; }' +
+                '.likhtar-card__hero .full-start-new__reactions { display: none !important; }' +
                 '.likhtar-card__descr { font-size: 1.05em; line-height: 1.5; opacity: .85; max-width: 40em;' +
                 ' margin: .6em 0 .2em; display: -webkit-box; -webkit-line-clamp: 2;' +
                 ' -webkit-box-orient: vertical; overflow: hidden; }' +
