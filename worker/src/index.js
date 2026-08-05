@@ -11,6 +11,9 @@
  * прив'язки немає — тоді працює пам'ять процесу, чого для тестів досить.
  */
 
+import QRCode from 'qrcode';
+import { CONFIG_HTML } from './config-page.js';
+
 // Літери й цифри, які неможливо сплутати на екрані телевізора:
 // без O/0, I/1, S/5 — інакше код доводиться вгадувати.
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRTUVWXYZ23456789';
@@ -212,6 +215,26 @@ async function proxy(request) {
     return response;
 }
 
+/** QR для екрана телевізора: SVG масштабується без розмиття на будь-якій діагоналі. */
+async function qr(text) {
+    if (!text) return json({ error: 'no_text' }, 400);
+    if (text.length > 512) return json({ error: 'too_long' }, 400);
+
+    const svg = await QRCode.toString(text, {
+        type: 'svg',
+        margin: 1,
+        errorCorrectionLevel: 'M'
+    });
+
+    return new Response(svg, {
+        headers: {
+            'Content-Type': 'image/svg+xml; charset=utf-8',
+            'Cache-Control': 'public, max-age=600',
+            ...CORS_HEADERS
+        }
+    });
+}
+
 export default {
     async fetch(request, env) {
         const url = new URL(request.url);
@@ -239,6 +262,16 @@ export default {
 
         if (path === '/api/proxy' && request.method === 'GET') {
             return proxy(request);
+        }
+
+        if (path === '/api/qr' && request.method === 'GET') {
+            return qr(url.searchParams.get('text'));
+        }
+
+        if (path === '/config') {
+            return new Response(CONFIG_HTML, {
+                headers: { 'Content-Type': 'text/html; charset=utf-8', ...CORS_HEADERS }
+            });
         }
 
         if (path === '/') {

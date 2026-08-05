@@ -196,6 +196,74 @@
     var SERVICE_WATCH_PROVIDERS_FOR_ROW = { hbo: '384', amazon: '119', paramount: '531' };
 
     /**
+     * Мережа плагіна: запити до джерел, які не віддають CORS.
+     *
+     * Якщо в налаштуваннях указано власний Worker — ходимо через нього:
+     * він швидший, кешує відповіді для всіх користувачів одразу і не показує
+     * чужим людям, що саме дивляться наші. Без Worker'а лишається старий
+     * список публічних проксі: вони живі через раз, тому пробуємо по черзі.
+     */
+    var LikhtarNet = (function () {
+        var PUBLIC_PROXIES = [
+            'https://api.allorigins.win/raw?url=',
+            'https://api.allorigins.win/get?url=',
+            'https://corsproxy.io/?url=',
+            'https://api.codetabs.com/v1/proxy?quest='
+        ];
+
+        function workerUrl() {
+            var url = (Lampa.Storage.get('likhtar_worker_url', '') || '').trim();
+            if (!url) return '';
+            return url.replace(/\/+$/, '');
+        }
+
+        /** Відповідь allorigins у режимі /get загорнута в {contents}, решта віддає тіло як є. */
+        function unwrap(data) {
+            if (typeof data === 'string') return data;
+            if (data && typeof data.contents === 'string') return data.contents;
+            if (data && data.documentElement) return data;
+            return data ? String(data) : '';
+        }
+
+        /**
+         * Тягне URL через проксі. onSuccess отримує сире тіло відповіді.
+         * Через Worker — одна спроба (він або є, або його нема),
+         * через публічні — послідовний перебір, поки хтось не відповість.
+         */
+        function fetchText(url, onSuccess, onError) {
+            var worker = workerUrl();
+
+            if (worker) {
+                $.get(worker + '/api/proxy?url=' + encodeURIComponent(url))
+                    .done(function (data) { onSuccess(unwrap(data)); })
+                    .fail(function () { tryPublic(0); });
+                return;
+            }
+
+            tryPublic(0);
+
+            function tryPublic(index) {
+                if (index >= PUBLIC_PROXIES.length) return onError && onError();
+
+                var proxy = PUBLIC_PROXIES[index];
+                $.get(proxy + encodeURIComponent(url))
+                    .done(function (data) {
+                        var text = unwrap(data);
+                        if (text) onSuccess(text);
+                        else tryPublic(index + 1);
+                    })
+                    .fail(function () { tryPublic(index + 1); });
+            }
+        }
+
+        return {
+            fetchText: fetchText,
+            workerUrl: workerUrl,
+            hasWorker: function () { return !!workerUrl(); }
+        };
+    })();
+
+    /**
      * Спільний кеш плагіна: один запис у сховищі замість тисячі окремих ключів.
      *
      * Раніше кожен фільм створював власний ключ у Lampa.Storage, і за кілька
@@ -1947,6 +2015,34 @@
             field: { name: 'Кіно під настрій', description: 'Підбірки фільмів за жанрами та настроєм' }
         });
 
+        // === Сервер і налаштування з телефона ===
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { type: 'title' },
+            field: { name: 'Сервер Ліхтаря' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_worker_url', type: 'input', default: '' },
+            field: {
+                name: 'Адреса сервера',
+                description: 'Свій Worker замість публічних проксі: швидше й надійніше для міток якості та Кіноогляду. Наприклад http://192.168.0.70:8787'
+            }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { type: 'button' },
+            field: {
+                name: 'Налаштувати з телефона',
+                description: 'Показати код і QR, щоб змінити налаштування у браузері смартфона. Потрібна вказана вище адреса сервера.'
+            },
+            onChange: function () {
+                LikhtarPairing.start();
+            }
+        });
+
         // === Розділи бічного меню ===
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
@@ -2072,32 +2168,20 @@
                 Lampa.Storage.set('kino_channels', channels);
             },
             resolveHandleToChannelId: function (handle, callback) {
-                var _this = this;
                 var cleanHandle = String(handle).trim().replace(/^@/, '');
                 var pageUrl = 'https://www.youtube.com/@' + encodeURIComponent(cleanHandle);
-                var encodedPage = encodeURIComponent(pageUrl);
-                var tried = 0;
 
-                function tryProxy(idx) {
-                    if (idx >= _this.proxies.length) {
-                        callback(new Error('resolve_failed'));
-                        return;
-                    }
-                    var proxy = _this.proxies[idx];
-                    var url = proxy + (proxy.indexOf('corsproxy') > -1 ? pageUrl : encodedPage);
-                    $.get(url).done(function (html) {
-                        var str = typeof html === 'string' ? html : (html && html.contents) ? html.contents : '';
-                        var m = str.match(/"externalId"\s*:\s*"(UC[\w-]{22})"/) ||
-                            str.match(/"channelId"\s*:\s*"(UC[\w-]{22})"/) ||
-                            str.match(/youtube\.com\/channel\/(UC[\w-]{22})/);
-                        if (m && m[1]) {
-                            callback(null, { id: m[1], name: cleanHandle });
-                        } else {
-                            tryProxy(idx + 1);
-                        }
-                    }).fail(function () { tryProxy(idx + 1); });
-                }
-                tryProxy(0);
+                LikhtarNet.fetchText(pageUrl, function (html) {
+                    var str = typeof html === 'string' ? html : '';
+                    var m = str.match(/"externalId"\s*:\s*"(UC[\w-]{22})"/) ||
+                        str.match(/"channelId"\s*:\s*"(UC[\w-]{22})"/) ||
+                        str.match(/youtube\.com\/channel\/(UC[\w-]{22})/);
+
+                    if (m && m[1]) callback(null, { id: m[1], name: cleanHandle });
+                    else callback(new Error('resolve_failed'));
+                }, function () {
+                    callback(new Error('resolve_failed'));
+                });
             },
             fetch: function (channel, oncomplite, onerror) {
                 var _this = this;
@@ -2105,71 +2189,49 @@
                 var isChannelId = /^UC[\w-]{22}$/.test(id);
 
                 function doFetch(feedUrl) {
-                    var url = feedUrl;
-                    var encodedUrl = encodeURIComponent(url);
+                    LikhtarNet.fetchText(feedUrl, function (raw) {
+                        var str = (typeof raw === 'string' ? raw : '').trim();
 
-                    function tryFetch(index) {
-                        if (index >= _this.proxies.length) {
-                            console.log('Kinoohlyad: All proxies failed for ' + channel.name);
-                            onerror();
-                            return;
+                        // Проксі, що впало, зазвичай віддає свою HTML-сторінку помилки замість фіду
+                        if (str.indexOf('<!DOCTYPE') !== -1 || str.indexOf('<html') !== -1) return onerror();
+
+                        var xml;
+                        try {
+                            xml = $.parseXML(str);
+                        } catch (e) {
+                            return onerror();
                         }
 
-                        var currentProxy = _this.proxies[index];
-                        var fetchUrl = currentProxy + encodedUrl;
+                        if (!xml || !$(xml).find('entry').length) return onerror();
 
-                        $.get(fetchUrl, function (data) {
-                            var raw = typeof data === 'string' ? data : (data && typeof data.contents === 'string') ? data.contents : '';
-                            var str = (raw || (typeof data === 'string' ? data : '')).trim();
-                            if (str && str.indexOf('<?xml') !== 0 && str.indexOf('<feed') !== 0) {
-                                if (str.indexOf('<!DOCTYPE') !== -1 || str.indexOf('<html') !== -1) {
-                                    return tryFetch(index + 1);
-                                }
-                            }
-                            var items = [];
-                            var xml;
-                            try {
-                                xml = typeof data === 'string' ? $.parseXML(data) : (data && data.documentElement) ? data : $.parseXML(raw || String(data || ''));
-                            } catch (e) {
-                                return tryFetch(index + 1);
-                            }
+                        var items = [];
+                        $(xml).find('entry').each(function () {
+                            var $el = $(this);
+                            var mediaGroup = $el.find('media\\:group, group');
+                            var thumb = mediaGroup.find('media\\:thumbnail, thumbnail').attr('url');
+                            var videoId = $el.find('yt\\:videoId, videoId').text();
+                            var link = $el.find('link').attr('href');
+                            var title = $el.find('title').text();
 
-                            if (!xml || !$(xml).find('entry').length) {
-                                return tryFetch(index + 1);
-                            }
+                            // Filter out Shorts
+                            if (link && link.indexOf('/shorts/') > -1) return;
+                            if (title && title.toLowerCase().indexOf('#shorts') > -1) return;
 
-                            $(xml).find('entry').each(function () {
-                                var $el = $(this);
-                                var mediaGroup = $el.find('media\\:group, group');
-                                var thumb = mediaGroup.find('media\\:thumbnail, thumbnail').attr('url');
-                                var videoId = $el.find('yt\\:videoId, videoId').text();
-                                var link = $el.find('link').attr('href');
-                                var title = $el.find('title').text();
-
-                                // Filter out Shorts
-                                if (link && link.indexOf('/shorts/') > -1) return;
-                                if (title && title.toLowerCase().indexOf('#shorts') > -1) return;
-
-                                items.push({
-                                    title: title,
-                                    img: thumb,
-                                    video_id: videoId,
-                                    release_date: ($el.find('published').text() || '').split('T')[0],
-                                    vote_average: 0
-                                });
+                            items.push({
+                                title: title,
+                                img: thumb,
+                                video_id: videoId,
+                                release_date: ($el.find('published').text() || '').split('T')[0],
+                                vote_average: 0
                             });
-
-                            if (items.length) {
-                                oncomplite(items);
-                            } else {
-                                tryFetch(index + 1);
-                            }
-                        }).fail(function () {
-                            tryFetch(index + 1);
                         });
-                    }
 
-                    tryFetch(0);
+                        if (items.length) oncomplite(items);
+                        else onerror();
+                    }, function () {
+                        console.log('Kinoohlyad: не вдалося отримати фід ' + channel.name);
+                        onerror();
+                    });
                 }
 
                 if (isChannelId) {
@@ -3797,6 +3859,186 @@
     })();
 
     // =================================================================
+    // НАЛАШТУВАННЯ З ТЕЛЕФОНА
+    // =================================================================
+    /**
+     * Клацати налаштування пультом довго й незручно. Тут телевізор показує
+     * код, користувач відкриває сторінку на телефоні, все там налаштовує —
+     * і телевізор підхоплює зміни, не перериваючи перегляд.
+     */
+    var LikhtarPairing = (function () {
+        var POLL_INTERVAL = 3000;
+        var POLL_LIMIT = 200;          // ~10 хвилин, стільки ж живе сесія на сервері
+
+        /**
+         * Налаштування, які має сенс переносити. Список явний, а не «усе, що
+         * починається з likhtar_»: так у конфіг не потрапить службове,
+         * як-от кеш чи позначки міграцій.
+         */
+        var PORTABLE_KEYS = [
+            'likhtar_tmdb_apikey',
+            'likhtar_section_streamings',
+            'likhtar_section_mood',
+            'likhtar_assistant_enabled',
+            'likhtar_section_digital',
+            'likhtar_section_anniversary',
+            'likhtar_section_chronology',
+            'likhtar_badge_enabled',
+            'likhtar_badge_ua',
+            'likhtar_badge_en',
+            'likhtar_badge_4k',
+            'likhtar_badge_fhd',
+            'likhtar_badge_hdr',
+            'likhtar_show_logo_instead_text',
+            'likhtar_full_info',
+            'likhtar_full_trailer_ua',
+            'likhtar_full_franchise',
+            'likhtar_kinooglad_enabled',
+            'kino_channels'
+        ];
+
+        function exportConfig() {
+            var config = {};
+            PORTABLE_KEYS.forEach(function (key) {
+                var value = Lampa.Storage.get(key, undefined);
+                if (value !== undefined && value !== null) config[key] = value;
+            });
+            return config;
+        }
+
+        /** Повертає кількість застосованих змін — щоб було що сказати користувачу. */
+        function importConfig(config) {
+            var applied = 0;
+
+            PORTABLE_KEYS.forEach(function (key) {
+                if (!(key in config)) return;
+
+                var value = config[key];
+                if (JSON.stringify(Lampa.Storage.get(key, null)) === JSON.stringify(value)) return;
+
+                Lampa.Storage.set(key, value);
+                applied++;
+            });
+
+            return applied;
+        }
+
+        function modalHtml(code, qrUrl) {
+            var html = $('<div class="likhtar-pair"></div>');
+
+            html.append('<div class="likhtar-pair__hint">Відкрийте сторінку на телефоні та введіть код</div>');
+            if (qrUrl) html.append($('<img class="likhtar-pair__qr">').attr('src', qrUrl));
+            html.append($('<div class="likhtar-pair__code"></div>').text(code));
+            html.append('<div class="likhtar-pair__status">Очікуємо на зміни…</div>');
+
+            return html;
+        }
+
+        function start() {
+            var worker = LikhtarNet.workerUrl();
+
+            if (!worker) {
+                Lampa.Noty.show('Спершу вкажіть адресу сервера Ліхтаря в налаштуваннях');
+                return;
+            }
+
+            var pageUrl = worker + '/config';
+
+            $.ajax({
+                url: worker + '/api/session',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ config: exportConfig() })
+            }).done(function (data) {
+                if (!data || !data.code) return Lampa.Noty.show('Сервер не видав код');
+                showModal(worker, data.code, pageUrl);
+            }).fail(function () {
+                Lampa.Noty.show('Не вдалося зв\'язатися із сервером Ліхтаря');
+            });
+        }
+
+        function showModal(worker, code, pageUrl) {
+            var qrTarget = pageUrl + '?s=' + code;
+            var qrUrl = worker + '/api/qr?text=' + encodeURIComponent(qrTarget);
+            var html = modalHtml(code, qrUrl);
+            var status = html.find('.likhtar-pair__status');
+
+            var polls = 0;
+            var timer = null;
+            var closed = false;
+
+            function stop() {
+                closed = true;
+                if (timer) clearTimeout(timer);
+            }
+
+            function poll() {
+                if (closed) return;
+
+                if (++polls > POLL_LIMIT) {
+                    status.text('Час сесії вичерпано — відкрийте вікно ще раз');
+                    return;
+                }
+
+                $.get(worker + '/api/session/' + code).done(function (data) {
+                    if (closed) return;
+
+                    if (data && data.updated) {
+                        var applied = importConfig(data.config || {});
+                        stop();
+
+                        Lampa.Modal.close();
+                        Lampa.Controller.toggle('settings_component');
+                        Lampa.Noty.show(applied
+                            ? 'Налаштування застосовано (' + applied + '). Перезапустіть Lampa, щоб оновились розділи меню.'
+                            : 'Налаштування вже актуальні');
+                        return;
+                    }
+
+                    timer = setTimeout(poll, POLL_INTERVAL);
+                }).fail(function () {
+                    if (!closed) timer = setTimeout(poll, POLL_INTERVAL);
+                });
+            }
+
+            Lampa.Modal.open({
+                title: 'Налаштувати з телефона',
+                html: html,
+                size: 'medium',
+                onBack: function () {
+                    stop();
+                    Lampa.Modal.close();
+                    Lampa.Controller.toggle('settings_component');
+                }
+            });
+
+            timer = setTimeout(poll, POLL_INTERVAL);
+        }
+
+        function addStyles() {
+            if ($('style#likhtar-pair-css').length) return;
+
+            $('head').append('<style id="likhtar-pair-css">' +
+                '.likhtar-pair { text-align: center; padding: 1em; }' +
+                '.likhtar-pair__hint { font-size: 1.1em; opacity: 0.8; margin-bottom: 1em; }' +
+                '.likhtar-pair__qr { width: 14em; height: 14em; background: #fff; padding: 0.6em;' +
+                ' border-radius: 0.6em; display: block; margin: 0 auto 1em; }' +
+                '.likhtar-pair__code { font-size: 2.6em; font-weight: 700; letter-spacing: 0.25em;' +
+                ' padding: 0.3em 0; }' +
+                '.likhtar-pair__status { font-size: 1em; opacity: 0.6; margin-top: 0.6em; }' +
+                '</style>');
+        }
+
+        return {
+            init: addStyles,
+            start: start,
+            exportConfig: exportConfig,
+            importConfig: importConfig,
+            PORTABLE_KEYS: PORTABLE_KEYS
+        };
+    })();
+
+    // =================================================================
     // INIT FUNCTION
     // =================================================================
     function init() {
@@ -3814,6 +4056,7 @@
         LikhtarFullCard.init();
         LikhtarSections.init();
         LikhtarAssistant.init();
+        LikhtarPairing.init();
 
         addStyles();
 
@@ -3864,39 +4107,11 @@
         var _uafixCache = {};
 
         function fetchWithProxy(url, callback) {
-            var proxies = [
-                'https://api.allorigins.win/get?url=',
-                'https://cors-anywhere.herokuapp.com/',
-                'https://thingproxy.freeboard.io/fetch/'
-            ];
-
-            function tryProxy(index) {
-                if (index >= proxies.length) return callback(new Error('All proxies failed'), null);
-
-                var p = proxies[index];
-                var reqUrl = p === 'https://api.allorigins.win/get?url='
-                    ? p + encodeURIComponent(url)
-                    : p + url;
-
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', reqUrl, true);
-                if (p === 'https://cors-anywhere.herokuapp.com/') {
-                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                }
-
-                xhr.onload = function () {
-                    if (xhr.status === 200) {
-                        callback(null, xhr.responseText);
-                    } else {
-                        tryProxy(index + 1);
-                    }
-                };
-                xhr.onerror = function () { tryProxy(index + 1); };
-                xhr.timeout = 10000;
-                xhr.ontimeout = function () { tryProxy(index + 1); };
-                xhr.send();
-            }
-            tryProxy(0);
+            LikhtarNet.fetchText(url, function (text) {
+                callback(null, text);
+            }, function () {
+                callback(new Error('All proxies failed'), null);
+            });
         }
 
         function getBestJacred(card, callback) {
