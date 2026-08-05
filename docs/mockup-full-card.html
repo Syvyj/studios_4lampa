@@ -1,0 +1,163 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Ліхтар — макет сторінки фільму</title>
+<!--
+  Макет нової сторінки фільму. Не код плагіна — ескіз для обговорення.
+  Ідея: вся головна інформація в один екран без прокрутки, а все довге
+  (актори, коментарі, деталі) ховається в бічну панель на кнопці.
+-->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1280px;height:720px;overflow:hidden;position:relative;background:#07090f;
+       font:16px/1.5 -apple-system,system-ui,"Segoe UI",sans-serif;color:#fff}
+
+  /* ===== Фон ===== */
+  .bg{position:absolute;inset:0;background:url(https://image.tmdb.org/t/p/w1280/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg) center/cover no-repeat}
+  .scrim{position:absolute;inset:0;
+       background:linear-gradient(100deg,rgba(7,9,15,.98) 0%,rgba(7,9,15,.92) 30%,rgba(7,9,15,.55) 55%,rgba(7,9,15,.1) 80%,transparent 100%)}
+  .scrim2{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,9,15,.9),transparent 45%)}
+
+  /* ===== Вміст ===== */
+  .wrap{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+        padding:0 60px;max-width:64%}
+
+  .studio{font-size:12px;letter-spacing:.32em;opacity:.65;margin-bottom:14px}
+  .logo{font-size:52px;line-height:1.02;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;
+        text-shadow:0 4px 24px rgba(0,0,0,.6)}
+  .logo em{display:block;font-size:26px;font-weight:500;font-style:italic;opacity:.92;margin-top:6px}
+
+  .meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 14px;font-size:14px}
+  .pill{background:rgba(255,255,255,.13);border-radius:7px;padding:5px 11px;font-weight:600}
+  .pill.rate{background:rgba(255,255,255,.95);color:#111}
+  .dot{opacity:.4}
+  .badge{border-radius:7px;padding:5px 11px;font-weight:700;font-size:13px}
+  .b-ua{background:linear-gradient(135deg,#0057b7,#2b7fe0)}
+  .b-4k{background:linear-gradient(135deg,#7b2cbf,#a44ae0)}
+  .b-hdr{background:linear-gradient(135deg,#b8860b,#e0b53a);color:#191100}
+
+  .descr{font-size:15px;line-height:1.55;opacity:.82;max-width:640px;margin-bottom:26px;
+       display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+  /* ===== Дії ===== */
+  .actions{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+  .play{display:flex;align-items:center;gap:11px;background:#fff;color:#111;border:0;
+        border-radius:999px;padding:15px 30px;font-size:17px;font-weight:700;cursor:pointer}
+  .round{width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.14);border:0;
+         display:grid;place-items:center;cursor:pointer}
+  .round svg{width:23px;height:23px;fill:#fff}
+
+  /* ===== Модулі: усе довге ховається сюди ===== */
+  .modules{display:flex;gap:11px;flex-wrap:wrap}
+  .mod{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.09);
+       border:1px solid rgba(255,255,255,.13);border-radius:12px;padding:12px 17px;
+       font-size:14px;font-weight:600;cursor:pointer;color:#fff}
+  .mod .n{background:rgba(255,255,255,.16);border-radius:6px;padding:1px 8px;font-size:12px;opacity:.9}
+  .mod.focus{background:#fff;color:#111;border-color:#fff;transform:scale(1.04)}
+  .mod.focus .n{background:rgba(0,0,0,.12)}
+
+  /* ===== Бічна панель ===== */
+  .panel{position:absolute;top:0;right:0;bottom:0;width:440px;background:rgba(10,12,18,.93);
+       backdrop-filter:blur(24px);border-left:1px solid rgba(255,255,255,.1);
+       transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column}
+  .panel.open{transform:none}
+  .panel h3{font-size:20px;padding:26px 26px 8px}
+  .panel .sub{font-size:13px;opacity:.5;padding:0 26px 16px}
+  .panel .list{flex:1;overflow:hidden;padding:0 16px 20px}
+
+  .grp{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.45;
+       padding:14px 10px 8px}
+  .person{display:flex;align-items:center;gap:14px;padding:10px;border-radius:12px;cursor:pointer}
+  .person .av{width:52px;height:52px;border-radius:50%;flex:0 0 52px;display:grid;place-items:center;
+       font-size:17px;font-weight:700;letter-spacing:.02em;color:#fff;
+       background:linear-gradient(135deg,#2a3450,#43516f)}
+  .person .av.a2{background:linear-gradient(135deg,#4a2f55,#6d4478)}
+  .person .av.a3{background:linear-gradient(135deg,#2f4a45,#426b62)}
+  .person .av.a4{background:linear-gradient(135deg,#503a2a,#75563c)}
+  .person .av.a5{background:linear-gradient(135deg,#3a2a50,#544075)}
+  .person .nm{font-size:15px;font-weight:600}
+  .person .rl{font-size:13px;opacity:.55;margin-top:1px}
+  .person .ch{margin-left:auto;opacity:.35}
+  .person.focus{background:rgba(255,255,255,.14);outline:2px solid rgba(255,255,255,.5)}
+
+  .hint{position:absolute;left:0;right:0;bottom:0;padding:14px 26px;font-size:12px;opacity:.45;
+        border-top:1px solid rgba(255,255,255,.08)}
+</style>
+
+<div class="bg"></div>
+<div class="scrim"></div>
+<div class="scrim2"></div>
+
+<div class="wrap">
+  <div class="studio">MARVEL STUDIOS</div>
+  <div class="logo">ЛЮДИНА-ПАВУК<em>Додому шляху нема</em></div>
+
+  <div class="meta">
+    <span class="pill rate">★ 7.9</span>
+    <span>2021</span><span class="dot">•</span>
+    <span>2 год 28 хв</span><span class="dot">•</span>
+    <span>Бойовик, Фантастика</span>
+    <span class="pill">13+</span>
+    <span class="badge b-ua">UA+</span>
+    <span class="badge b-4k">4K</span>
+    <span class="badge b-hdr">HDR</span>
+  </div>
+
+  <div class="descr">Уперше за всю кіноісторію Людини-павука улюбленого супергероя викрито. Пітер Паркер
+    більше не в змозі поєднувати звичайне життя та супергеройські обов'язки, тож звертається по допомогу
+    до Доктора Стренджа.</div>
+
+  <div class="actions">
+    <button class="play"><svg viewBox="0 0 24 24" width="20" height="20" fill="#111"><path d="M8 5v14l11-7z"/></svg>Дивитись</button>
+    <button class="round" title="Закладки"><svg viewBox="0 0 24 24"><path d="M17 3H7a2 2 0 00-2 2v16l7-3 7 3V5a2 2 0 00-2-2z"/></svg></button>
+    <button class="round" title="Трейлер UA"><svg viewBox="0 0 24 24"><path d="M10 15l5.2-3L10 9v6zm11-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>
+    <button class="round" title="Ще"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+  </div>
+
+  <div class="modules">
+    <div class="mod focus" onclick="openPanel()">Актори та автори <span class="n">24</span></div>
+    <div class="mod">Коментарі <span class="n">128</span></div>
+    <div class="mod">Франшиза <span class="n">4</span></div>
+    <div class="mod">Деталі</div>
+  </div>
+</div>
+
+<div class="panel" id="panel">
+  <h3>Актори та автори</h3>
+  <div class="sub">Оберіть людину — відкриється її фільмографія</div>
+  <div class="list">
+    <div class="grp">Режисер</div>
+    <div class="person focus">
+      <div class="av ">ДВ</div>
+      <div><div class="nm">Джон Воттс</div><div class="rl">Режисер</div></div>
+      <div class="ch">›</div>
+    </div>
+
+    <div class="grp">У головних ролях</div>
+    <div class="person">
+      <div class="av a2">ТГ</div>
+      <div><div class="nm">Том Голланд</div><div class="rl">Пітер Паркер</div></div>
+      <div class="ch">›</div>
+    </div>
+    <div class="person">
+      <div class="av a3">З</div>
+      <div><div class="nm">Зендея</div><div class="rl">Ем-Джей</div></div>
+      <div class="ch">›</div>
+    </div>
+    <div class="person">
+      <div class="av a4">БК</div>
+      <div><div class="nm">Бенедикт Камбербетч</div><div class="rl">Доктор Стрендж</div></div>
+      <div class="ch">›</div>
+    </div>
+    <div class="person">
+      <div class="av a5">ДБ</div>
+      <div><div class="nm">Джейкоб Баталон</div><div class="rl">Нед Лідс</div></div>
+      <div class="ch">›</div>
+    </div>
+  </div>
+  <div class="hint">Назад — закрити панель</div>
+</div>
+
+<script>
+function openPanel(){ document.getElementById('panel').classList.toggle('open'); }
+if (location.hash === '#panel') openPanel();
+</script>
