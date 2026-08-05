@@ -1947,6 +1947,31 @@
             field: { name: 'Кіно під настрій', description: 'Підбірки фільмів за жанрами та настроєм' }
         });
 
+        // === Розділи бічного меню ===
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { type: 'title' },
+            field: { name: 'Розділи бічного меню' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_section_digital', type: 'trigger', default: true },
+            field: { name: 'Релізи в цифрі', description: 'Кінопрокатні фільми, що вже вийшли або скоро вийдуть у цифрі. Потрібен перезапуск.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_section_anniversary', type: 'trigger', default: true },
+            field: { name: 'Річниці кіно', description: 'Круглі річниці виходу фільмів. Потрібен перезапуск.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_section_chronology', type: 'trigger', default: true },
+            field: { name: 'Хронології', description: 'Порядок перегляду всесвітів за подіями, а не за датою виходу. Потрібен перезапуск.' }
+        });
+
         // === Мітки якості та озвучки ===
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
@@ -2825,18 +2850,52 @@
             return line.children().length ? line : null;
         }
 
-        function injectInfoLine(details, $render) {
+        /**
+         * Для кінопрокатних стрічок найважливіше питання — коли їх можна буде
+         * подивитись удома. Плашка з'являється лише поки дата в майбутньому.
+         */
+        function injectDigitalDate(details, $render) {
+            if (typeOf(details) !== 'movie') return;
             if (!isSettingEnabled('likhtar_full_info', true)) return;
-            if ($render.find('.likhtar-info-line').length) return;
 
-            var line = buildInfoLine(details);
-            if (!line) return;
+            LikhtarSections.getDigitalDate(details.id, function (isoDate) {
+                if (!isoDate) return;
+
+                var when = relativeDay(isoDate);
+                if (!when && new Date(isoDate + 'T00:00:00') < new Date()) return;  // вже вийшов — не новина
+
+                var line = ensureInfoLine($render);
+                if (!line || line.find('.likhtar-chip--digital').length) return;
+
+                line.append(chip('В цифрі ' + (when || formatDate(isoDate)), 'digital'));
+            });
+        }
+
+        /** Рядок плашок один на сторінку; створюємо його на першу потребу. */
+        function ensureInfoLine($render) {
+            var existing = $render.find('.likhtar-info-line').first();
+            if (existing.length) return existing;
 
             var anchor = $render.find('.full-start-new__details, .full-start__details').first();
             if (!anchor.length) anchor = $render.find('.full-start-new__rate-line, .full-start__rate-line').first();
-            if (!anchor.length) return;
+            if (!anchor.length) return null;
 
+            var line = $('<div class="likhtar-info-line"></div>');
             anchor.after(line);
+            return line;
+        }
+
+        function injectInfoLine(details, $render) {
+            if (!isSettingEnabled('likhtar_full_info', true)) return;
+            if ($render.find('.likhtar-info-line').children().length) return;
+
+            var built = buildInfoLine(details);
+            if (!built) return;
+
+            var line = ensureInfoLine($render);
+            if (!line) return;
+
+            built.children().each(function () { line.append(this); });
         }
 
         /** Кнопки Lampa — це .selector'и в спільному контейнері; додаємо свою в тому ж стилі. */
@@ -2977,6 +3036,7 @@
                 '.likhtar-chip--ended { background: rgba(255,255,255,0.18); }' +
                 '.likhtar-chip--canceled { background: rgba(218,54,51,0.85); }' +
                 '.likhtar-chip--time { background: rgba(255,255,255,0.14); }' +
+                '.likhtar-chip--digital { background: linear-gradient(135deg, #6a1b9a, #8e24aa); }' +
                 '.likhtar-full-button span { margin-left: 0.6em; }' +
                 /* Кольоровий рейтинг: зелений/жовтий/червоний читається з дивана швидше за цифру */
                 '.card__mark--rating.likhtar-rating--high { background: linear-gradient(135deg,#1b5e20,#2ea043); color: #fff; border-color: rgba(46,160,67,0.4); }' +
@@ -2992,6 +3052,7 @@
             getDetails(movie, function (details) {
                 try {
                     injectInfoLine(details, $render);
+                    injectDigitalDate(details, $render);
                     injectFranchise(details, $render);
                 } catch (e) { }
             });
@@ -3023,6 +3084,423 @@
     })();
 
     // =================================================================
+    // РОЗДІЛИ БІЧНОГО МЕНЮ: РЕЛІЗИ В ЦИФРІ, РІЧНИЦІ, ХРОНОЛОГІЇ
+    // =================================================================
+    var LikhtarSections = (function () {
+        // Типи релізів TMDB: 3 — кінопрокат, 4 — цифра. Саме їх порівняння дає
+        // відповідь на питання «коли фільм із кінотеатру можна буде подивитись удома».
+        var RELEASE_THEATRICAL = 3;
+        var RELEASE_DIGITAL = 4;
+
+        // Регіон для дат релізів: у США база TMDB заповнена найповніше,
+        // а цифрові релізи здебільшого глобальні й збігаються.
+        var RELEASE_REGION = 'US';
+
+        /**
+         * Хронології всесвітів — порядок перегляду за подіями, а не за датою виходу.
+         * Зберігаємо назвами, а не id: назву можна перевірити очима, а id —
+         * ні, і помилка в ньому мовчки підсуне не той фільм.
+         * Список можна замінити файлом chronologies.json поруч із плагіном.
+         */
+        var BUILTIN_CHRONOLOGIES = [
+            {
+                key: 'mcu',
+                title: 'Marvel: у хронології подій',
+                items: [
+                    ['Captain America: The First Avenger', 2011],
+                    ['Captain Marvel', 2019],
+                    ['Iron Man', 2008],
+                    ['Iron Man 2', 2010],
+                    ['The Incredible Hulk', 2008],
+                    ['Thor', 2011],
+                    ['The Avengers', 2012],
+                    ['Iron Man 3', 2013],
+                    ['Thor: The Dark World', 2013],
+                    ['Captain America: The Winter Soldier', 2014],
+                    ['Guardians of the Galaxy', 2014],
+                    ['Guardians of the Galaxy Vol. 2', 2017],
+                    ['Avengers: Age of Ultron', 2015],
+                    ['Ant-Man', 2015],
+                    ['Captain America: Civil War', 2016],
+                    ['Black Widow', 2021],
+                    ['Black Panther', 2018],
+                    ['Doctor Strange', 2016],
+                    ['Spider-Man: Homecoming', 2017],
+                    ['Ant-Man and the Wasp', 2018],
+                    ['Thor: Ragnarok', 2017],
+                    ['Avengers: Infinity War', 2018],
+                    ['Avengers: Endgame', 2019],
+                    ['Spider-Man: Far From Home', 2019]
+                ]
+            },
+            {
+                key: 'starwars',
+                title: 'Зоряні війни: за хронологією',
+                items: [
+                    ['Star Wars: Episode I - The Phantom Menace', 1999],
+                    ['Star Wars: Episode II - Attack of the Clones', 2002],
+                    ['Star Wars: Episode III - Revenge of the Sith', 2005],
+                    ['Solo: A Star Wars Story', 2018],
+                    ['Rogue One: A Star Wars Story', 2016],
+                    ['Star Wars', 1977],
+                    ['The Empire Strikes Back', 1980],
+                    ['Return of the Jedi', 1983],
+                    ['Star Wars: The Force Awakens', 2015],
+                    ['Star Wars: The Last Jedi', 2017],
+                    ['Star Wars: The Rise of Skywalker', 2019]
+                ]
+            },
+            {
+                key: 'middleearth',
+                title: 'Середзем\'я: від «Гобіта» до «Персня»',
+                items: [
+                    ['The Hobbit: An Unexpected Journey', 2012],
+                    ['The Hobbit: The Desolation of Smaug', 2013],
+                    ['The Hobbit: The Battle of the Five Armies', 2014],
+                    ['The Lord of the Rings: The Fellowship of the Ring', 2001],
+                    ['The Lord of the Rings: The Two Towers', 2002],
+                    ['The Lord of the Rings: The Return of the King', 2003]
+                ]
+            }
+        ];
+
+        function lang() {
+            return Lampa.Storage.get('language', 'uk');
+        }
+
+        function apiKeyParams() {
+            return 'api_key=' + getTmdbKey() + '&language=' + lang();
+        }
+
+        function dateStr(date) {
+            return [date.getFullYear(), ('0' + (date.getMonth() + 1)).slice(-2), ('0' + date.getDate()).slice(-2)].join('-');
+        }
+
+        function shiftDays(days) {
+            return dateStr(new Date(Date.now() + days * 86400000));
+        }
+
+        // ===== Релізи в цифрі =====
+
+        function digitalCategories() {
+            var common = '&with_release_type=' + RELEASE_DIGITAL + '&region=' + RELEASE_REGION + '&vote_count.gte=10';
+
+            return [
+                {
+                    title: 'Щойно вийшли в цифрі',
+                    query: 'discover/movie?' + apiKeyParams() + common +
+                        '&release_date.gte=' + shiftDays(-30) + '&release_date.lte=' + shiftDays(0) +
+                        '&sort_by=primary_release_date.desc'
+                },
+                {
+                    title: 'Скоро в цифрі',
+                    query: 'discover/movie?' + apiKeyParams() + common +
+                        '&release_date.gte=' + shiftDays(1) + '&release_date.lte=' + shiftDays(60) +
+                        '&sort_by=primary_release_date.asc'
+                },
+                {
+                    // Ці вже відпрацювали в кінотеатрах, але цифрової дати ще немає —
+                    // саме вони зазвичай і з'являються в цифрі найближчим часом.
+                    title: 'Ще в прокаті — чекаємо на цифру',
+                    query: 'discover/movie?' + apiKeyParams() +
+                        '&with_release_type=' + RELEASE_THEATRICAL + '&region=' + RELEASE_REGION +
+                        '&release_date.gte=' + shiftDays(-50) + '&release_date.lte=' + shiftDays(-7) +
+                        '&vote_count.gte=20&sort_by=popularity.desc'
+                }
+            ];
+        }
+
+        function DigitalComponent(object) {
+            var comp = new Lampa.InteractionMain(object);
+            var network = new Lampa.Reguest();
+
+            comp.create = function () {
+                var _this = this;
+                this.activity.loader(true);
+
+                var categories = digitalCategories();
+                var status = new Lampa.Status(categories.length);
+
+                status.onComplite = function () {
+                    var fulldata = [];
+
+                    categories.forEach(function (cat, index) {
+                        var data = status.data && status.data[index];
+                        if (!data || !data.results || !data.results.length) return;
+
+                        data.results.forEach(function (item) {
+                            if (!item.poster_path && item.backdrop_path) item.poster_path = item.backdrop_path;
+                        });
+
+                        fulldata.push({ title: cat.title, results: data.results });
+                    });
+
+                    if (!fulldata.length) return _this.empty();
+
+                    _this.build(fulldata);
+                    _this.activity.loader(false);
+                };
+
+                categories.forEach(function (cat, index) {
+                    network.silent(Lampa.TMDB.api(cat.query), function (json) {
+                        status.append(String(index), json);
+                    }, function () {
+                        status.error();
+                    });
+                });
+
+                return this.render();
+            };
+
+            return comp;
+        }
+
+        /** Дата цифрового релізу конкретного фільму — для плашки на його сторінці. */
+        function getDigitalDate(movieId, callback) {
+            var key = 'digital_' + movieId;
+            var cached = LikhtarCache.get(key);
+            if (cached !== undefined) return callback(cached);
+
+            var url = Lampa.TMDB.api('movie/' + movieId + '/release_dates?api_key=' + getTmdbKey());
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var results = (data && data.results) || [];
+                var region = results.filter(function (r) { return r.iso_3166_1 === RELEASE_REGION; })[0];
+                var digital = null;
+
+                if (region && region.release_dates) {
+                    var entry = region.release_dates.filter(function (r) { return r.type === RELEASE_DIGITAL; })[0];
+                    if (entry && entry.release_date) digital = entry.release_date.substr(0, 10);
+                }
+
+                LikhtarCache.set(key, digital, LikhtarCache.TTL.DAY);
+                callback(digital);
+            }, function () {
+                callback(null);
+            });
+        }
+
+        // ===== Річниці =====
+
+        /** Круглі річниці виходу — привід переглянути те, що колись вразило. */
+        function anniversaryCategories() {
+            var year = new Date().getFullYear();
+
+            return [10, 20, 25, 30, 40, 50].map(function (age) {
+                var target = year - age;
+                return {
+                    title: age + ' років фільмам ' + target + '-го',
+                    query: 'discover/movie?' + apiKeyParams() +
+                        '&primary_release_date.gte=' + target + '-01-01' +
+                        '&primary_release_date.lte=' + target + '-12-31' +
+                        '&vote_count.gte=300&sort_by=vote_average.desc'
+                };
+            });
+        }
+
+        function AnniversaryComponent(object) {
+            var comp = new Lampa.InteractionMain(object);
+            var network = new Lampa.Reguest();
+
+            comp.create = function () {
+                var _this = this;
+                this.activity.loader(true);
+
+                var categories = anniversaryCategories();
+                var status = new Lampa.Status(categories.length);
+
+                status.onComplite = function () {
+                    var fulldata = [];
+
+                    categories.forEach(function (cat, index) {
+                        var data = status.data && status.data[index];
+                        if (!data || !data.results || !data.results.length) return;
+
+                        data.results.forEach(function (item) {
+                            if (!item.poster_path && item.backdrop_path) item.poster_path = item.backdrop_path;
+                        });
+
+                        fulldata.push({ title: cat.title, results: data.results });
+                    });
+
+                    if (!fulldata.length) return _this.empty();
+
+                    _this.build(fulldata);
+                    _this.activity.loader(false);
+                };
+
+                categories.forEach(function (cat, index) {
+                    network.silent(Lampa.TMDB.api(cat.query), function (json) {
+                        status.append(String(index), json);
+                    }, function () {
+                        status.error();
+                    });
+                });
+
+                return this.render();
+            };
+
+            return comp;
+        }
+
+        // ===== Хронології =====
+
+        var _chronologies = null;
+
+        function getChronologies(callback) {
+            if (_chronologies) return callback(_chronologies);
+
+            // Свій файл поруч із плагіном має пріоритет — так список можна поповнювати без правки коду
+            $.get(LIKHTAR_BASE_URL + 'chronologies.json').done(function (data) {
+                try {
+                    var parsed = typeof data === 'string' ? JSON.parse(data) : data;
+                    _chronologies = (parsed && parsed.length) ? parsed : BUILTIN_CHRONOLOGIES;
+                } catch (e) {
+                    _chronologies = BUILTIN_CHRONOLOGIES;
+                }
+                callback(_chronologies);
+            }).fail(function () {
+                _chronologies = BUILTIN_CHRONOLOGIES;
+                callback(_chronologies);
+            });
+        }
+
+        /** Шукаємо фільм за назвою та роком — id у списках не тримаємо, щоб не помилитись мовчки. */
+        function resolveTitle(title, year, callback) {
+            var key = 'find_' + title.toLowerCase().replace(/[^a-z0-9]+/g, '_') + '_' + year;
+            var cached = LikhtarCache.get(key);
+            if (cached !== undefined) return callback(cached);
+
+            var url = Lampa.TMDB.api('search/movie?' + apiKeyParams() +
+                '&query=' + encodeURIComponent(title) + '&year=' + year);
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var found = (data && data.results && data.results[0]) || null;
+                LikhtarCache.set(key, found, LikhtarCache.TTL.MONTH);
+                callback(found);
+            }, function () {
+                callback(null);
+            });
+        }
+
+        function ChronologyComponent(object) {
+            var comp = new Lampa.InteractionMain(object);
+
+            comp.create = function () {
+                var _this = this;
+                this.activity.loader(true);
+
+                var items = object.chronology_items || [];
+                var resolved = new Array(items.length);
+                var pending = items.length;
+
+                if (!pending) {
+                    this.empty();
+                    return this.render();
+                }
+
+                items.forEach(function (entry, index) {
+                    resolveTitle(entry[0], entry[1], function (movie) {
+                        if (movie) {
+                            if (!movie.poster_path && movie.backdrop_path) movie.poster_path = movie.backdrop_path;
+                            // Номер у хронології — головна цінність списку, показуємо його в назві
+                            movie.title = (index + 1) + '. ' + (movie.title || entry[0]);
+                            resolved[index] = movie;
+                        }
+
+                        if (--pending > 0) return;
+
+                        var results = resolved.filter(Boolean);
+                        if (!results.length) return _this.empty();
+
+                        _this.build([{ title: object.title, results: results }]);
+                        _this.activity.loader(false);
+                    });
+                });
+
+                return this.render();
+            };
+
+            return comp;
+        }
+
+        function openChronologyMenu() {
+            getChronologies(function (list) {
+                Lampa.Select.show({
+                    title: 'Хронології всесвітів',
+                    items: list.map(function (c) { return { title: c.title, chronology: c }; }),
+                    onSelect: function (item) {
+                        Lampa.Activity.push({
+                            url: '',
+                            title: item.chronology.title,
+                            component: 'likhtar_chronology',
+                            chronology_items: item.chronology.items,
+                            page: 1
+                        });
+                    },
+                    onBack: function () {
+                        Lampa.Controller.toggle('menu');
+                    }
+                });
+            });
+        }
+
+        // ===== Меню =====
+
+        function menuItem(action, label, iconPath, onEnter) {
+            var item = $('<li class="menu__item selector" data-action="' + action + '">' +
+                '<div class="menu__ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">' +
+                '<path d="' + iconPath + '"/></svg></div>' +
+                '<div class="menu__text"></div></li>');
+
+            item.find('.menu__text').text(label);
+            item.on('hover:enter click', onEnter);
+            return item;
+        }
+
+        function addMenu() {
+            var list = $('.menu .menu__list').eq(0);
+            if (!list.length) return;
+
+            if (isSettingEnabled('likhtar_section_digital', true) && !$('[data-action="likhtar_digital"]').length) {
+                list.append(menuItem('likhtar_digital', 'Релізи в цифрі',
+                    'M4 6h16v10H4V6zm0-2a2 2 0 00-2 2v10a2 2 0 002 2h6v2H8v2h8v-2h-2v-2h6a2 2 0 002-2V6a2 2 0 00-2-2H4z',
+                    function () {
+                        Lampa.Activity.push({ url: '', title: 'Релізи в цифрі', component: 'likhtar_digital', page: 1 });
+                    }));
+            }
+
+            if (isSettingEnabled('likhtar_section_anniversary', true) && !$('[data-action="likhtar_anniversary"]').length) {
+                list.append(menuItem('likhtar_anniversary', 'Річниці кіно',
+                    'M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z',
+                    function () {
+                        Lampa.Activity.push({ url: '', title: 'Річниці кіно', component: 'likhtar_anniversary', page: 1 });
+                    }));
+            }
+
+            if (isSettingEnabled('likhtar_section_chronology', true) && !$('[data-action="likhtar_chronology"]').length) {
+                list.append(menuItem('likhtar_chronology', 'Хронології',
+                    'M13 3a9 9 0 00-9 9H1l4 4 4-4H6a7 7 0 117 7v2a9 9 0 000-18zm-1 5v5l4 2 .7-1.2-3.2-1.9V8H12z',
+                    openChronologyMenu));
+            }
+        }
+
+        return {
+            init: function () {
+                Lampa.Component.add('likhtar_digital', DigitalComponent);
+                Lampa.Component.add('likhtar_anniversary', AnniversaryComponent);
+                Lampa.Component.add('likhtar_chronology', ChronologyComponent);
+
+                if (window.appready) addMenu();
+                else Lampa.Listener.follow('app', function (e) {
+                    if (e.type === 'ready') addMenu();
+                });
+            },
+            getDigitalDate: getDigitalDate
+        };
+    })();
+
+    // =================================================================
     // INIT FUNCTION
     // =================================================================
     function init() {
@@ -3038,6 +3516,7 @@
         Lampa.Component.add('ukrainian_feed', UkrainianFeedMain);
         LikhtarStudioSubscription.init();
         LikhtarFullCard.init();
+        LikhtarSections.init();
 
         addStyles();
 
