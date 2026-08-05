@@ -4212,7 +4212,7 @@
 
         // Розділи, які вже покриті власними кнопками або нічого не дають.
         // Без цього поруч стоять наші «Актори та автори» і рідні «Актори».
-        var SKIP_SECTIONS = /^(shots?|актори|акторський склад|у ролях|режисер|детально|деталі|cast|actors|director|details|description)$/i;
+        var SKIP_SECTIONS = /^(shots?|актори|акторський склад|у ролях|режисер|детально|деталі|cast|actors|director|details|description|сезон\s*\d+|season\s*\d+)$/i;
 
         var moved = [];        // що саме ми перенесли в панель — щоб повернути на місце
         var panel = null;
@@ -4502,7 +4502,7 @@
 
         function openSeasons(movie) {
             function render() {
-                fillPanel('Серії', 'Дати виходу за сезонами', function (body) {
+                fillPanel('Перелік серій', 'Дати виходу за сезонами', function (body) {
                     body.append('<div class="likhtar-panel__loading">Завантаження…</div>');
 
                     seasonsOf(movie, function (seasons) {
@@ -4542,7 +4542,7 @@
                 }, null);
             }
 
-            openPanel('Серії', 'Дати виходу за сезонами', function () { });
+            openPanel('Перелік серій', 'Дати виходу за сезонами', function () { });
             render();
         }
 
@@ -4611,7 +4611,7 @@
             }
 
             if (isSeries(movie) && !holder.find('.likhtar-module--seasons').length) {
-                holder.append(moduleButton('Серії', movie.number_of_seasons ? movie.number_of_seasons + ' сез.' : '',
+                holder.append(moduleButton('Перелік серій', movie.number_of_seasons ? movie.number_of_seasons + ' сез.' : '',
                     function () { openSeasons(movie); }).addClass('likhtar-module--seasons'));
             }
 
@@ -4803,7 +4803,18 @@
             var descr = scope.find('.full-descr__text').first();
             var details = hero.find('.full-start-new__details, .full-start__details').first();
             if (descr.length && details.length && !hero.find('.likhtar-card__descr').length) {
-                descr.clone().removeAttr('class').addClass('likhtar-card__descr').insertAfter(details);
+                var fullText = descr.text();
+                var short = descr.clone().removeAttr('class').addClass('likhtar-card__descr selector');
+
+                // На екрані опис обрізаний — повний текст відкривається панеллю
+                short.on('hover:enter click', function () {
+                    openPanel('Опис', '', function (body) {
+                        body.append($('<div class="likhtar-panel__text selector"></div>').text(fullText));
+                        refocusPanel();
+                    });
+                });
+
+                short.insertAfter(details);
             }
 
             buildMetrics(hero);
@@ -4843,19 +4854,49 @@
                 ' rgba(7,9,15,.55) 58%, rgba(7,9,15,.1) 85%, rgba(7,9,15,.05) 100%),' +
                 ' linear-gradient(to top, rgba(7,9,15,.95) 0%, rgba(7,9,15,.2) 40%, transparent 70%); }' +
 
-                /* Картка з метриками збоку */
-                '.likhtar-metrics { position: absolute; top: 0; right: 0; width: 19em;' +
-                ' background: rgba(12,14,20,.66); border: 1px solid rgba(255,255,255,.1);' +
-                ' border-radius: .9em; padding: 1em 1.1em; display: flex; flex-direction: column;' +
-                ' gap: .55em; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }' +
+                /* Бічна картка: три яруси, один янтарний акцент (макет 1a) */
+                '.likhtar-metrics { position: absolute; top: 0; right: 0; width: 21em;' +
+                ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
+                ' border-radius: 1.1em; padding: 1.15em 1.25em; display: flex; flex-direction: column;' +
+                ' gap: .8em; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }' +
                 '.likhtar-metrics > * { margin: 0 !important; }' +
-                '.likhtar-metrics .full-start-new__rate-line { flex-wrap: wrap; }' +
-                '.likhtar-metrics__facts { border-top: 1px solid rgba(255,255,255,.12);' +
-                ' padding-top: .6em; margin-top: .15em; display: flex; flex-direction: column; gap: .35em; }' +
-                '.likhtar-fact { display: flex; justify-content: space-between; gap: 1em;' +
-                ' font-size: .88em; }' +
-                '.likhtar-fact__name { opacity: .55; white-space: nowrap; }' +
-                '.likhtar-fact__value { text-align: right; }' +
+
+                /* Ярус 1: великий рейтинг, вік праворуч */
+                '.likhtar-metrics .full-start-new__rate-line { display: flex; align-items: flex-start;' +
+                ' flex-wrap: wrap; gap: .5em; }' +
+                '.likhtar-metrics .rate--tmdb { background: none !important; padding: 0 !important;' +
+                ' display: flex; align-items: baseline; gap: .45em; }' +
+                '.likhtar-metrics .rate--tmdb > div:first-child { font-size: 2.6em; font-weight: 800;' +
+                ' line-height: 1; letter-spacing: -.03em; color: #eec37a; }' +
+                '.likhtar-metrics .rate--tmdb .source--name { font-size: .72em; font-weight: 700;' +
+                ' letter-spacing: .16em; opacity: .45; }' +
+                '.likhtar-metrics .full-start__pg { margin-left: auto !important;' +
+                ' border: 1px solid rgba(255,255,255,.22) !important; background: none !important;' +
+                ' border-radius: .5em; font-weight: 700; opacity: .85; }' +
+
+                /* Ярус 2: статус і мітки — однакові тихі плашки */
+                '.likhtar-metrics .full-start__status, .likhtar-metrics .likhtar-full-badge {' +
+                ' background: rgba(255,255,255,.07) !important; border: none !important;' +
+                ' border-radius: .55em !important; padding: .3em .8em !important;' +
+                ' font-size: .82em !important; font-weight: 700; color: rgba(233,233,236,.82) !important; }' +
+                '.likhtar-metrics .full-start__status:before { content: ""; display: inline-block;' +
+                ' width: .5em; height: .5em; border-radius: 50%; background: #3fb46a; margin-right: .5em; }' +
+
+                /* Ярус 3: факти таблицею «назва — значення» */
+                '.likhtar-metrics .full-start-new__head, .likhtar-metrics .full-start-new__details' +
+                ' { font-size: .92em; opacity: .8; line-height: 1.5; }' +
+                '.likhtar-metrics__facts { border-top: 1px solid rgba(255,255,255,.08);' +
+                ' padding-top: .8em; display: grid; grid-template-columns: 6.5em 1fr; gap: .5em .9em; }' +
+                '.likhtar-fact { display: contents; }' +
+                '.likhtar-fact__name { font-size: .85em; color: rgba(233,233,236,.42); }' +
+                '.likhtar-fact__value { font-size: .92em; font-weight: 600; }' +
+
+                /* Акцентний блок: наступна серія */
+                '.likhtar-metrics .likhtar-info-line { border-top: 1px solid rgba(255,255,255,.08);' +
+                ' padding-top: .8em; display: flex; flex-direction: column; gap: .5em; }' +
+                '.likhtar-metrics .likhtar-chip { background: rgba(255,255,255,.07); font-size: .85em; }' +
+                '.likhtar-metrics .likhtar-chip--next { background: none; padding: 0; font-size: 1em;' +
+                ' font-weight: 800; color: #eec37a; }' +
                 'body.likhtar-card-on .full-start-new__left, body.likhtar-card-on .full-start__left' +
                 ' { display: none !important; }' +
                 'body.likhtar-card-on .full-start-new__right, body.likhtar-card-on .full-start__right' +
@@ -4869,21 +4910,27 @@
                 /* Рідна кнопка «Деталі» дублює нашу панель */
                 'body.likhtar-card-on .full-start__button.view--category,' +
                 ' body.likhtar-card-on .button--details { display: none !important; }' +
-                '.likhtar-card__descr { font-size: 1.02em; line-height: 1.5; max-width: 36em;' +
-                ' margin: .7em 0 .2em; padding: .75em .95em; border-radius: .8em;' +
-                ' background: rgba(12,14,20,.6); border: 1px solid rgba(255,255,255,.08);' +
-                ' backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);' +
+                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5; max-width: 36em;' +
+                ' margin: .8em 0 .2em; padding: 1em 1.2em; border-radius: 1em;' +
+                ' background: rgba(14,14,17,.5); border: 1px solid rgba(255,255,255,.07);' +
+                ' backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);' +
+                ' color: rgba(233,233,236,.78);' +
                 ' display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;' +
                 ' max-height: 7.2em; overflow: hidden; }' +
+                '.likhtar-card__descr.focus { border-color: rgba(255,255,255,.6);' +
+                ' background: rgba(20,22,28,.75); }' +
+                '.likhtar-panel__text { font-size: 1.05em; line-height: 1.6; padding: .6em;' +
+                ' color: rgba(233,233,236,.85); white-space: pre-line; border-radius: .6em; }' +
+                '.likhtar-panel__text.focus { background: rgba(255,255,255,.08); }' +
 
                 /* Кнопки розділів */
                 '.likhtar-modules { display: flex; flex-wrap: wrap; gap: .7em; margin-top: 1.2em;' +
                 ' position: relative; z-index: 1; }' +
                 '.likhtar-module { display: flex; align-items: center; gap: .6em;' +
-                ' background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.14);' +
-                ' border-radius: .8em; padding: .75em 1.1em; font-size: .95em; font-weight: 600; }' +
-                '.likhtar-module__count { background: rgba(255,255,255,.16); border-radius: .4em;' +
-                ' padding: 0 .5em; font-size: .85em; }' +
+                ' background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.08);' +
+                ' border-radius: .8em; padding: .75em 1.35em; font-size: .95em; font-weight: 600;' +
+                ' color: rgba(233,233,236,.85); }' +
+                '.likhtar-module__count { font-size: .85em; color: rgba(233,233,236,.45); }' +
                 '.likhtar-module.focus { background: #fff; color: #000; border-color: #fff; }' +
                 '.likhtar-module.focus .likhtar-module__count { background: rgba(0,0,0,.12); }' +
 
