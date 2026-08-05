@@ -2102,6 +2102,12 @@
 
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
+            param: { name: 'likhtar_new_card', type: 'trigger', default: true },
+            field: { name: 'Нова сторінка фільму', description: 'Уся інформація в один екран, а актори, коментарі й решта — за кнопками в бічній панелі. Вимкніть, щоб повернути звичайний вигляд Lampa.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
             param: { name: 'likhtar_show_logo_instead_text', type: 'trigger', default: true },
             field: { name: 'Логотип замість тексту', description: 'Завантажувати і показувати логотип фільму замість звичайної назви у повній картці та херо секції.' }
         });
@@ -4191,6 +4197,568 @@
     })();
 
     // =================================================================
+    // НОВИЙ ВИГЛЯД СТОРІНКИ ФІЛЬМУ
+    // =================================================================
+    /**
+     * Уся головна інформація в один екран, а довгі списки — за кнопками,
+     * що відкривають бічну панель.
+     *
+     * Свідомо не будуємо сторінку з нуля: беремо ту, що намалювала Lampa,
+     * і перебудовуємо. Секції не копіюємо, а переносимо — так у них
+     * лишаються живі обробники подій і працює навігація пультом.
+     */
+    var LikhtarCard = (function () {
+        var PANEL_CONTROLLER = 'likhtar_panel';
+
+        // Розділи, які й так живуть у власних кнопках або нічого не дають
+        var SKIP_SECTIONS = /^(shots|shot)$/i;
+
+        var moved = [];        // що саме ми перенесли в панель — щоб повернути на місце
+        var panel = null;
+        var panelBack = null;  // куди веде «Назад» усередині панелі (з епізодів — до сезонів)
+
+        function isEnabled() {
+            return isSettingEnabled('likhtar_new_card', true);
+        }
+
+        function personActivity(id, name) {
+            Lampa.Activity.push({
+                url: '',
+                title: name || Lampa.Lang.translate('title_person'),
+                component: 'actor',
+                id: id,
+                source: 'tmdb'
+            });
+        }
+
+        // ===== Бічна панель =====
+
+        function closePanel() {
+            if (!panel) return;
+
+            // Повертаємо перенесені блоки туди, звідки взяли
+            moved.forEach(function (item) {
+                item.node.detach().insertAfter(item.anchor);
+                item.node.addClass('likhtar-card__hidden');
+            });
+            moved = [];
+
+            panel.remove();
+            panel = null;
+            panelBack = null;
+
+            Lampa.Controller.toggle('full_start');
+        }
+
+        /** Перемальовує вміст відкритої панелі, не закриваючи її. */
+        function fillPanel(title, subtitle, fill, onBack) {
+            if (!panel) return;
+
+            panel.find('.likhtar-panel__title').text(title);
+            panel.find('.likhtar-panel__sub').text(subtitle || '');
+            panel.find('.likhtar-panel__hint').text(onBack ? 'Назад — до списку' : 'Назад — закрити панель');
+
+            var body = panel.find('.likhtar-panel__body').empty();
+            panelBack = onBack || null;
+            fill(body);
+
+            Lampa.Controller.toggle(PANEL_CONTROLLER);
+        }
+
+        function openPanel(title, subtitle, fill) {
+            closePanel();
+
+            panel = $('<div class="likhtar-panel">' +
+                '<div class="likhtar-panel__head"><div class="likhtar-panel__title"></div>' +
+                '<div class="likhtar-panel__sub"></div></div>' +
+                '<div class="likhtar-panel__body"></div>' +
+                '<div class="likhtar-panel__hint">Назад — закрити панель</div></div>');
+
+            panel.find('.likhtar-panel__title').text(title);
+            panel.find('.likhtar-panel__sub').text(subtitle || '');
+
+            fill(panel.find('.likhtar-panel__body'));
+            $('body').append(panel);
+
+            // Клас додаємо наступним кадром, інакше переходу не буде видно
+            setTimeout(function () { if (panel) panel.addClass('likhtar-panel--open'); }, 10);
+
+            Lampa.Controller.add(PANEL_CONTROLLER, {
+                toggle: function () {
+                    Lampa.Controller.collectionSet(panel[0]);
+                    Lampa.Controller.collectionFocus(false, panel[0]);
+                },
+                up: function () { Navigator.move('up'); },
+                down: function () { Navigator.move('down'); },
+                left: closePanel,
+                right: function () { },
+                back: function () {
+                    if (panelBack) panelBack();
+                    else closePanel();
+                }
+            });
+
+            Lampa.Controller.toggle(PANEL_CONTROLLER);
+        }
+
+        // ===== Актори та автори =====
+
+        function creditsList(movie, callback) {
+            var type = (movie.name || movie.first_air_date) ? 'tv' : 'movie';
+            var key = 'credits_' + type + '_' + movie.id;
+
+            var cached = LikhtarCache.get(key);
+            if (cached) return callback(cached);
+
+            var url = Lampa.TMDB.api(type + '/' + movie.id + '/credits?api_key=' + getTmdbKey() +
+                '&language=' + Lampa.Storage.get('language', 'uk'));
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var crew = (data && data.crew) || [];
+                var pick = function (job) {
+                    return crew.filter(function (p) { return p.job === job; }).slice(0, 3);
+                };
+
+                var result = {
+                    directors: pick('Director'),
+                    writers: pick('Screenplay').concat(pick('Writer')).slice(0, 3),
+                    cast: ((data && data.cast) || []).slice(0, 20)
+                };
+
+                LikhtarCache.set(key, result, LikhtarCache.TTL.WEEK);
+                callback(result);
+            }, function () {
+                callback(null);
+            });
+        }
+
+        function personRow(person, role) {
+            var row = $('<div class="likhtar-person selector">' +
+                '<div class="likhtar-person__ava"></div>' +
+                '<div class="likhtar-person__text"><div class="likhtar-person__name"></div>' +
+                '<div class="likhtar-person__role"></div></div>' +
+                '<div class="likhtar-person__chevron">›</div></div>');
+
+            row.find('.likhtar-person__name').text(person.name || '');
+            row.find('.likhtar-person__role').text(role || '');
+
+            var ava = row.find('.likhtar-person__ava');
+            if (person.profile_path) {
+                ava.css('background-image', 'url(' + Lampa.TMDB.image('t/p/w185' + person.profile_path) + ')');
+            } else {
+                // Без фото — ініціали: порожнє коло виглядає як помилка завантаження
+                ava.addClass('likhtar-person__ava--text').text((person.name || '?').charAt(0));
+            }
+
+            row.on('hover:enter click', function () { personActivity(person.id, person.name); });
+            return row;
+        }
+
+        function openCast(movie) {
+            openPanel('Актори та автори', 'Оберіть людину — відкриється її фільмографія', function (body) {
+                body.append('<div class="likhtar-panel__loading">Завантаження…</div>');
+
+                creditsList(movie, function (credits) {
+                    body.empty();
+
+                    if (!credits || (!credits.cast.length && !credits.directors.length)) {
+                        body.append('<div class="likhtar-panel__loading">Даних немає</div>');
+                        return;
+                    }
+
+                    function group(title, people, roleOf) {
+                        if (!people.length) return;
+                        body.append($('<div class="likhtar-panel__group"></div>').text(title));
+                        people.forEach(function (p) { body.append(personRow(p, roleOf(p))); });
+                    }
+
+                    group('Режисер', credits.directors, function () { return 'Режисер'; });
+                    group('Сценарій', credits.writers, function (p) { return p.job || 'Сценарій'; });
+                    group('У ролях', credits.cast, function (p) { return p.character || ''; });
+                });
+            });
+        }
+
+        // ===== Серії та дати виходу =====
+
+        function isSeries(movie) {
+            return !!(movie.name || movie.first_air_date || movie.number_of_seasons);
+        }
+
+        function seasonsOf(movie, callback) {
+            if (movie.seasons && movie.seasons.length) return callback(movie.seasons);
+
+            var key = 'seasons_' + movie.id;
+            var cached = LikhtarCache.get(key);
+            if (cached) return callback(cached);
+
+            var url = Lampa.TMDB.api('tv/' + movie.id + '?api_key=' + getTmdbKey() +
+                '&language=' + Lampa.Storage.get('language', 'uk'));
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var seasons = (data && data.seasons) || [];
+                LikhtarCache.set(key, seasons, LikhtarCache.TTL.DAY);
+                callback(seasons);
+            }, function () {
+                callback([]);
+            });
+        }
+
+        function episodesOf(movie, seasonNumber, callback) {
+            var key = 'episodes_' + movie.id + '_' + seasonNumber;
+            var cached = LikhtarCache.get(key);
+            if (cached) return callback(cached);
+
+            var url = Lampa.TMDB.api('tv/' + movie.id + '/season/' + seasonNumber +
+                '?api_key=' + getTmdbKey() + '&language=' + Lampa.Storage.get('language', 'uk'));
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var episodes = (data && data.episodes) || [];
+                // Сезон, що ще виходить, кешуємо ненадовго: дати уточнюються
+                var hasUpcoming = episodes.some(function (ep) {
+                    return ep.air_date && new Date(ep.air_date + 'T00:00:00') > new Date();
+                });
+                LikhtarCache.set(key, episodes, hasUpcoming ? LikhtarCache.TTL.DAY : LikhtarCache.TTL.WEEK);
+                callback(episodes);
+            }, function () {
+                callback([]);
+            });
+        }
+
+        function episodeDateLabel(iso) {
+            if (!iso) return { text: 'Дата невідома', mod: 'unknown' };
+
+            var air = new Date(iso + 'T00:00:00');
+            if (isNaN(air.getTime())) return { text: 'Дата невідома', mod: 'unknown' };
+
+            var today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            var days = Math.round((air - today) / 86400000);
+            var human = ('0' + air.getDate()).slice(-2) + '.' + ('0' + (air.getMonth() + 1)).slice(-2) + '.' + air.getFullYear();
+
+            if (days < 0) return { text: human, mod: 'aired' };
+            if (days === 0) return { text: 'сьогодні', mod: 'soon' };
+            if (days === 1) return { text: 'завтра', mod: 'soon' };
+            if (days < 7) return { text: 'через ' + days + ' дн.', mod: 'soon' };
+            return { text: human, mod: 'upcoming' };
+        }
+
+        function episodeRow(episode) {
+            var row = $('<div class="likhtar-episode">' +
+                '<div class="likhtar-episode__num"></div>' +
+                '<div class="likhtar-episode__text"><div class="likhtar-episode__name"></div>' +
+                '<div class="likhtar-episode__descr"></div></div>' +
+                '<div class="likhtar-episode__date"></div></div>');
+
+            row.find('.likhtar-episode__num').text(episode.episode_number || '?');
+            row.find('.likhtar-episode__name').text(episode.name || ('Серія ' + episode.episode_number));
+            row.find('.likhtar-episode__descr').text((episode.overview || '').substr(0, 90));
+
+            var date = episodeDateLabel(episode.air_date);
+            row.find('.likhtar-episode__date').text(date.text).addClass('likhtar-episode__date--' + date.mod);
+            row.addClass('likhtar-episode--' + date.mod);
+
+            return row;
+        }
+
+        function openEpisodes(movie, season, backToSeasons) {
+            fillPanel(season.name || ('Сезон ' + season.season_number), '', function (body) {
+                body.append('<div class="likhtar-panel__loading">Завантаження…</div>');
+
+                episodesOf(movie, season.season_number, function (episodes) {
+                    body.empty();
+
+                    if (!episodes.length) {
+                        body.append('<div class="likhtar-panel__loading">Серій не знайдено</div>');
+                        return;
+                    }
+
+                    var upcoming = episodes.filter(function (ep) {
+                        return ep.air_date && new Date(ep.air_date + 'T00:00:00') >= new Date().setHours(0, 0, 0, 0);
+                    });
+                    if (upcoming.length) {
+                        body.append($('<div class="likhtar-panel__group"></div>')
+                            .text('Попереду ще ' + upcoming.length + ' сер.'));
+                    }
+
+                    episodes.forEach(function (ep) { body.append(episodeRow(ep)); });
+                });
+            }, backToSeasons);
+        }
+
+        function openSeasons(movie) {
+            function render() {
+                fillPanel('Серії', 'Дати виходу за сезонами', function (body) {
+                    body.append('<div class="likhtar-panel__loading">Завантаження…</div>');
+
+                    seasonsOf(movie, function (seasons) {
+                        body.empty();
+
+                        // Нульовий сезон — це спецвипуски; у списку вони лише плутають
+                        var list = seasons.filter(function (s) { return s.season_number > 0; });
+                        if (!list.length) list = seasons;
+
+                        if (!list.length) {
+                            body.append('<div class="likhtar-panel__loading">Даних немає</div>');
+                            return;
+                        }
+
+                        list.forEach(function (season) {
+                            var row = $('<div class="likhtar-season selector">' +
+                                '<div class="likhtar-season__text"><div class="likhtar-season__name"></div>' +
+                                '<div class="likhtar-season__meta"></div></div>' +
+                                '<div class="likhtar-person__chevron">›</div></div>');
+
+                            row.find('.likhtar-season__name').text(season.name || ('Сезон ' + season.season_number));
+
+                            var meta = [];
+                            if (season.episode_count) meta.push(season.episode_count + ' сер.');
+                            if (season.air_date) meta.push(season.air_date.substr(0, 4));
+                            row.find('.likhtar-season__meta').text(meta.join(' • '));
+
+                            row.on('hover:enter click', function () {
+                                openEpisodes(movie, season, render);
+                            });
+
+                            body.append(row);
+                        });
+                    });
+                }, null);
+            }
+
+            openPanel('Серії', 'Дати виходу за сезонами', function () { });
+            render();
+        }
+
+        // ===== Секції Lampa, перенесені в панель =====
+
+        function openSection(title, node, anchor) {
+            openPanel(title, '', function (body) {
+                node.removeClass('likhtar-card__hidden');
+                node.detach().appendTo(body);
+                moved.push({ node: node, anchor: anchor });
+            });
+        }
+
+        // ===== Складання =====
+
+        function moduleButton(label, count, onEnter) {
+            var btn = $('<div class="likhtar-module selector"><span class="likhtar-module__name"></span></div>');
+            btn.find('.likhtar-module__name').text(label);
+
+            if (count) btn.append($('<span class="likhtar-module__count"></span>').text(count));
+            btn.on('hover:enter click', onEnter);
+
+            return btn;
+        }
+
+        /** Заголовок секції потрібен і для підпису кнопки, і щоб упізнати непотрібне. */
+        function sectionTitle(line) {
+            return $(line).find('.items-line__title').first().text().trim();
+        }
+
+        function buildModules($render, movie) {
+            var holder = $render.find('.likhtar-modules').first();
+
+            if (!holder.length) {
+                holder = $('<div class="likhtar-modules"></div>');
+                var after = $render.find('.full-start-new__buttons, .full-start__buttons').first();
+                if (!after.length) return null;
+                after.after(holder);
+            }
+
+            if (!holder.find('.likhtar-module--cast').length) {
+                holder.append(moduleButton('Актори та автори', '', function () { openCast(movie); })
+                    .addClass('likhtar-module--cast'));
+            }
+
+            if (isSeries(movie) && !holder.find('.likhtar-module--seasons').length) {
+                holder.append(moduleButton('Серії', movie.number_of_seasons ? movie.number_of_seasons + ' сез.' : '',
+                    function () { openSeasons(movie); }).addClass('likhtar-module--seasons'));
+            }
+
+            return holder;
+        }
+
+        /**
+         * Кнопки для решти секцій робимо з того, що Lampa вже намалювала:
+         * так у списку опиняються і коментарі, і колекція, і схоже — без
+         * припущень про те, які саме секції існують у цій збірці.
+         */
+        function collectSections($render, holder) {
+            $render.find('.items-line').each(function () {
+                var line = $(this);
+                if (line.data('likhtar-module')) return;
+
+                var title = sectionTitle(line);
+                if (!title || SKIP_SECTIONS.test(title)) return;
+
+                line.data('likhtar-module', true);
+                line.addClass('likhtar-card__hidden');
+
+                // Запам'ятовуємо сусіда, щоб повернути секцію рівно на її місце
+                var anchor = $('<div class="likhtar-card__anchor"></div>');
+                anchor.insertBefore(line);
+
+                holder.append(moduleButton(title, '', function () {
+                    openSection(title, line, anchor);
+                }));
+            });
+        }
+
+        function apply(movie, renderEl) {
+            if (!isEnabled() || !movie || !renderEl) return;
+
+            var $render = $(renderEl);
+            var start = $render.find('.full-start-new, .full-start').first();
+            if (!start.length) return;
+
+            $render.addClass('likhtar-card');
+
+            // Кадр із фільму замість глухого фону — головна відмінність нового вигляду
+            if (movie.backdrop_path && !start.find('.likhtar-card__bg').length) {
+                var bg = $('<div class="likhtar-card__bg"></div>');
+                bg.css('background-image', 'url(' + Lampa.TMDB.image('t/p/w1280' + movie.backdrop_path) + ')');
+                start.prepend($('<div class="likhtar-card__bgwrap"></div>').append(bg));
+            }
+
+            // Опис живе окремим блоком нижче — піднімаємо його в перший екран
+            var descr = $render.find('.full-descr__text').first();
+            var details = $render.find('.full-start-new__details, .full-start__details').first();
+            if (descr.length && details.length && !$render.find('.likhtar-card__descr').length) {
+                descr.clone().removeClass().addClass('likhtar-card__descr').insertAfter(details);
+            }
+
+            var holder = buildModules($render, movie);
+            if (!holder) return;
+
+            $render.find('.full-descr').addClass('likhtar-card__hidden');
+            collectSections($render, holder);
+
+            // Секції довантажуються по черзі — переглядаємо ще кілька разів
+            [700, 1800, 3500].forEach(function (delay) {
+                setTimeout(function () {
+                    try {
+                        if ($render.closest('body').length) collectSections($render, holder);
+                    } catch (e) { }
+                }, delay);
+            });
+        }
+
+        function addStyles() {
+            if ($('style#likhtar-card-css').length) return;
+
+            $('head').append('<style id="likhtar-card-css">' +
+                '.likhtar-card__hidden { display: none !important; }' +
+                '.likhtar-card__anchor { display: none; }' +
+
+                /* Герой */
+                '.likhtar-card .full-start-new__body { position: relative; min-height: 26em; }' +
+                '.likhtar-card__bgwrap { position: absolute; top: -3em; right: -3em; bottom: 0; left: 0;' +
+                ' overflow: hidden; border-radius: 0 0 1em 1em; pointer-events: none; }' +
+                '.likhtar-card__bg { position: absolute; inset: 0; background-size: cover;' +
+                ' background-position: center 20%; }' +
+                '.likhtar-card__bgwrap:after { content: ""; position: absolute; inset: 0;' +
+                ' background: linear-gradient(100deg, rgba(7,9,15,.97) 0%, rgba(7,9,15,.9) 32%,' +
+                ' rgba(7,9,15,.5) 58%, rgba(7,9,15,.05) 85%, transparent 100%); }' +
+                '.likhtar-card .full-start-new__left { display: none; }' +
+                '.likhtar-card .full-start-new__right { position: relative; z-index: 1; max-width: 64%; }' +
+                '.likhtar-card__descr { font-size: 1.05em; line-height: 1.5; opacity: .85; max-width: 40em;' +
+                ' margin: .6em 0 .2em; display: -webkit-box; -webkit-line-clamp: 2;' +
+                ' -webkit-box-orient: vertical; overflow: hidden; }' +
+
+                /* Кнопки розділів */
+                '.likhtar-modules { display: flex; flex-wrap: wrap; gap: .7em; margin-top: 1.2em;' +
+                ' position: relative; z-index: 1; }' +
+                '.likhtar-module { display: flex; align-items: center; gap: .6em;' +
+                ' background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.14);' +
+                ' border-radius: .8em; padding: .75em 1.1em; font-size: .95em; font-weight: 600; }' +
+                '.likhtar-module__count { background: rgba(255,255,255,.16); border-radius: .4em;' +
+                ' padding: 0 .5em; font-size: .85em; }' +
+                '.likhtar-module.focus { background: #fff; color: #000; border-color: #fff; }' +
+                '.likhtar-module.focus .likhtar-module__count { background: rgba(0,0,0,.12); }' +
+
+                /* Панель */
+                '.likhtar-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 30em; z-index: 90;' +
+                ' background: rgba(10,12,18,.96); border-left: 1px solid rgba(255,255,255,.1);' +
+                ' display: flex; flex-direction: column; transform: translateX(100%);' +
+                ' transition: transform .2s ease-out; }' +
+                '.likhtar-panel--open { transform: none; }' +
+                '.likhtar-panel__head { padding: 1.4em 1.4em .4em; }' +
+                '.likhtar-panel__title { font-size: 1.4em; font-weight: 600; }' +
+                '.likhtar-panel__sub { font-size: .85em; opacity: .5; margin-top: .2em; }' +
+                '.likhtar-panel__body { flex: 1; overflow: auto; padding: .6em 1em 1em; }' +
+                '.likhtar-panel__hint { padding: .8em 1.4em; font-size: .8em; opacity: .45;' +
+                ' border-top: 1px solid rgba(255,255,255,.08); }' +
+                '.likhtar-panel__group { font-size: .72em; letter-spacing: .14em; text-transform: uppercase;' +
+                ' opacity: .45; padding: 1em .6em .4em; }' +
+                '.likhtar-panel__loading { padding: 1em .6em; opacity: .6; }' +
+
+                /* Людина */
+                '.likhtar-person { display: flex; align-items: center; gap: .9em; padding: .6em;' +
+                ' border-radius: .7em; }' +
+                '.likhtar-person.focus { background: rgba(255,255,255,.16); }' +
+                '.likhtar-person__ava { width: 3.2em; height: 3.2em; border-radius: 50%; flex: 0 0 auto;' +
+                ' background: #2a3450 center/cover no-repeat; display: flex; align-items: center;' +
+                ' justify-content: center; font-weight: 700; }' +
+                '.likhtar-person__name { font-weight: 600; }' +
+                '.likhtar-person__role { font-size: .85em; opacity: .55; }' +
+                '.likhtar-person__chevron { margin-left: auto; opacity: .35; font-size: 1.4em; }' +
+
+                /* Сезони та серії */
+                '.likhtar-season { display: flex; align-items: center; gap: .9em; padding: .8em .6em;' +
+                ' border-radius: .7em; }' +
+                '.likhtar-season.focus { background: rgba(255,255,255,.16); }' +
+                '.likhtar-season__name { font-weight: 600; }' +
+                '.likhtar-season__meta { font-size: .85em; opacity: .55; }' +
+                '.likhtar-episode { display: flex; align-items: flex-start; gap: .8em; padding: .6em;' +
+                ' border-radius: .6em; }' +
+                '.likhtar-episode__num { flex: 0 0 1.8em; text-align: center; font-weight: 700; opacity: .5; }' +
+                '.likhtar-episode__text { flex: 1; min-width: 0; }' +
+                '.likhtar-episode__name { font-weight: 600; font-size: .95em; }' +
+                '.likhtar-episode__descr { font-size: .8em; opacity: .5; overflow: hidden;' +
+                ' text-overflow: ellipsis; white-space: nowrap; }' +
+                '.likhtar-episode__date { flex: 0 0 auto; font-size: .8em; padding: .2em .55em;' +
+                ' border-radius: .4em; background: rgba(255,255,255,.1); }' +
+                /* Те, що вже вийшло, притлумлюємо; те, що попереду, підсвічуємо */
+                '.likhtar-episode--aired { opacity: .55; }' +
+                '.likhtar-episode__date--soon { background: linear-gradient(135deg,#0057b7,#0072e8); }' +
+                '.likhtar-episode__date--upcoming { background: rgba(46,160,67,.8); }' +
+                '.likhtar-episode__date--unknown { opacity: .5; }' +
+
+                /* Перенесена секція має вміщатись у вужчу панель */
+                '.likhtar-panel .items-line { margin: 0; }' +
+                '.likhtar-panel .items-line__title { font-size: 1em; }' +
+                '</style>');
+        }
+
+        return {
+            init: function () {
+                addStyles();
+
+                if (!Lampa.Listener || !Lampa.Listener.follow) return;
+                Lampa.Listener.follow('full', function (e) {
+                    if (e.type !== 'complite') return;
+
+                    try {
+                        var movie = e.data && e.data.movie;
+                        var renderEl = e.object && e.object.activity && e.object.activity.render && e.object.activity.render();
+                        apply(movie, renderEl);
+                    } catch (err) {
+                        console.log('Ліхтар: не вдалося перебудувати картку', err);
+                    }
+                });
+
+                // Виходячи зі сторінки, панель треба прибрати за собою
+                Lampa.Listener.follow('activity', function (e) {
+                    if (e.type === 'archive' || e.type === 'destroy') closePanel();
+                });
+            }
+        };
+    })();
+
+    // =================================================================
     // ЛІХТАРИК: ВІЛЬНИЙ ЗАПИТ ДО МОДЕЛІ
     // =================================================================
     /**
@@ -4484,6 +5052,7 @@
         LikhtarAssistant.init();
         LikhtarPairing.init();
         LikhtarRoulette.init();
+        LikhtarCard.init();
 
         addStyles();
 
@@ -4879,8 +5448,12 @@
             // Co-existence guard: if QualityUA.js is active, skip our badge injection
             if ($('.quality-badges-container').length) return;
 
-            // Detect layout: try to find poster
-            var poster = $render.find('.full-start__poster, .full-start-new__poster').first();
+            // Detect layout: try to find poster.
+            // У новому вигляді постера на сторінці немає — мітки мають лягти
+            // в рядок фактів, інакше вони поїхали б у прихований блок.
+            var poster = isSettingEnabled('likhtar_new_card', true)
+                ? $()
+                : $render.find('.full-start__poster, .full-start-new__poster').first();
 
             if (poster.length) {
                 // ── REGULAR CARD: overlay badges on the poster image (top-left) ──────

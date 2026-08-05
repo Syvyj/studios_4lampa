@@ -13,6 +13,8 @@
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
+    "jquery": "^4.0.0",
+    "jsdom": "^30.0.1",
     "jsqr": "^1.4.0"
   }
 }
