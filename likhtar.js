@@ -195,6 +195,109 @@
     /** Для рядка на головній: HBO/Prime/Paramount через watch_providers (TMDB), щоб отримувати і фільми, і серіали з актуальним контентом. */
     var SERVICE_WATCH_PROVIDERS_FOR_ROW = { hbo: '384', amazon: '119', paramount: '531' };
 
+    /**
+     * Спільний кеш плагіна: один запис у сховищі замість тисячі окремих ключів.
+     *
+     * Раніше кожен фільм створював власний ключ у Lampa.Storage, і за кілька
+     * місяців користування localStorage телевізора забивався під зав'язку —
+     * а він там маленький і спільний з налаштуваннями самої Lampa.
+     * Тут усе лежить в одному об'єкті з терміном придатності та обмеженням
+     * на кількість записів: найстаріші витісняються, як в LRU.
+     */
+    var LikhtarCache = (function () {
+        var STORE_KEY = 'likhtar_cache_v1';
+        var MAX_ENTRIES = 600;
+        var SAVE_DELAY = 2000;
+
+        var mem = null;
+        var saveTimer = null;
+
+        function load() {
+            if (mem) return mem;
+            try {
+                var raw = Lampa.Storage.get(STORE_KEY, '{}');
+                mem = typeof raw === 'string' ? JSON.parse(raw) : (raw || {});
+            } catch (e) {
+                mem = {};
+            }
+            return mem;
+        }
+
+        /** Пишемо пачкою: під час скролу картки сиплються десятками, і запис на кожну гальмував би ТБ. */
+        function scheduleSave() {
+            if (saveTimer) clearTimeout(saveTimer);
+            saveTimer = setTimeout(function () {
+                saveTimer = null;
+                try { Lampa.Storage.set(STORE_KEY, mem); } catch (e) { }
+            }, SAVE_DELAY);
+        }
+
+        /** Спершу викидаємо протерміноване, і лише якщо не допомогло — найдавніше вживане. */
+        function prune(store) {
+            var keys = Object.keys(store);
+            if (keys.length <= MAX_ENTRIES) return;
+
+            var now = Date.now();
+            keys.forEach(function (k) {
+                if (store[k].e && now > store[k].e) delete store[k];
+            });
+
+            keys = Object.keys(store);
+            if (keys.length <= MAX_ENTRIES) return;
+
+            keys.sort(function (a, b) { return (store[a].t || 0) - (store[b].t || 0); })
+                .slice(0, keys.length - MAX_ENTRIES)
+                .forEach(function (k) { delete store[k]; });
+        }
+
+        return {
+            get: function (key) {
+                var store = load();
+                var rec = store[key];
+                if (!rec) return undefined;
+
+                if (rec.e && Date.now() > rec.e) {
+                    delete store[key];
+                    return undefined;
+                }
+
+                rec.t = Date.now();
+                return rec.v;
+            },
+
+            set: function (key, value, ttlMs) {
+                var store = load();
+                store[key] = { v: value, e: ttlMs ? Date.now() + ttlMs : 0, t: Date.now() };
+                prune(store);
+                scheduleSave();
+            },
+
+            /** Прибирає кеш попередніх версій — по ключу на фільм. */
+            migrate: function () {
+                if (Lampa.Storage.get('likhtar_cache_migrated', false)) return;
+
+                try {
+                    var stale = [];
+                    for (var i = 0; i < localStorage.length; i++) {
+                        var key = localStorage.key(i);
+                        if (key && key.indexOf('jacred_v4_') === 0) stale.push(key);
+                    }
+                    stale.forEach(function (key) { localStorage.removeItem(key); });
+                    if (stale.length) console.log('Ліхтар: прибрано ' + stale.length + ' застарілих записів кешу');
+                } catch (e) { }
+
+                Lampa.Storage.set('likhtar_cache_migrated', true);
+            },
+
+            TTL: {
+                HOUR: 60 * 60 * 1000,
+                DAY: 24 * 60 * 60 * 1000,
+                WEEK: 7 * 24 * 60 * 60 * 1000,
+                MONTH: 30 * 24 * 60 * 60 * 1000
+            }
+        };
+    })();
+
     // =================================================================
     // UTILS & COMPONENTS
     // =================================================================
@@ -312,11 +415,20 @@
                 }
             }
 
+            // Логотипи не змінюються місяцями — тримаємо їх між сеансами, щоб не ганяти TMDB щоразу
+            var stored = LikhtarCache.get('logo_' + key);
+            if (stored) {
+                window.LikhtarHeroLogos[key] = stored;
+                return callback(stored.fail ? null : stored);
+            }
+
             var pending = { fetching: true, waiting: [] };
             window.LikhtarHeroLogos[key] = pending;
 
             function resolve(result) {
-                window.LikhtarHeroLogos[key] = result || { fail: true };
+                var record = result || { fail: true };
+                window.LikhtarHeroLogos[key] = record;
+                LikhtarCache.set('logo_' + key, record, LikhtarCache.TTL.MONTH);
                 callback(result);
                 pending.waiting.forEach(function (cb) { cb(result); });
             }
@@ -402,6 +514,14 @@
             return;
         }
 
+        var detailsKey = 'herodet_' + (movie.name ? 'tv' : 'movie') + '_' + movie.id;
+        var storedDetails = LikhtarCache.get(detailsKey);
+        if (storedDetails) {
+            window.LikhtarHeroDetails[movie.id] = storedDetails;
+            renderDetails(storedDetails);
+            return;
+        }
+
         var type = movie.name ? 'tv' : 'movie';
         var lang = Lampa.Storage.get('language', 'uk');
         var append = type === 'movie' ? 'release_dates' : 'content_ratings';
@@ -439,6 +559,7 @@
             if (!details.age) details.age = ''; // Fallback
 
             window.LikhtarHeroDetails[movie.id] = details;
+            LikhtarCache.set(detailsKey, details, LikhtarCache.TTL.WEEK);
             renderDetails(details);
         });
     }
@@ -1099,6 +1220,22 @@
         // Перевірка нового контенту за останні 7 днів
         function checkNewContent(studio, cardElement) {
             if (!studio.providerId && !studio.networkId) return;
+
+            function showBadge() {
+                if (!cardElement.find('.studio-new-badge').length) {
+                    cardElement.find('.card__view').append('<div class="studio-new-badge">NEW</div>');
+                }
+            }
+
+            // Новинки за тиждень не з'являються щохвилини — година кешу економить
+            // два запити на кожен сервіс при кожному відкритті головної.
+            var cacheKey = 'studio_new_' + (studio.providerId || 'n' + studio.networkId);
+            var cached = LikhtarCache.get(cacheKey);
+            if (cached !== undefined) {
+                if (cached) showBadge();
+                return;
+            }
+
             var d = new Date();
             var today = [d.getFullYear(), ('0' + (d.getMonth() + 1)).slice(-2), ('0' + d.getDate()).slice(-2)].join('-');
             var weekAgo = new Date(d.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -1113,18 +1250,21 @@
 
             var url = Lampa.TMDB.api('discover/movie?' + apiKey + '&sort_by=primary_release_date.desc&primary_release_date.gte=' + weekAgoStr + '&primary_release_date.lte=' + today + '&vote_count.gte=1' + filter);
 
+            function remember(hasNew) {
+                LikhtarCache.set(cacheKey, hasNew, LikhtarCache.TTL.HOUR);
+                if (hasNew) showBadge();
+            }
+
             var network = new Lampa.Reguest();
             network.timeout(5000);
             network.silent(url, function (json) {
                 if (json.results && json.results.length > 0) {
-                    cardElement.find('.card__view').append('<div class="studio-new-badge">NEW</div>');
+                    remember(true);
                 } else {
                     // Спробуємо TV
                     var urlTV = Lampa.TMDB.api('discover/tv?' + apiKey + '&sort_by=first_air_date.desc&first_air_date.gte=' + weekAgoStr + '&first_air_date.lte=' + today + '&vote_count.gte=1' + filter);
                     network.silent(urlTV, function (json2) {
-                        if (json2.results && json2.results.length > 0) {
-                            cardElement.find('.card__view').append('<div class="studio-new-badge">NEW</div>');
-                        }
+                        remember(!!(json2.results && json2.results.length > 0));
                     });
                 }
             });
@@ -2839,9 +2979,9 @@
                 '.likhtar-chip--time { background: rgba(255,255,255,0.14); }' +
                 '.likhtar-full-button span { margin-left: 0.6em; }' +
                 /* Кольоровий рейтинг: зелений/жовтий/червоний читається з дивана швидше за цифру */
-                '.card__mark--rating.likhtar-rating--high { background: rgba(46,160,67,0.9); }' +
-                '.card__mark--rating.likhtar-rating--mid { background: rgba(210,153,34,0.9); }' +
-                '.card__mark--rating.likhtar-rating--low { background: rgba(218,54,51,0.9); }' +
+                '.card__mark--rating.likhtar-rating--high { background: linear-gradient(135deg,#1b5e20,#2ea043); color: #fff; border-color: rgba(46,160,67,0.4); }' +
+                '.card__mark--rating.likhtar-rating--mid { background: linear-gradient(135deg,#7a4f01,#d29922); color: #fff; border-color: rgba(210,153,34,0.4); }' +
+                '.card__mark--rating.likhtar-rating--low { background: linear-gradient(135deg,#6e1b1b,#da3633); color: #fff; border-color: rgba(218,54,51,0.4); }' +
                 '</style>');
         }
 
@@ -2886,6 +3026,9 @@
     // INIT FUNCTION
     // =================================================================
     function init() {
+        // Прибираємо кеш старого формату, поки він не з'їв усе сховище телевізора
+        LikhtarCache.migrate();
+
         // Settings panel
         setupSettings();
 
@@ -2981,17 +3124,15 @@
         }
 
         function getBestJacred(card, callback) {
-            var cacheKey = 'jacred_v4_' + card.id;
+            var cacheKey = 'jacred_' + card.id;
 
             if (_jacredCache[cacheKey]) return callback(_jacredCache[cacheKey]);
 
-            try {
-                var raw = Lampa.Storage.get(cacheKey, '');
-                if (raw && typeof raw === 'object' && raw._ts && (Date.now() - raw._ts < 48 * 60 * 60 * 1000)) {
-                    _jacredCache[cacheKey] = raw;
-                    return callback(raw);
-                }
-            } catch (e) { }
+            var stored = LikhtarCache.get(cacheKey);
+            if (stored) {
+                _jacredCache[cacheKey] = stored;
+                return callback(stored);
+            }
 
             var title = (card.original_title || card.title || card.name || '').toLowerCase();
             var year = (card.release_date || card.first_air_date || '').substr(0, 4);
@@ -3016,9 +3157,10 @@
                     var results = Array.isArray(parsed) ? parsed : (parsed.Results || []);
 
                     if (!results.length) {
-                        var emptyData = { empty: true, _ts: Date.now() };
+                        var emptyData = { empty: true };
                         _jacredCache[cacheKey] = emptyData;
-                        try { Lampa.Storage.set(cacheKey, emptyData); } catch (e) { }
+                        // Порожній результат кешуємо ненадовго: реліз може з'явитися будь-коли
+                        LikhtarCache.set(cacheKey, emptyData, LikhtarCache.TTL.DAY);
                         return callback(null);
                     }
 
@@ -3072,10 +3214,9 @@
                     var finalBest = bestGlobal.ukr ? bestUkr : bestGlobal;
                     if (card.original_language === 'en') finalBest.eng = true;
 
-                    finalBest._ts = Date.now();
                     finalBest.empty = false;
                     _jacredCache[cacheKey] = finalBest;
-                    try { Lampa.Storage.set(cacheKey, finalBest); } catch (e) { }
+                    LikhtarCache.set(cacheKey, finalBest, 2 * LikhtarCache.TTL.DAY);
                     callback(finalBest);
 
                 } catch (e) {
@@ -3135,26 +3276,55 @@
             });
         }
 
-        function processCards() {
-            $('.card:not(.jacred-mark-processed-v3)').each(function () {
-                var card = $(this);
-                card.addClass('jacred-mark-processed-v3');
+        /** Позначає картку обробленою і навішує мітки; викликається лише для видимих. */
+        function markCard(cardEl) {
+            var card = $(cardEl);
+            if (card.hasClass('jacred-mark-done')) return;
+            card.addClass('jacred-mark-done');
 
-                var movie = card[0].heroMovieData || card.data('item') || (card[0] && (card[0].card_data || card[0].item)) || null;
-                if (movie && movie.id && !movie.size) {
-                    if (card.hasClass('hero-banner')) {
-                        addMarksToContainer(card, movie, null);
-                    } else {
-                        addMarksToContainer(card, movie, '.card__view');
-                    }
-                }
+            var movie = cardEl.heroMovieData || card.data('item') || cardEl.card_data || cardEl.item || null;
+            if (!movie || !movie.id || movie.size) return;
+
+            addMarksToContainer(card, movie, card.hasClass('hero-banner') ? null : '.card__view');
+        }
+
+        /**
+         * Мітки рахуються тільки для карток, які реально потрапили на екран.
+         * У рядку може бути 100 карток, а видно 6 — решта не варта ні запитів, ні роботи.
+         */
+        var visibilityWatcher = (function () {
+            if (typeof IntersectionObserver === 'undefined') return null;
+
+            return new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    visibilityWatcher.unobserve(entry.target);
+                    markCard(entry.target);
+                });
+            }, { rootMargin: '300px' });   // трохи наперед, щоб мітки встигали з'явитись до підходу фокуса
+        })();
+
+        function processCards() {
+            $('.card:not(.jacred-mark-seen)').each(function () {
+                $(this).addClass('jacred-mark-seen');
+                if (visibilityWatcher) visibilityWatcher.observe(this);
+                else markCard(this);   // старі ТВ без IntersectionObserver — як раніше, одразу
             });
         }
 
         function observeCardRows() {
+            var timer = null;
+
+            // Lampa сипле мутаціями пачками (особливо під час скролу) — реагуємо один раз
+            // після паузи, інакше обхід усіх карток запускається десятки разів поспіль.
             var observer = new MutationObserver(function () {
-                processCards();
+                if (timer) return;
+                timer = setTimeout(function () {
+                    timer = null;
+                    processCards();
+                }, 250);
             });
+
             var target = document.getElementById('app') || document.body;
             observer.observe(target, { childList: true, subtree: true });
             processCards();
@@ -3520,7 +3690,7 @@
             .card__mark--rating { background: linear-gradient(135deg, #1a1a2e, #16213e); color: #ffd700; border-color: rgba(255,215,0,0.3); font-size: 0.75em; white-space: nowrap; }
             .card__mark--rating .mark-star { margin-right: 0.15em; font-size: 0.9em; }
 
-            .card.jacred-mark-processed-v3 .card__vote { display: none !important; }
+            .card.jacred-mark-seen .card__vote { display: none !important; }
 
             .hero-banner .card-marks {
                 top: 1.5em !important;
