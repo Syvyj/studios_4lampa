@@ -215,6 +215,135 @@ async function proxy(request) {
     return response;
 }
 
+// ==== Якість релізів (JacRed) ====
+
+const JACRED_URL = 'https://jr.maxvol.pro/api/v1.0/torrents';
+const QUALITY_TTL_SECONDS = 2 * 24 * 60 * 60;
+const QUALITY_MAX_ITEMS = 100;
+const QUALITY_CONCURRENCY = 6;
+
+const RESOLUTION_ORDER = ['SD', 'HD', 'FHD', '2K', '4K'];
+
+// Позначки мови шукаємо як окремі слова. Простий пошук підрядка «ua» ловить
+// Squad, Quality, Aqua, а «eng» — Avenger, і тоді UA-мітка стоїть майже скрізь.
+// «uk» свідомо не беремо: у назвах роздач це зазвичай Велика Британія.
+const UKRAINIAN_MARK = /(^|[^a-z])(ua|ukr|ukrainian)([^a-z]|$)|укр/i;
+const ENGLISH_MARK = /(^|[^a-z])(eng|english|multi)([^a-z]|$)/i;
+
+/** Витягує якість і мову з назви роздачі — інших джерел цієї інформації немає. */
+function parseTorrentTitle(title) {
+    const raw = String(title || '');
+    const t = raw.toLowerCase();
+
+    let resolution = 'SD';
+    if (t.includes('4k') || t.includes('2160') || t.includes('uhd')) resolution = '4K';
+    else if (t.includes('2k') || t.includes('1440')) resolution = '2K';
+    else if (t.includes('1080') || t.includes('fhd') || t.includes('full hd')) resolution = 'FHD';
+    else if (t.includes('720') || t.includes('hd')) resolution = 'HD';
+
+    const ukr = UKRAINIAN_MARK.test(raw);
+    const eng = ENGLISH_MARK.test(raw);
+    const dolbyVision = t.includes('dolby vision') || t.includes('dolbyvision');
+    const hdr = dolbyVision || t.includes('hdr');
+
+    return { resolution, ukr, eng, hdr, dolbyVision };
+}
+
+/**
+ * Найкраще, що є для фільму. Правило те саме, що в плагіні: якщо існує
+ * українська доріжка, показники беремо тільки з українських роздач —
+ * інакше обіцяли б 4K, якого українською немає.
+ */
+function bestRelease(results) {
+    const best = { resolution: 'SD', ukr: false, eng: false, hdr: false, dolbyVision: false };
+    const bestUkr = { resolution: 'SD', ukr: true, eng: false, hdr: false, dolbyVision: false };
+    let hasUkr = false;
+
+    for (const item of results) {
+        const info = parseTorrentTitle(item && item.title);
+        const rank = RESOLUTION_ORDER.indexOf(info.resolution);
+
+        if (rank > RESOLUTION_ORDER.indexOf(best.resolution)) {
+            best.resolution = info.resolution;
+            best.hdr = info.hdr;
+            best.dolbyVision = info.dolbyVision;
+        }
+        if (info.eng) best.eng = true;
+
+        if (!info.ukr) continue;
+        hasUkr = true;
+        if (rank > RESOLUTION_ORDER.indexOf(bestUkr.resolution)) {
+            bestUkr.resolution = info.resolution;
+            bestUkr.hdr = info.hdr;
+            bestUkr.dolbyVision = info.dolbyVision;
+        }
+        if (info.eng) bestUkr.eng = true;
+    }
+
+    return hasUkr ? bestUkr : best;
+}
+
+async function lookupQuality(item, store) {
+    const key = 'quality:' + item.id;
+
+    const cached = await store.get(key);
+    if (cached) return JSON.parse(cached);
+
+    const url = JACRED_URL + '?search=' + encodeURIComponent(item.title || '') +
+        (item.year ? '&year=' + encodeURIComponent(item.year) : '');
+
+    let parsed = { resolution: 'SD', ukr: false, hdr: false, dolbyVision: false, empty: true };
+
+    try {
+        const response = await fetch(url, { cf: { cacheTtl: QUALITY_TTL_SECONDS, cacheEverything: true } });
+        if (response.ok) {
+            const data = await response.json();
+            const results = Array.isArray(data) ? data : (data.Results || []);
+            if (results.length) parsed = Object.assign(bestRelease(results), { empty: false });
+        }
+    } catch (e) {
+        // Джерело не відповіло — не кешуємо, щоб спробувати ще раз наступного разу
+        return parsed;
+    }
+
+    await store.put(key, JSON.stringify(parsed), { expirationTtl: QUALITY_TTL_SECONDS });
+    return parsed;
+}
+
+/**
+ * Пакетна перевірка якості. Сенс у тому, щоб телевізор не робив сотню
+ * повільних запитів через проксі: сервер зробить їх швидше, а результат
+ * осяде в кеші й дістанеться всім користувачам одразу.
+ */
+async function quality(request, env) {
+    let items;
+    try {
+        const body = await request.json();
+        items = body && body.items;
+    } catch (e) {
+        return json({ error: 'bad_json' }, 400);
+    }
+
+    if (!Array.isArray(items) || !items.length) return json({ error: 'no_items' }, 400);
+    if (items.length > QUALITY_MAX_ITEMS) return json({ error: 'too_many', max: QUALITY_MAX_ITEMS }, 413);
+
+    const store = storage(env);
+    const results = {};
+    const queue = items.slice();
+
+    async function worker() {
+        while (queue.length) {
+            const item = queue.shift();
+            if (!item || !item.id) continue;
+            results[item.id] = await lookupQuality(item, store);
+        }
+    }
+
+    await Promise.all(Array.from({ length: Math.min(QUALITY_CONCURRENCY, items.length) }, worker));
+
+    return json({ results });
+}
+
 /** QR для екрана телевізора: SVG масштабується без розмиття на будь-якій діагоналі. */
 async function qr(text) {
     if (!text) return json({ error: 'no_text' }, 400);
@@ -266,6 +395,10 @@ export default {
 
         if (path === '/api/qr' && request.method === 'GET') {
             return qr(url.searchParams.get('text'));
+        }
+
+        if (path === '/api/quality' && request.method === 'POST') {
+            return quality(request, env);
         }
 
         if (path === '/config') {

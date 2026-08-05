@@ -2074,6 +2074,12 @@
             field: { name: 'Хронології', description: 'Порядок перегляду всесвітів за подіями, а не за датою виходу. Потрібен перезапуск.' }
         });
 
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_section_4k', type: 'trigger', default: true },
+            field: { name: '4K українською', description: 'Фільми, що існують і в 4K, і з українською доріжкою. Потрібна адреса сервера — перебір робить він. Потрібен перезапуск.' }
+        });
+
         // === Мітки якості та озвучки ===
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
@@ -3513,6 +3519,96 @@
             });
         }
 
+        // ===== 4K українською =====
+
+        /**
+         * Розділ, якого немає більше ніде: фільми, що існують і в 4K, і з
+         * українською доріжкою. JacRed не вміє шукати за такою умовою —
+         * можна лише питати про конкретні назви, тож перебираємо популярне.
+         * Перебір робить сервер: телевізору сотня запитів через проксі
+         * коштувала б хвилин очікування.
+         */
+        function UltraHdComponent(object) {
+            var comp = new Lampa.InteractionMain(object);
+            var network = new Lampa.Reguest();
+            var PAGES = 3;
+
+            comp.create = function () {
+                var _this = this;
+                this.activity.loader(true);
+
+                var collected = [];
+                var pending = PAGES;
+
+                for (var page = 1; page <= PAGES; page++) {
+                    var url = Lampa.TMDB.api('discover/movie?' + apiKeyParams() +
+                        '&sort_by=popularity.desc&vote_count.gte=200&page=' + page);
+
+                    network.silent(url, function (json) {
+                        (json && json.results ? json.results : []).forEach(function (item) {
+                            if (!item.poster_path && item.backdrop_path) item.poster_path = item.backdrop_path;
+                            collected.push(item);
+                        });
+                        if (--pending === 0) checkQuality();
+                    }, function () {
+                        if (--pending === 0) checkQuality();
+                    });
+                }
+
+                function checkQuality() {
+                    if (!collected.length) return _this.empty();
+
+                    var payload = collected.map(function (movie) {
+                        return {
+                            id: movie.id,
+                            title: movie.original_title || movie.title,
+                            year: (movie.release_date || '').substr(0, 4)
+                        };
+                    });
+
+                    $.ajax({
+                        url: LikhtarNet.workerUrl() + '/api/quality',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ items: payload }),
+                        timeout: 60000
+                    }).done(function (data) {
+                        render(data && data.results ? data.results : {});
+                    }).fail(function () {
+                        _this.empty();
+                    });
+                }
+
+                function render(quality) {
+                    var ultra = [], hdr = [], fullHd = [];
+
+                    collected.forEach(function (movie) {
+                        var info = quality[movie.id];
+                        if (!info || info.empty || !info.ukr) return;
+
+                        if (info.resolution === '4K') ultra.push(movie);
+                        else if (info.resolution === 'FHD') fullHd.push(movie);
+
+                        if (info.hdr) hdr.push(movie);
+                    });
+
+                    var rows = [];
+                    if (ultra.length) rows.push({ title: '4K з українською', results: ultra });
+                    if (hdr.length) rows.push({ title: 'HDR з українською', results: hdr });
+                    if (fullHd.length) rows.push({ title: '1080p з українською', results: fullHd });
+
+                    if (!rows.length) return _this.empty();
+
+                    _this.build(rows);
+                    _this.activity.loader(false);
+                }
+
+                return this.render();
+            };
+
+            return comp;
+        }
+
         // ===== Меню =====
 
         function menuItem(action, label, iconPath, onEnter) {
@@ -3546,6 +3642,15 @@
                     }));
             }
 
+            // Розділ живе на переборі JacRed — без сервера телевізор його не потягне
+            if (isSettingEnabled('likhtar_section_4k', true) && LikhtarNet.hasWorker() && !$('[data-action="likhtar_4k"]').length) {
+                list.append(menuItem('likhtar_4k', '4K українською',
+                    'M3 5h18v14H3V5zm2 2v10h14V7H5zm2 2h2v2h1V9h2v6h-2v-2H9v2H7V9zm8 0h2v4h1V9h2v6h-5V9z',
+                    function () {
+                        Lampa.Activity.push({ url: '', title: '4K українською', component: 'likhtar_4k', page: 1 });
+                    }));
+            }
+
             if (isSettingEnabled('likhtar_section_chronology', true) && !$('[data-action="likhtar_chronology"]').length) {
                 list.append(menuItem('likhtar_chronology', 'Хронології',
                     'M13 3a9 9 0 00-9 9H1l4 4 4-4H6a7 7 0 117 7v2a9 9 0 000-18zm-1 5v5l4 2 .7-1.2-3.2-1.9V8H12z',
@@ -3558,6 +3663,7 @@
                 Lampa.Component.add('likhtar_digital', DigitalComponent);
                 Lampa.Component.add('likhtar_anniversary', AnniversaryComponent);
                 Lampa.Component.add('likhtar_chronology', ChronologyComponent);
+                Lampa.Component.add('likhtar_4k', UltraHdComponent);
 
                 if (window.appready) addMenu();
                 else Lampa.Listener.follow('app', function (e) {
@@ -4102,6 +4208,12 @@
     // =================================================================
     // LIKHTAR QUALITY MARKS (PARSING JACRED + UAFLIX)
     // =================================================================
+    // Позначки мови шукаємо як окремі слова. Простий пошук підрядка «ua» ловить
+    // Squad, Quality, Aqua, а «eng» — Avenger, і тоді UA-мітка стоїть майже скрізь.
+    // «uk» свідомо не беремо: у назвах роздач це зазвичай Велика Британія.
+    var UKRAINIAN_MARK = /(^|[^a-z])(ua|ukr|ukrainian)([^a-z]|$)|укр/i;
+    var ENGLISH_MARK = /(^|[^a-z])(eng|english|multi)([^a-z]|$)/i;
+
     function initMarksJacRed() {
         var _jacredCache = {};
         var _uafixCache = {};
@@ -4170,9 +4282,9 @@
 
                         var isUkr = false, isEng = false, isHdr = false, isDv = false;
 
-                        if (t.indexOf('ukr') >= 0 || t.indexOf('укр') >= 0 || t.indexOf('ua') >= 0 || t.indexOf('ukrainian') >= 0) isUkr = true;
+                        if (UKRAINIAN_MARK.test(item.title || '')) isUkr = true;
                         if (card.original_language === 'uk') isUkr = true;
-                        if (t.indexOf('eng') >= 0 || t.indexOf('english') >= 0 || t.indexOf('multi') >= 0) isEng = true;
+                        if (ENGLISH_MARK.test(item.title || '')) isEng = true;
 
                         if (t.indexOf('dolby vision') >= 0 || t.indexOf('dolbyvision') >= 0) {
                             isHdr = true; isDv = true;
