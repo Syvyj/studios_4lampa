@@ -1956,6 +1956,12 @@
 
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
+            param: { name: 'likhtar_assistant_enabled', type: 'trigger', default: true },
+            field: { name: 'Ліхтарик', description: 'Помічник, що підбирає кіно за кількома питаннями. Потрібен перезапуск.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
             param: { name: 'likhtar_section_digital', type: 'trigger', default: true },
             field: { name: 'Релізи в цифрі', description: 'Кінопрокатні фільми, що вже вийшли або скоро вийдуть у цифрі. Потрібен перезапуск.' }
         });
@@ -3501,6 +3507,296 @@
     })();
 
     // =================================================================
+    // ЛІХТАРИК — ПОМІЧНИК ІЗ ПІДБОРУ КІНО
+    // =================================================================
+    /**
+     * Замість того щоб гортати десятки рядків, користувач відповідає на
+     * кілька питань картками — і отримує готову підбірку. Усе рахується
+     * локально: жодних запитів до моменту, коли відповіді зібрані.
+     */
+    var LikhtarAssistant = (function () {
+        // Жанри в TMDB для фільмів і серіалів пронумеровані по-різному,
+        // тож кожен настрій одразу тримає обидва набори.
+        var MOODS = [
+            { emoji: '🍿', text: 'Розслабитись', movie: [35, 10751], tv: [35, 10751] },
+            { emoji: '🖤', text: 'Щось похмуре', movie: [18, 80], tv: [18, 80] },
+            { emoji: '😂', text: 'Посміятись', movie: [35], tv: [35] },
+            { emoji: '🤯', text: 'Щоб мозок закипів', movie: [878, 9648], tv: [10765, 9648] },
+            { emoji: '💘', text: 'Романтика', movie: [10749], tv: [18], keywords: '9840' },
+            { emoji: '⚔️', text: 'Адреналін', movie: [28, 12], tv: [10759] },
+            { emoji: '👻', text: 'Лоскотати нерви', movie: [27, 53], tv: [9648, 80] },
+            { emoji: '🌍', text: 'Пізнавальне', movie: [99], tv: [99] }
+        ];
+
+        var FORMATS = [
+            { emoji: '🎬', text: 'Фільм', type: 'movie' },
+            { emoji: '📺', text: 'Серіал', type: 'tv' }
+        ];
+
+        var COMPANY = [
+            { emoji: '🧘', text: 'Сам', kids: false },
+            { emoji: '❤️', text: 'Удвох', kids: false },
+            { emoji: '👨‍👩‍👧', text: 'З дітьми', kids: true },
+            { emoji: '🎉', text: 'Компанією', kids: false }
+        ];
+
+        var LENGTH = [
+            { emoji: '⏱', text: 'До 1,5 години', max: 95 },
+            { emoji: '🎞', text: 'Повний метр', min: 95, max: 150 },
+            { emoji: '🍿', text: 'Скільки завгодно' }
+        ];
+
+        var ERA = [
+            { emoji: '✨', text: 'Свіже', fresh: true },
+            { emoji: '🏛', text: 'Перевірене часом', classic: true },
+            { emoji: '🎲', text: 'Байдуже' }
+        ];
+
+        /** Питання, які ставимо. Крок про тривалість пропускаємо для серіалів. */
+        var STEPS = [
+            { key: 'mood', title: 'Що хочеться подивитись?', options: MOODS },
+            { key: 'format', title: 'Фільм чи серіал?', options: FORMATS },
+            { key: 'company', title: 'З ким дивитесь?', options: COMPANY },
+            { key: 'length', title: 'Скільки маєте часу?', options: LENGTH, onlyFor: 'movie' },
+            { key: 'era', title: 'Свіже чи класика?', options: ERA }
+        ];
+
+        /** Збирає відповіді в один запит до TMDB. */
+        function buildQuery(answers) {
+            var type = (answers.format && answers.format.type) || 'movie';
+            var isMovie = type === 'movie';
+            var params = {
+                sort_by: 'popularity.desc',
+                'vote_count.gte': isMovie ? '100' : '50'
+            };
+
+            var genres = (answers.mood && answers.mood[type]) || [];
+            if (answers.company && answers.company.kids) {
+                // Сімейний жанр витісняє похмурі: дитячий вечір і кримінальна драма погано поєднуються
+                genres = [10751];
+                params.certification_country = 'US';
+                params['certification.lte'] = isMovie ? 'PG-13' : null;
+                params.include_adult = 'false';
+            }
+            if (genres.length) params.with_genres = genres.join(',');
+            if (answers.mood && answers.mood.keywords && !(answers.company && answers.company.kids)) {
+                params.with_keywords = answers.mood.keywords;
+            }
+
+            if (isMovie && answers.length) {
+                if (answers.length.max) params['with_runtime.lte'] = String(answers.length.max);
+                if (answers.length.min) params['with_runtime.gte'] = String(answers.length.min);
+            }
+
+            var dateField = isMovie ? 'primary_release_date' : 'first_air_date';
+            if (answers.era && answers.era.fresh) {
+                var since = new Date();
+                since.setFullYear(since.getFullYear() - 3);
+                params[dateField + '.gte'] = since.getFullYear() + '-01-01';
+            } else if (answers.era && answers.era.classic) {
+                params[dateField + '.lte'] = '2010-12-31';
+                params['vote_average.gte'] = '7';
+                params['vote_count.gte'] = '500';
+            }
+
+            // Прибираємо ключі, які лишились порожніми
+            Object.keys(params).forEach(function (k) {
+                if (params[k] === null || params[k] === undefined) delete params[k];
+            });
+
+            return { url: 'discover/' + type, params: params };
+        }
+
+        /** Підсумок відповідей — стане заголовком підбірки. */
+        function describe(answers) {
+            return [
+                answers.mood && answers.mood.text,
+                answers.format && answers.format.text.toLowerCase(),
+                answers.era && !answers.era.fresh && !answers.era.classic ? null : (answers.era && answers.era.text.toLowerCase())
+            ].filter(Boolean).join(' • ');
+        }
+
+        function stepsFor(answers) {
+            return STEPS.filter(function (step) {
+                if (!step.onlyFor) return true;
+                return answers.format && answers.format.type === step.onlyFor;
+            });
+        }
+
+        function AssistantComponent(object) {
+            var scroll = new Lampa.Scroll({ mask: true, over: true });
+            var html = $('<div class="likhtar-assistant"></div>');
+            var body = $('<div class="likhtar-assistant__body"></div>');
+            var answers = {};
+            var stepIndex = 0;
+            var comp = this;
+
+            function currentStep() {
+                return stepsFor(answers)[stepIndex];
+            }
+
+            function answerCard(option, onEnter) {
+                var card = $('<div class="card selector card--mood likhtar-answer">' +
+                    '<div class="card__view"><div class="mood-content">' +
+                    '<div class="likhtar-answer__emoji"></div>' +
+                    '<div class="mood-text"></div>' +
+                    '</div></div></div>');
+
+                card.find('.likhtar-answer__emoji').text(option.emoji || '');
+                card.find('.mood-text').text(option.text);
+                card.on('hover:enter click', onEnter);
+                return card;
+            }
+
+            function finish() {
+                var query = buildQuery(answers);
+
+                Lampa.Activity.push({
+                    url: query.url,
+                    params: query.params,
+                    title: describe(answers) || 'Підбірка Ліхтарика',
+                    component: 'studios_view',
+                    page: 1
+                });
+            }
+
+            function renderStep() {
+                var step = currentStep();
+                if (!step) return finish();
+
+                var total = stepsFor(answers).length;
+
+                body.empty();
+                body.append($('<div class="likhtar-assistant__step"></div>')
+                    .text('Питання ' + (stepIndex + 1) + ' з ' + total));
+                body.append($('<div class="likhtar-assistant__title"></div>').text(step.title));
+
+                var grid = $('<div class="likhtar-assistant__grid"></div>');
+                step.options.forEach(function (option) {
+                    grid.append(answerCard(option, function () {
+                        answers[step.key] = option;
+                        stepIndex++;
+                        renderStep();
+                    }));
+                });
+
+                body.append(grid);
+
+                // Набір .selector змінився — переспрямовуємо на нього фокус пульта
+                comp.start();
+            }
+
+            this.create = function () {
+                scroll.append(body);
+                html.append(scroll.render());
+                return this.render();
+            };
+
+            this.start = function () {
+                if (Lampa.Activity.active().activity !== this.activity) return;
+
+                Lampa.Controller.add('content', {
+                    toggle: function () {
+                        Lampa.Controller.collectionSet(scroll.render());
+                        Lampa.Controller.collectionFocus(false, scroll.render());
+                    },
+                    left: function () {
+                        if (Navigator.canmove('left')) Navigator.move('left');
+                        else Lampa.Controller.toggle('menu');
+                    },
+                    right: function () { Navigator.move('right'); },
+                    up: function () {
+                        if (Navigator.canmove('up')) Navigator.move('up');
+                        else Lampa.Controller.toggle('head');
+                    },
+                    down: function () { Navigator.move('down'); },
+                    back: function () {
+                        // Крок назад по питаннях, і лише з першого — вихід із помічника
+                        if (stepIndex > 0) {
+                            stepIndex--;
+                            renderStep();
+                        } else {
+                            Lampa.Activity.backward();
+                        }
+                    }
+                });
+
+                Lampa.Controller.toggle('content');
+            };
+
+            this.render = function () { return html; };
+
+            this.pause = function () { };
+            this.stop = function () { };
+
+            this.destroy = function () {
+                scroll.destroy();
+                html.remove();
+            };
+
+            // Перше питання малюємо одразу після створення активності
+            setTimeout(renderStep, 0);
+        }
+
+        function addStyles() {
+            if ($('style#likhtar-assistant-css').length) return;
+
+            $('head').append('<style id="likhtar-assistant-css">' +
+                '.likhtar-assistant__body { padding: 1.5em; }' +
+                '.likhtar-assistant__step { font-size: 1.1em; opacity: 0.6; margin-bottom: 0.3em; }' +
+                '.likhtar-assistant__title { font-size: 2em; font-weight: 600; margin-bottom: 1em; }' +
+                '.likhtar-assistant__grid { display: flex; flex-wrap: wrap; gap: 1em; }' +
+                '.likhtar-answer { width: 12em; }' +
+                '.likhtar-answer .card__view { display: flex; align-items: center; justify-content: center;' +
+                ' height: 7em; background: rgba(255,255,255,0.08); border-radius: 0.6em; }' +
+                '.likhtar-answer .mood-content { text-align: center; padding: 0.5em; }' +
+                '.likhtar-answer__emoji { font-size: 2.2em; line-height: 1.1; margin-bottom: 0.15em; }' +
+                '.likhtar-answer .mood-text { font-size: 1.1em; font-weight: 600; }' +
+                '.likhtar-answer.focus .card__view { background: rgba(255,255,255,0.25); }' +
+                '</style>');
+        }
+
+        function addMenu() {
+            if (!isSettingEnabled('likhtar_assistant_enabled', true)) return;
+            if ($('[data-action="likhtar_assistant"]').length) return;
+
+            var list = $('.menu .menu__list').eq(0);
+            if (!list.length) return;
+
+            var item = $('<li class="menu__item selector" data-action="likhtar_assistant">' +
+                '<div class="menu__ico" style="font-size:1.5em;line-height:1">💡</div>' +
+                '<div class="menu__text">Ліхтарик</div></li>');
+
+            item.on('hover:enter click', function () {
+                Lampa.Activity.push({
+                    url: '',
+                    title: 'Ліхтарик',
+                    component: 'likhtar_assistant',
+                    page: 1
+                });
+            });
+
+            list.append(item);
+        }
+
+        return {
+            init: function () {
+                addStyles();
+                Lampa.Component.add('likhtar_assistant', AssistantComponent);
+
+                if (window.appready) addMenu();
+                else Lampa.Listener.follow('app', function (e) {
+                    if (e.type === 'ready') addMenu();
+                });
+            },
+            buildQuery: buildQuery,
+            describe: describe,
+            stepsFor: stepsFor,
+            STEPS: STEPS
+        };
+    })();
+
+    // =================================================================
     // INIT FUNCTION
     // =================================================================
     function init() {
@@ -3517,6 +3813,7 @@
         LikhtarStudioSubscription.init();
         LikhtarFullCard.init();
         LikhtarSections.init();
+        LikhtarAssistant.init();
 
         addStyles();
 
