@@ -4697,7 +4697,7 @@
                 '.likhtar-card__anchor { display: none; }' +
 
                 /* Герой */
-                '.likhtar-card__hero .full-start-new__body, .likhtar-card__hero .full-start__body' +
+                'body.likhtar-card-on .full-start-new__body, body.likhtar-card-on .full-start__body' +
                 ' { position: relative; min-height: 26em; }' +
                 '.likhtar-card__bgwrap { position: absolute; top: -3em; right: -3em; bottom: 0; left: 0;' +
                 ' overflow: hidden; border-radius: 0 0 1em 1em; pointer-events: none; }' +
@@ -4706,16 +4706,16 @@
                 '.likhtar-card__bgwrap:after { content: ""; position: absolute; inset: 0;' +
                 ' background: linear-gradient(100deg, rgba(7,9,15,.97) 0%, rgba(7,9,15,.9) 32%,' +
                 ' rgba(7,9,15,.5) 58%, rgba(7,9,15,.05) 85%, transparent 100%); }' +
-                '.likhtar-card__hero .full-start-new__left, .likhtar-card__hero .full-start__left' +
+                'body.likhtar-card-on .full-start-new__left, body.likhtar-card-on .full-start__left' +
                 ' { display: none !important; }' +
-                '.likhtar-card__hero .full-start-new__right, .likhtar-card__hero .full-start__right' +
+                'body.likhtar-card-on .full-start-new__right, body.likhtar-card-on .full-start__right' +
                 ' { position: relative; z-index: 1; max-width: 64%; }' +
                 /* Рідні кнопки під новий вигляд: головна — світла пігулка, решта круглі */
-                '.likhtar-card__hero .full-start__button { border-radius: 999px;' +
-                ' background: rgba(255,255,255,.14); }' +
-                '.likhtar-card__hero .full-start__button.focus { background: #fff; color: #000; }' +
-                '.likhtar-card__hero .full-start__button.focus svg { fill: #000; }' +
-                '.likhtar-card__hero .full-start-new__reactions { display: none !important; }' +
+                'body.likhtar-card-on .full-start__button { border-radius: 999px !important;' +
+                ' background: rgba(255,255,255,.14) !important; }' +
+                'body.likhtar-card-on .full-start__button.focus { background: #fff !important; color: #000 !important; }' +
+                'body.likhtar-card-on .full-start__button.focus svg { fill: #000 !important; }' +
+                'body.likhtar-card-on .full-start-new__reactions { display: none !important; }' +
                 '.likhtar-card__descr { font-size: 1.05em; line-height: 1.5; opacity: .85; max-width: 40em;' +
                 ' margin: .6em 0 .2em; display: -webkit-box; -webkit-line-clamp: 2;' +
                 ' -webkit-box-orient: vertical; overflow: hidden; }' +
@@ -4788,10 +4788,12 @@
         return {
             init: function () {
                 addStyles();
+                if (isEnabled()) $('body').addClass('likhtar-card-on');
 
                 if (!Lampa.Listener || !Lampa.Listener.follow) return;
                 Lampa.Listener.follow('full', function (e) {
-                    if (e.type !== 'complite') return;
+                    // Різні збірки шлють подію під різними назвами
+                    if (e.type !== 'complite' && e.type !== 'complete') return;
 
                     try {
                         var movie = e.data && e.data.movie;
