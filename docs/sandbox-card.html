@@ -1,0 +1,354 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ліхтар — пісочниця сторінки фільму</title>
+
+<!--
+  Пісочниця: сторінка фільму так, як її бачить Lampa, з живим кодом плагіна.
+
+  Тут не копія стилів, а сам likhtar.js: сторінка витягує з нього модуль
+  LikhtarCard і виконує його над розміткою, ідентичною до шаблону Lampa.
+  Тому все, що видно тут, — це справжня поведінка плагіна, і будь-яка
+  правка у likhtar.js з'являється після перезавантаження сторінки.
+-->
+
+<link rel="stylesheet" href="https://yumata.github.io/lampa/css/app.css?v=4.56">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<style>
+  html, body { margin: 0; background: #07090f; color: #fff; font-family: system-ui, sans-serif; }
+
+  /* Панель керування пісочницею — поверх усього, поза розміткою Lampa */
+  #sandbox-bar {
+    /* Угорі, а не внизу: там панель перекривала б кнопки картки,
+       та й Lampa має свою шапку приблизно такої ж висоти */
+    position: fixed; z-index: 999; left: 0; right: 0; top: 0;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+    padding: 10px 14px; background: rgba(10,12,18,.94);
+    border-bottom: 1px solid rgba(255,255,255,.12); font-size: 13px;
+  }
+  #sandbox-bar button, #sandbox-bar input {
+    background: #1d1f27; color: #eee; border: 1px solid #333;
+    border-radius: 7px; padding: 7px 12px; font: inherit;
+  }
+  #sandbox-bar button { cursor: pointer; }
+  #sandbox-bar button.on { background: #0057b7; border-color: #0057b7; }
+  #sandbox-bar .grow { flex: 1; }
+  #sandbox-bar .note { opacity: .5; }
+  #sandbox-status { opacity: .65; }
+
+  /* Емуляція пульта: наведення миші = фокус у Lampa */
+  .selector.sandbox-hover { }
+</style>
+
+<div id="app">
+  <div class="activity__body" id="page"></div>
+</div>
+
+<div id="sandbox-bar">
+  <button id="btn-movie" class="on">Фільм</button>
+  <button id="btn-series">Серіал</button>
+  <button id="btn-toggle">Новий вигляд: увімк.</button>
+  <button id="btn-reload">Перезібрати</button>
+  <span class="note">TMDB-ключ (не обов'язково):</span>
+  <input id="tmdb-key" size="26" placeholder="без ключа — тестові дані">
+  <span class="grow"></span>
+  <span id="sandbox-status">завантаження…</span>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// Розмітка сторінки — точно за шаблоном full-start-new з app.min.js
+// ─────────────────────────────────────────────────────────────────────────────
+function lampaMarkup(data) {
+  return `
+    <img class="full-start__background" src="${data.backdrop}">
+    <div class="full-start-new">
+      <div class="full-start-new__body">
+        <div class="full-start-new__left">
+          <div class="full-start-new__poster"><img class="full-start-new__img" src="${data.poster}"></div>
+        </div>
+        <div class="full-start-new__right">
+          <div class="full-start-new__head">${data.year}, ${data.country}</div>
+          <div class="full-start-new__title">${data.title}</div>
+          <div class="full-start-new__tagline full--tagline"></div>
+          <div class="full-start-new__rate-line">
+            <div class="full-start__rate rate--tmdb"><div>${data.rating}</div><div class="source--name">TMDB</div></div>
+            <div class="full-start__pg">${data.pg}</div>
+            <div class="full-start__status">${data.statusText}</div>
+          </div>
+          <div class="full-start-new__details">${data.details}</div>
+          <div class="full-start-new__reactions"><div>Реакції</div></div>
+          <div class="full-start-new__buttons">
+            <div class="full-start__button selector button--play"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>Дивитись</span></div>
+            <div class="full-start__button selector"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M17 3H7a2 2 0 00-2 2v16l7-3 7 3V5a2 2 0 00-2-2z"/></svg><span>Закладки</span></div>
+            <div class="full-start__button selector"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg><span>Оцінити</span></div>
+            <div class="full-start__button selector"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg><span>Ще</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="full-descr">
+      <div class="full-descr__text">${data.overview}</div>
+      <div class="full-descr__details">Дата релізу · Бюджет · Країни</div>
+    </div>
+
+    <div class="items-line"><div class="items-line__title">Актори</div><div class="items-line__body">картки акторів</div></div>
+    <div class="items-line"><div class="items-line__title">Коментарі</div><div class="items-line__body">картки коментарів</div></div>
+    <div class="items-line"><div class="items-line__title">Рекомендації</div><div class="items-line__body">картки</div></div>
+    <div class="items-line"><div class="items-line__title">Shots</div><div class="items-line__body">сміття</div></div>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Дані: без ключа беремо тестові, з ключем — справжні з TMDB
+// ─────────────────────────────────────────────────────────────────────────────
+var IMG = 'https://image.tmdb.org/t/p/';
+
+var FIXTURES = {
+  movie: {
+    card: { id: 634649, title: 'Людина-павук: Додому шляху нема', vote_average: 7.9,
+            backdrop_path: '/14QbnygCuTO0vl7CAFmPf1fgZfV.jpg', poster_path: '/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg' },
+    details: {
+      id: 634649, runtime: 148, budget: 200000000, status: 'Released', release_date: '2021-12-15',
+      genres: [{ name: 'Бойовик' }, { name: 'Пригоди' }, { name: 'Фантастика' }],
+      production_countries: [{ name: 'США' }], belongs_to_collection: { id: 531241, name: 'Людина-павук: Колекція' },
+      release_dates: { results: [{ iso_3166_1: 'US', release_dates: [{ certification: 'PG-13' }] }] }
+    }
+  },
+  tv: {
+    card: { id: 94997, name: 'Дім Дракона', vote_average: 8.4, first_air_date: '2022-08-21',
+            backdrop_path: '/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', poster_path: '/1X4h40fcB4WWUmIBK0auT4zRBAV.jpg' },
+    details: {
+      id: 94997, status: 'Returning Series', first_air_date: '2022-08-21',
+      number_of_seasons: 3, number_of_episodes: 26,
+      genres: [{ name: 'Драма' }, { name: 'Фентезі' }], production_countries: [{ name: 'США' }],
+      next_episode_to_air: { air_date: nextWeek(), season_number: 3, episode_number: 8 },
+      content_ratings: { results: [{ iso_3166_1: 'US', rating: 'TV-MA' }] },
+      seasons: [
+        { season_number: 1, name: 'Сезон 1', episode_count: 10, air_date: '2022-08-21' },
+        { season_number: 2, name: 'Сезон 2', episode_count: 8, air_date: '2024-06-16' },
+        { season_number: 3, name: 'Сезон 3', episode_count: 8, air_date: '2026-06-01' }
+      ]
+    }
+  },
+  credits: {
+    crew: [{ id: 1, name: 'Раян Кондал', job: 'Director', profile_path: null }],
+    cast: [
+      { id: 2, name: 'Емма Дарсі', character: 'Рейніра Таргарієн', profile_path: '/6Sjz9teWjrMY9lF2o9FCo4XmoRh.jpg' },
+      { id: 3, name: 'Метт Сміт', character: 'Деймон Таргарієн', profile_path: null },
+      { id: 4, name: 'Олівія Кук', character: 'Алісента Хайтауер', profile_path: null },
+      { id: 5, name: 'Рис Іванс', character: 'Отто Хайтауер', profile_path: null },
+      { id: 6, name: 'Ів Бест', character: 'Рейніс Таргарієн', profile_path: null },
+      { id: 7, name: 'Стів Тусcент', character: 'Корліс Веларіон', profile_path: null },
+      { id: 8, name: 'Фабіан Франкель', character: 'Крістон Коль', profile_path: null }
+    ]
+  },
+  list: { results: [
+    { id: 1399, name: 'Гра престолів', vote_average: 8.5, first_air_date: '2011-04-17', backdrop_path: '/2OMB0ynKlyIenMJWI2Dy9IWT4c.jpg' },
+    { id: 71912, name: 'Відьмак', vote_average: 8.0, first_air_date: '2019-12-20', backdrop_path: '/jBJWaqoSCiARWtfV0GlqHrcdidd.jpg' },
+    { id: 63174, name: 'Люцифер', vote_average: 8.5, first_air_date: '2016-01-25', backdrop_path: '/ktejodbcdCPXbMMdnpI9BUxW6O8.jpg' },
+    { id: 60059, name: 'Краще подзвоніть Солу', vote_average: 8.7, first_air_date: '2015-02-08', backdrop_path: '/fC2HDm5t0kHl7mTm7jxMR31b7by.jpg' },
+    { id: 66732, name: 'Дивні дива', vote_average: 8.6, first_air_date: '2016-07-15', backdrop_path: '/56v2KjBlU4XaOv9rVYEQypROD7P.jpg' },
+    { id: 1396, name: 'Пуститися берега', vote_average: 8.9, first_air_date: '2008-01-20', backdrop_path: '/9faGSFi5jam6pDWGNd0p8JcJgXQ.jpg' }
+  ] },
+  episodes: { episodes: Array.from({ length: 8 }, function (_, i) {
+    return { episode_number: i + 1, name: 'Серія ' + (i + 1), air_date: episodeDate(i),
+             overview: 'Короткий опис подій цієї серії для перевірки верстки.' };
+  }) }
+};
+
+function nextWeek() { var d = new Date(); d.setDate(d.getDate() + 6); return d.toISOString().substr(0, 10); }
+function episodeDate(i) { var d = new Date(); d.setDate(d.getDate() - 40 + i * 7); return d.toISOString().substr(0, 10); }
+
+/** Підбирає фікстуру під URL, коли справжнього ключа немає. */
+function fixtureFor(url) {
+  if (url.indexOf('/credits') !== -1) return FIXTURES.credits;
+  if (/\/season\/\d+/.test(url)) return FIXTURES.episodes;
+  if (url.indexOf('/recommendations') !== -1 || url.indexOf('/similar') !== -1) return FIXTURES.list;
+  if (url.indexOf('collection/') !== -1) return { parts: FIXTURES.list.results };
+  if (url.indexOf('tv/94997') !== -1) return FIXTURES.tv.details;
+  if (url.indexOf('movie/634649') !== -1) return FIXTURES.movie.details;
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Заглушка Lampa: рівно стільки, скільки потребує модуль картки
+// ─────────────────────────────────────────────────────────────────────────────
+var store = {};
+
+window.Navigator = {
+  move: function () { },
+  canmove: function () { return false; }   // рух пультом тут не емулюємо, керуємо мишею
+};
+
+window.Lampa = {
+  Storage: {
+    get: function (k, d) { return k in store ? store[k] : d; },
+    set: function (k, v) { store[k] = v; }
+  },
+  TMDB: {
+    api: function (p) { return 'https://api.themoviedb.org/3/' + p; },
+    image: function (p) { return IMG + p.replace(/^t\/p\//, ''); }
+  },
+  Lang: { translate: function (k) { return k; } },
+  Reguest: function () {
+    this.timeout = function () { };
+    this.silent = function (url, ok, err) {
+      var key = (document.getElementById('tmdb-key').value || '').trim();
+
+      if (!key) {
+        var fixture = fixtureFor(url);
+        return fixture ? setTimeout(function () { ok(fixture); }, 120)
+                       : setTimeout(function () { err && err(); }, 60);
+      }
+
+      fetch(url.replace('api_key=KEY', 'api_key=' + key).replace(/api_key=[^&]*/, 'api_key=' + key))
+        .then(function (r) { return r.json(); })
+        .then(ok)
+        .catch(function () { err && err(); });
+    };
+  },
+  Activity: {
+    push: function (a) { status('відкрилась би сторінка: ' + (a.title || a.component + ' #' + a.id)); }
+  },
+  Controller: {
+    add: function () { },
+    toggle: function () { },
+    collectionSet: function () { },
+    collectionFocus: function () { }
+  },
+  Listener: { follow: function () { } },
+  Noty: { show: function (t) { status(t); } },
+  Modal: { open: function () { }, close: function () { } },
+  Manifest: { app_digital: 200 },
+  Utils: { shortText: function (s) { return s; } },
+  Player: { play: function () { }, playlist: function () { } },
+  YouTube: { play: function () { } },
+  Component: { add: function () { } },
+  InteractionMain: function () { },
+  Select: { show: function () { } }
+};
+
+function status(text) { document.getElementById('sandbox-status').textContent = text; }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Витягуємо модуль картки з живого likhtar.js
+// ─────────────────────────────────────────────────────────────────────────────
+var Card = null;
+var currentKind = 'movie';
+var enabled = true;
+
+// Модуль звертається до цих імен як до сусідів по файлу
+window.LikhtarCache = {
+  get: function (k) { try { return JSON.parse(sessionStorage.getItem('sb_' + k)); } catch (e) { return undefined; } },
+  set: function (k, v) { try { sessionStorage.setItem('sb_' + k, JSON.stringify(v)); } catch (e) { } },
+  TTL: { HOUR: 1, DAY: 2, WEEK: 3, MONTH: 4 }
+};
+window.getTmdbKey = function () { return (document.getElementById('tmdb-key').value || 'KEY').trim() || 'KEY'; };
+window.isSettingEnabled = function (name, def) {
+  if (name === 'likhtar_new_card') return enabled;
+  return def === undefined ? true : def;
+};
+
+function loadCardModule() {
+  return fetch('../likhtar.js?ts=' + Date.now())
+    .then(function (r) { return r.text(); })
+    .then(function (src) {
+      var from = src.indexOf('var LikhtarCard = (function () {');
+      var anchor = src.indexOf('return {\n            init: function () {\n                addStyles();', from);
+      var to = src.indexOf('})();', anchor);
+      if (from === -1 || to === -1) throw new Error('модуль LikhtarCard не знайдено у likhtar.js');
+
+      var moduleSrc = src.slice(from, to + 5);
+      var body = moduleSrc.slice(moduleSrc.indexOf('{') + 1, moduleSrc.lastIndexOf('return {'));
+
+      // eslint-disable-next-line no-new-func
+      return new Function('return (function(){ ' + body +
+        ' return { apply: apply, closePanel: closePanel, addStyles: addStyles }; })()')();
+    });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Складання сцени
+// ─────────────────────────────────────────────────────────────────────────────
+function render() {
+  var kind = currentKind;
+  var fx = FIXTURES[kind];
+  var card = fx.card;
+  var det = fx.details;
+
+  // Прибираємо сліди попереднього прогону
+  $('.likhtar-panel').remove();
+  $('#likhtar-card-css').remove();
+  $('body').removeClass('likhtar-card-on');
+  Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf('sb_') === 0) sessionStorage.removeItem(k); });
+
+  document.getElementById('page').innerHTML = lampaMarkup({
+    backdrop: IMG + 'w1280' + card.backdrop_path,
+    poster: IMG + 'w500' + card.poster_path,
+    title: card.title || card.name,
+    year: (card.release_date || card.first_air_date || det.release_date || det.first_air_date || '').substr(0, 4),
+    country: 'США',
+    rating: card.vote_average.toFixed(1),
+    pg: kind === 'tv' ? 'TV-MA' : 'PG-13',
+    statusText: kind === 'tv' ? 'Онгоїнг' : 'Випущено',
+    details: kind === 'tv' ? '~60 хв <span class="full-start-new__split">●</span> Драма, Фентезі'
+                           : '02:28 <span class="full-start-new__split">●</span> Бойовик, Пригоди, Фантастика',
+    overview: kind === 'tv'
+      ? 'Члени дому Тарґарієнів залишають приречену Валірію і відправляються на захід, де знаходять величезну територію, населену ворогуючими королівствами. Історія родини за двісті років до подій «Гри престолів».'
+      : 'Уперше за всю кіноісторію Людини-павука улюбленого супергероя викрито. Пітер Паркер більше не в змозі поєднувати звичайне життя та супергеройські обов’язки, тож звертається по допомогу до Доктора Стренджа.'
+  });
+
+  Card.addStyles();
+  if (enabled) $('body').addClass('likhtar-card-on');
+  Card.apply(card, document.getElementById('page'));
+
+  hoverAsFocus();
+  status(enabled ? 'новий вигляд · ' + (kind === 'tv' ? 'серіал' : 'фільм') : 'вигляд Lampa без плагіна');
+}
+
+/**
+ * На телевізорі фокус ходить пультом і Lampa вішає клас .focus.
+ * Тут це робить миша — інакше не видно, як елементи поводяться у фокусі.
+ */
+function hoverAsFocus() {
+  $(document).off('.sandbox')
+    .on('mouseenter.sandbox', '.selector', function () {
+      $('.selector.focus').removeClass('focus');
+      $(this).addClass('focus').trigger('hover:focus');
+    })
+    .on('mouseleave.sandbox', '.selector', function () { $(this).removeClass('focus'); });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Керування пісочницею
+// ─────────────────────────────────────────────────────────────────────────────
+$('#btn-movie').on('click', function () {
+  currentKind = 'movie'; $(this).addClass('on'); $('#btn-series').removeClass('on'); render();
+});
+$('#btn-series').on('click', function () {
+  currentKind = 'tv'; $(this).addClass('on'); $('#btn-movie').removeClass('on'); render();
+});
+$('#btn-toggle').on('click', function () {
+  enabled = !enabled;
+  $(this).text('Новий вигляд: ' + (enabled ? 'увімк.' : 'вимк.')).toggleClass('on', enabled);
+  render();
+});
+$('#btn-reload').on('click', boot);
+$('#tmdb-key').on('change', function () {
+  localStorage.setItem('sandbox_tmdb_key', this.value);
+  render();
+});
+
+function boot() {
+  status('читаю likhtar.js…');
+  loadCardModule()
+    .then(function (module) { Card = module; render(); })
+    .catch(function (e) { status('помилка: ' + e.message); });
+}
+
+$('#tmdb-key').val(localStorage.getItem('sandbox_tmdb_key') || '');
+$('#btn-toggle').addClass('on');
+boot();
+</script>

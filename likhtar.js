@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.17';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.18';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -5010,6 +5010,32 @@
         }
 
         /**
+         * Розтягує блок героя до низу екрана.
+         *
+         * Міряємо відступ від початку сторінки, а не від краю вікна:
+         * getBoundingClientRect().top залежить від прокрутки, і на вже
+         * прокрученій сторінці дає від'ємне значення — блок роздувався
+         * вище екрана, а вміст ішов під нижній край.
+         */
+        function pinToBottom(hero) {
+            var heroBody = hero.find('.full-start-new__body, .full-start__body').first();
+            if (!heroBody.length) return;
+
+            setTimeout(function () {
+                try {
+                    heroBody.css('min-height', '');   // міряємо без власного впливу на верстку
+
+                    var top = 0;
+                    for (var node = heroBody[0]; node; node = node.offsetParent) top += node.offsetTop;
+
+                    var free = window.innerHeight - top - 16;
+                    // Верхня межа рятує від зациклення, нижня — від смужки замість екрана
+                    if (free > 320 && free <= window.innerHeight) heroBody.css('min-height', free + 'px');
+                } catch (e) { }
+            }, 50);
+        }
+
+        /**
          * Lampa передає різні вузли залежно від збірки: іноді всю сторінку,
          * іноді лише обгортку героя. Секції — опис, актори, коментарі —
          * можуть лежати не всередині нього, а поруч, тож область пошуку
@@ -5097,19 +5123,7 @@
 
             buildMetrics(hero, movie);
 
-            // Притискаємо вміст до низу екрана: висота героя — від його реальної
-            // позиції на сторінці до низу вікна. Константа тут не працює,
-            // бо висота шапки різна між збірками й розмірами екрана.
-            var heroBody = hero.find('.full-start-new__body, .full-start__body').first();
-            if (heroBody.length) {
-                setTimeout(function () {
-                    try {
-                        var top = heroBody[0].getBoundingClientRect().top;
-                        var free = window.innerHeight - top - 16;
-                        if (free > 380) heroBody.css('min-height', free + 'px');
-                    } catch (e) { }
-                }, 50);
-            }
+            pinToBottom(hero);
 
             var holder = buildModules(hero, movie);
             if (!holder) return;
