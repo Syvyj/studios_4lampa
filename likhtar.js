@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.18';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.19';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4914,7 +4914,9 @@
                 hero.find(sel).first().addClass('likhtar-card__hidden');
             });
 
-            var card = $('<div class="likhtar-metrics"></div>');
+            // Згорнута за замовчуванням: розгорнута вона налазить на шапку Lampa.
+            // selector — щоб її можна було навести пультом, як звичайну кнопку.
+            var card = $('<div class="likhtar-metrics likhtar-metrics--collapsed selector"></div>');
 
             // Ярус 1: рейтинг і вік
             var top = $('<div class="likhtar-metrics__top"></div>');
@@ -4942,6 +4944,9 @@
             // Акцент внизу
             var accent = $('<div class="likhtar-metrics__accent likhtar-card__hidden"></div>');
             card.append(accent);
+
+            card.on('hover:focus mouseenter', function () { card.removeClass('likhtar-metrics--collapsed'); });
+            card.on('hover:blur mouseleave', function () { card.addClass('likhtar-metrics--collapsed'); });
 
             body.append(card);
 
@@ -5167,10 +5172,21 @@
                 ' linear-gradient(to top, rgba(7,9,15,.95) 0%, rgba(7,9,15,.2) 40%, transparent 70%); }' +
 
                 /* Бічна картка за макетом 1a — власна розмітка */
-                '.likhtar-metrics { position: absolute; top: 0; right: 0; width: 23em;' +
+                '.likhtar-metrics { position: absolute; top: .6em; right: 0; width: 23em;' +
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
                 ' border-radius: 1.1em; overflow: hidden; display: flex; flex-direction: column;' +
-                ' backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }' +
+                ' backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);' +
+                ' transition: width .18s ease-out; }' +
+                '.likhtar-metrics.focus { border-color: rgba(255,255,255,.35);' +
+                ' box-shadow: 0 16px 40px rgba(0,0,0,.5); }' +
+
+                /* Згорнутий стан: лише рядок з оцінкою, решта складається */
+                '.likhtar-metrics--collapsed { width: auto; }' +
+                '.likhtar-metrics--collapsed .likhtar-metrics__top { padding: .7em .9em; gap: .8em; }' +
+                '.likhtar-metrics--collapsed .likhtar-metrics__num { font-size: 1.5em; }' +
+                '.likhtar-metrics--collapsed .likhtar-metrics__chips,' +
+                '.likhtar-metrics--collapsed .likhtar-metrics__facts,' +
+                '.likhtar-metrics--collapsed .likhtar-metrics__accent { display: none; }' +
 
                 '.likhtar-metrics__top { display: flex; align-items: flex-start;' +
                 ' justify-content: space-between; padding: 1.3em 1.3em 1em; }' +
