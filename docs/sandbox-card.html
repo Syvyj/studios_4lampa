@@ -17,26 +17,31 @@
 
 <style>
   html, body { margin: 0; background: #07090f; color: #fff; font-family: system-ui, sans-serif; }
-  /* Місце під панель — у Lampa тут своя шапка приблизно такої ж висоти,
-     тож без цього відступу пісочниця брехала б про перекриття */
+  /* Місце під шапку Lampa: у застосунку вона є завжди, тож без цього
+     відступу пісочниця брехала б про перекриття верхніх елементів */
   #app { padding-top: 52px; }
 
-  /* Панель керування пісочницею — поверх усього, поза розміткою Lampa */
+  /* Панель керування пісочницею: згорнута в кутовий значок, щоб не
+     закривати сторінку. Розкривається наведенням або клавіатурою. */
   #sandbox-bar {
-    /* Угорі, а не внизу: там панель перекривала б кнопки картки,
-       та й Lampa має свою шапку приблизно такої ж висоти */
-    position: fixed; z-index: 999; left: 0; right: 0; top: 0;
-    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-    padding: 10px 14px; background: rgba(10,12,18,.94);
-    border-bottom: 1px solid rgba(255,255,255,.12); font-size: 13px;
+    position: fixed; z-index: 999; left: 10px; top: 10px;
+    display: flex; gap: 8px; align-items: center;
+    padding: 6px; background: rgba(10,12,18,.94);
+    border: 1px solid rgba(255,255,255,.14); border-radius: 10px; font-size: 13px;
   }
+  #sandbox-bar .tools {
+    display: none; gap: 8px; align-items: center; flex-wrap: wrap; padding-right: 4px;
+  }
+  #sandbox-bar:hover .tools, #sandbox-bar:focus-within .tools { display: flex; }
+  #sandbox-bar:hover #sandbox-chip, #sandbox-bar:focus-within #sandbox-chip { opacity: .5; }
+
+  #sandbox-chip { padding: 4px 8px; cursor: default; user-select: none; }
   #sandbox-bar button, #sandbox-bar input {
     background: #1d1f27; color: #eee; border: 1px solid #333;
     border-radius: 7px; padding: 7px 12px; font: inherit;
   }
   #sandbox-bar button { cursor: pointer; }
   #sandbox-bar button.on { background: #0057b7; border-color: #0057b7; }
-  #sandbox-bar .grow { flex: 1; }
   #sandbox-bar .note { opacity: .5; }
   #sandbox-status { opacity: .65; }
 
@@ -48,15 +53,17 @@
   <div class="activity__body" id="page"></div>
 </div>
 
-<div id="sandbox-bar">
-  <button id="btn-movie" class="on">Фільм</button>
-  <button id="btn-series">Серіал</button>
-  <button id="btn-toggle">Новий вигляд: увімк.</button>
-  <button id="btn-reload">Перезібрати</button>
-  <span class="note">TMDB-ключ (не обов'язково):</span>
-  <input id="tmdb-key" size="26" placeholder="без ключа — тестові дані">
-  <span class="grow"></span>
-  <span id="sandbox-status">завантаження…</span>
+<div id="sandbox-bar" tabindex="0">
+  <div id="sandbox-chip">⚙ пісочниця</div>
+  <div class="tools">
+    <button id="btn-movie" class="on">Фільм</button>
+    <button id="btn-series">Серіал</button>
+    <button id="btn-toggle">Новий вигляд: увімк.</button>
+    <button id="btn-reload">Перезібрати</button>
+    <span class="note">TMDB-ключ:</span>
+    <input id="tmdb-key" size="22" placeholder="без ключа — тестові дані">
+    <span id="sandbox-status">завантаження…</span>
+  </div>
 </div>
 
 <script>
