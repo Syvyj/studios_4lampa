@@ -500,11 +500,14 @@ async function ai(request, env) {
  * звичайної веб-адреси. Вбудований у цю сторінку плеєр бачить нормальний
  * домен воркера, тож питань не має.
  */
-function youtubeFrame(key) {
+function youtubeFrame(key, withSound) {
     if (!key || !/^[\w-]{6,20}$/.test(key)) return json({ error: 'bad_key' }, 400);
 
-    const src = 'https://www.youtube.com/embed/' + key +
-        '?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=' + key;
+    // Зі звуком це повноекранний перегляд: потрібні елементи керування
+    // і без зациклення; беззвучний варіант — фонове превʼю в куті.
+    const src = 'https://www.youtube.com/embed/' + key + '?autoplay=1&playsinline=1&rel=0' +
+        '&modestbranding=1' +
+        (withSound ? '&mute=0&controls=1' : '&mute=1&controls=0&loop=1&playlist=' + key);
 
     const html = '<!doctype html><meta charset="utf-8">' +
         '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}' +
@@ -570,7 +573,7 @@ export default {
         }
 
         if (path === '/yt' && request.method === 'GET') {
-            return youtubeFrame(url.searchParams.get('v'));
+            return youtubeFrame(url.searchParams.get('v'), url.searchParams.get('sound') === '1');
         }
 
         if (path === '/api/qr' && request.method === 'GET') {

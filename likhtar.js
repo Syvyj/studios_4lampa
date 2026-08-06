@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.24';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.25';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -5069,23 +5069,40 @@
         }
 
         /**
-         * Плеєр Lampa — накладка, а не окремий екран: подій активності при
-         * його закритті немає. Ловимо власні події плеєра й повертаємо превʼю.
+         * Повноекранний трейлер власною накладкою.
+         *
+         * Через плеєр Lampa це працювало лише перший раз: удруге він
+         * зупинявся на «натисніть Плей». Своя накладка не залежить від його
+         * внутрішнього стану — поводиться однаково щоразу.
          */
-        function waitPlayerClose(side, movie) {
-            if (!Lampa.Player || !Lampa.Player.listener) return;
+        function openCinema(key, side, movie) {
+            stopTrailer();
+            $('.likhtar-cinema').remove();
 
-            var restore = function () {
-                Lampa.Player.listener.remove('destroy', restore);
-                Lampa.Player.listener.remove('end', restore);
+            var cinema = $('<div class="likhtar-cinema"></div>');
+            var frame = $('<iframe allow="autoplay; encrypted-media; fullscreen" frameborder="0"></iframe>');
 
-                setTimeout(function () {
-                    if (side && side.closest('body').length) mountTrailer(side, movie);
-                }, 400);
-            };
+            frame.attr('src', LikhtarNet.workerUrl() + '/yt?sound=1&v=' + encodeURIComponent(key));
+            cinema.append(frame);
+            cinema.append('<div class="likhtar-cinema__hint">Назад — закрити</div>');
+            $('body').append(cinema);
 
-            Lampa.Player.listener.follow('destroy', restore);
-            Lampa.Player.listener.follow('end', restore);
+            function close() {
+                cinema.remove();
+                Lampa.Controller.toggle('full_start');
+                if (side && side.closest('body').length) mountTrailer(side, movie);
+            }
+
+            Lampa.Controller.add('likhtar_cinema', {
+                toggle: function () { Lampa.Controller.collectionSet(cinema[0]); },
+                back: close,
+                left: close,
+                right: function () { },
+                up: function () { },
+                down: function () { }
+            });
+
+            Lampa.Controller.toggle('likhtar_cinema');
         }
 
         var navRefreshTimer = null;
@@ -5137,22 +5154,7 @@
                     box.append('<div class="likhtar-preview__hint">Трейлер · відкрити зі звуком</div>');
 
                     box.on('hover:enter click', function () {
-                        stopTrailer();
-                        // Повертаємо превʼю, коли плеєр закриють
-                        waitPlayerClose(side, movie);
-
-                        var item = {
-                            title: movie.title || movie.name || 'Трейлер',
-                            id: key, youtube: true,
-                            url: 'https://www.youtube.com/watch?v=' + key
-                        };
-
-                        if (Lampa.Manifest.app_digital >= 183) {
-                            Lampa.Player.play(item);
-                            Lampa.Player.playlist([item]);
-                        } else {
-                            Lampa.YouTube.play(key);
-                        }
+                        openCinema(key, side, movie);
                     });
 
                     side.append(box);
@@ -5334,6 +5336,10 @@
                 '.likhtar-preview iframe { position: absolute; inset: 0; width: 100%; height: 100%;' +
                 ' pointer-events: none; }' +
                 '.likhtar-preview.focus { border-color: #eec37a; box-shadow: 0 0 0 2px #eec37a; }' +
+                '.likhtar-cinema { position: fixed; inset: 0; z-index: 200; background: #000; }' +
+                '.likhtar-cinema iframe { width: 100%; height: 100%; border: 0; }' +
+                '.likhtar-cinema__hint { position: absolute; left: 1.5em; bottom: 1em; font-size: .85em;' +
+                ' color: rgba(255,255,255,.55); pointer-events: none; }' +
                 '.likhtar-preview__hint { position: absolute; left: 0; right: 0; bottom: 0;' +
                 ' padding: .5em .8em; font-size: .78em; color: rgba(233,233,236,.8);' +
                 ' background: linear-gradient(to top, rgba(8,8,10,.9), transparent); }' +
@@ -5534,6 +5540,7 @@
                     if (e.type === 'archive' || e.type === 'destroy') {
                         closePanel();
                         stopTrailer();
+                        $('.likhtar-cinema').remove();
                     }
                 });
             }
