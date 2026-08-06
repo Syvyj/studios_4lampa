@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.32';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.33';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4785,12 +4785,13 @@
                 };
             }
 
-            openPanel('Ліхтарик', movie.title || movie.name || '', function (body) {
+            openPanel('Підсвічую найцікавіше:', '', function (body) {
                 function group(title) {
                     body.append($('<div class="likhtar-panel__group"></div>').text(title));
                 }
 
-                group('Глибше');
+                // Перший блок — без заголовка, одразу найужиткові пункти
+                body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, fromHub(function () { openWiki(movie); })));
                 body.append(hubEntry('Актори та автори', MODULE_ICONS.cast, fromHub(function () { openCast(movie); })));
 
                 if (isSeries(movie)) {
@@ -4798,6 +4799,7 @@
                     body.append(hubEntry('Попередній сезон: коротко', MODULE_ICONS.comments, fromHub(function () { openSeasonRecap(movie); })));
                 }
 
+                group('Що далі');
                 var franchiseSlot = $('<div></div>');
                 body.append(franchiseSlot);
                 collectionOf(movie, function (collection) {
@@ -4808,7 +4810,6 @@
                     refocusPanel();
                 });
 
-                group('Що далі');
                 body.append(hubEntry('Рекомендації', MODULE_ICONS.recommend, fromHub(function () {
                     openTitleList('Рекомендації', mediaType + '/' + movie.id + '/recommendations');
                 })));
@@ -4817,8 +4818,6 @@
                 })));
 
                 group('Інше');
-                body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, fromHub(function () { openWiki(movie); })));
-
                 var comments = hubScope && hubScope.find('.items-line').filter(function () {
                     return /комент|comment|review/i.test(sectionTitle($(this)));
                 }).first();
@@ -5731,6 +5730,8 @@
                 ' position: relative; z-index: 1; }' +
                 /* Кнопки розділів успадковують вигляд рідних; своє — лише дрібниці */
                 '.likhtar-module svg { width: 1.5em; height: 1.5em; }' +
+                '.likhtar-module--hub svg { fill: #ffc700; }' +
+                '.likhtar-module--hub.focus svg { fill: #000; }' +
 
                 /* Панель */
                 '.likhtar-panel { position: fixed; top: 0; right: 0; bottom: 0; width: 30em; z-index: 90;' +
@@ -5739,13 +5740,13 @@
                 ' transition: transform .2s ease-out; }' +
                 '.likhtar-panel--open { transform: none; }' +
                 '.likhtar-panel__head { padding: 1.4em 1.4em .4em; }' +
-                '.likhtar-panel__title { font-size: 1.4em; font-weight: 600; }' +
+                '.likhtar-panel__title { font-size: 1.4em; font-weight: 700; color: #ffc700; }' +
                 '.likhtar-panel__sub { font-size: .85em; opacity: .5; margin-top: .2em; }' +
                 '.likhtar-panel__body { flex: 1; overflow: auto; padding: .6em 1em 1em; }' +
                 '.likhtar-panel__hint { padding: .8em 1.4em; font-size: .8em; opacity: .45;' +
                 ' border-top: 1px solid rgba(255,255,255,.08); }' +
                 '.likhtar-panel__group { font-size: .72em; letter-spacing: .14em; text-transform: uppercase;' +
-                ' opacity: .45; padding: 1em .6em .4em; }' +
+                ' color: #ffc700; padding: 1em .6em .4em; }' +
                 '.likhtar-panel__loading { padding: 1em .6em; opacity: .6; }' +
 
                 /* Людина */
