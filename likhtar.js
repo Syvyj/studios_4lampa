@@ -5,9 +5,11 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.0';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.13';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
+
+    console.log('Ліхтар ' + window.LIKHTAR_STUDIOS_VER);
 
     if (typeof Lampa === 'undefined') {
         window.LIKHTAR_STUDIOS_ERROR = 'Lampa not found (script loaded before app?)';
