@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.26';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.27';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -5377,7 +5377,7 @@
                 ' linear-gradient(to top, rgba(7,9,15,.95) 0%, rgba(7,9,15,.2) 40%, transparent 70%); }' +
 
                 /* Бічна картка за макетом 1a — власна розмітка */
-                '.likhtar-side { position: absolute; top: .6em; right: 0; width: 19em;' +
+                '.likhtar-side { position: absolute; top: .6em; right: 0; width: 20em;' +
                 ' display: flex; flex-direction: column; gap: .8em; }' +
                 '.likhtar-preview { position: relative; padding-top: 56.25%; border-radius: 1em;' +
                 ' overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,.08); }' +
@@ -5387,7 +5387,7 @@
                 '.likhtar-side-button { display: flex; align-items: center; justify-content: center;' +
                 ' gap: .6em; padding: .9em 1.1em; border-radius: 1.1em; font-weight: 600;' +
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
-                ' backdrop-filter: blur(45px); -webkit-backdrop-filter: blur(45px); }' +
+                ' backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px); }' +
                 '.likhtar-side-button svg { width: 1.4em; height: 1.4em; flex: 0 0 auto; }' +
                 '.likhtar-side-button.focus { background: #fff; color: #000; border-color: #fff; }' +
                 '.likhtar-cinema { position: fixed; inset: 0; z-index: 200; background: #000; }' +
@@ -5400,7 +5400,7 @@
                 '.likhtar-metrics { position: relative; width: 100%;' +
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
                 ' border-radius: 1.1em; overflow: hidden; display: flex; flex-direction: column;' +
-                ' backdrop-filter: blur(45px); -webkit-backdrop-filter: blur(45px); }' +
+                ' backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px); }' +
 
 
                 '.likhtar-metrics__top { display: flex; align-items: flex-start;' +
@@ -5465,13 +5465,14 @@
                 /* Рідна кнопка «Деталі» дублює нашу панель */
                 'body.likhtar-card-on .full-start__button.view--category,' +
                 ' body.likhtar-card-on .button--details { display: none !important; }' +
-                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5; max-width: 38em;' +
+                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5;' +
                 ' margin: .8em 0 .2em; padding: 1em 1.2em; border-radius: 1em;' +
                 ' background: rgba(14,14,17,.5); border: 1px solid rgba(255,255,255,.07);' +
                 ' backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);' +
                 ' color: rgba(233,233,236,.78);' +
+                /* Довжину тримає обрізання по рядках — жорстких меж не ставимо */
                 ' display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;' +
-                ' max-height: 7.2em; overflow: hidden; }' +
+                ' overflow: hidden; }' +
                 '.likhtar-card__descr.focus { border-color: rgba(255,255,255,.6);' +
                 ' background: rgba(20,22,28,.75); }' +
                 '.likhtar-panel__text { font-size: 1.05em; line-height: 1.6; padding: .6em;' +
