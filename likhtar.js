@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.27';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.28';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4920,6 +4920,43 @@
             grid.append($('<div class="likhtar-metrics__fvalue"></div>').text(value));
         }
 
+        /** Те саме, але значення — готові елементи, а не текст. */
+        function factNodes(grid, name, nodes) {
+            if (!nodes || !nodes.length) return;
+
+            grid.append($('<div class="likhtar-metrics__fname"></div>').text(name));
+            var cell = $('<div class="likhtar-metrics__fvalue likhtar-metrics__genres"></div>');
+            nodes.forEach(function (node) { cell.append(node); });
+            grid.append(cell);
+        }
+
+        /**
+         * Жанри клікабельні: у TMDB вони мають власні ідентифікатори, тож
+         * з назви одразу відкривається підбірка. Це найкоротший шлях від
+         * «сподобалось» до «покажи ще такого».
+         */
+        function genreChips(details, isTv) {
+            return (details.genres || []).slice(0, 4).map(function (genre) {
+                var chip = $('<span class="likhtar-genre selector"></span>').text(genre.name);
+
+                chip.on('hover:enter click', function () {
+                    Lampa.Activity.push({
+                        url: isTv ? 'discover/tv' : 'discover/movie',
+                        params: {
+                            with_genres: String(genre.id),
+                            sort_by: 'popularity.desc',
+                            'vote_count.gte': '50'
+                        },
+                        title: genre.name,
+                        component: 'studios_view',
+                        page: 1
+                    });
+                });
+
+                return chip;
+            });
+        }
+
         /**
          * Бічна картка за макетом «Редизайн блоків» (1a): рейтинг і вік,
          * ряд плашок, факти таблицею, внизу акцентний блок. Збирається
@@ -4998,11 +5035,11 @@
                     factRow(facts, 'Тривалість', (h ? h + ' год ' : '') + m + ' хв');
                 }
 
-                if (details.genres && details.genres.length) {
-                    factRow(facts, 'Жанр', details.genres.map(function (g) { return g.name; }).slice(0, 4).join(', '));
-                }
+                factNodes(facts, 'Жанр', genreChips(details, isSeries(movie)));
 
                 factRow(facts, 'Реліз', humanDate(details.release_date || details.first_air_date));
+
+                refreshNavigation();
 
                 if (details.budget && details.budget > 0) {
                     factRow(facts, 'Бюджет', '$ ' + String(details.budget).replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
@@ -5436,6 +5473,10 @@
                 '.likhtar-metrics__facts:empty { display: none; }' +
                 '.likhtar-metrics__fname { font-size: .85em; color: rgba(233,233,236,.42); }' +
                 '.likhtar-metrics__fvalue { font-size: .92em; font-weight: 600; line-height: 1.4; }' +
+                '.likhtar-metrics__genres { display: flex; flex-wrap: wrap; gap: .35em; }' +
+                '.likhtar-genre { padding: .1em .45em; margin: -.1em 0; border-radius: .4em;' +
+                ' border: 1px solid transparent; }' +
+                '.likhtar-genre.focus { background: #fff; color: #000; border-color: #fff; }' +
 
                 '.likhtar-metrics__accent { display: flex; flex-direction: column; gap: .55em;' +
                 ' padding: 1.1em 1.3em 1.25em; border-top: 1px solid rgba(255,255,255,.08);' +
