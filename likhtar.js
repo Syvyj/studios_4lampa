@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.29';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.30';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -5072,7 +5072,19 @@
             });
 
             var side = $('<div class="likhtar-side"></div>');
-            var card = $('<div class="likhtar-metrics"></div>');
+
+            // Картка фокусована: без трейлера в бічній колонці не було жодного
+            // selector'а, і Navigator не знаходив дороги до жанрів. Сама картка
+            // висока, тож пульт бачить її з будь-якого рядка зліва, а Enter
+            // заводить фокус усередину — на перший жанр.
+            var card = $('<div class="likhtar-metrics selector"></div>');
+
+            card.on('hover:enter', function () {
+                var genre = card.find('.likhtar-genre').first();
+                if (genre.length && Lampa.Controller.collectionFocus) {
+                    Lampa.Controller.collectionFocus(genre[0], hero[0] || false);
+                }
+            });
 
             // Ярус 1: рейтинг і вік
             var top = $('<div class="likhtar-metrics__top"></div>');
@@ -5533,6 +5545,7 @@
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
                 ' border-radius: 1.1em; overflow: hidden; display: flex; flex-direction: column;' +
                 ' backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px); }' +
+                '.likhtar-metrics.selector.focus { border-color: rgba(255,255,255,.45); }' +
 
 
                 '.likhtar-metrics__top { display: flex; align-items: flex-start;' +
@@ -5603,7 +5616,7 @@
                 /* Рідна кнопка «Деталі» дублює нашу панель */
                 'body.likhtar-card-on .full-start__button.view--category,' +
                 ' body.likhtar-card-on .button--details { display: none !important; }' +
-                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5;' +
+                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5; max-width: 38em;' +
                 ' margin: .8em 0 .2em; padding: 1em 1.2em; border-radius: 1em;' +
                 ' background: rgba(14,14,17,.5); border: 1px solid rgba(255,255,255,.07);' +
                 ' backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);' +
