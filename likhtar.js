@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.22';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.23';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -5068,6 +5068,41 @@
             });
         }
 
+        /**
+         * Плеєр Lampa — накладка, а не окремий екран: подій активності при
+         * його закритті немає. Ловимо власні події плеєра й повертаємо превʼю.
+         */
+        function waitPlayerClose(side, movie) {
+            if (!Lampa.Player || !Lampa.Player.listener) return;
+
+            var restore = function () {
+                Lampa.Player.listener.remove('destroy', restore);
+                Lampa.Player.listener.remove('end', restore);
+
+                setTimeout(function () {
+                    if (side && side.closest('body').length) mountTrailer(side, movie);
+                }, 400);
+            };
+
+            Lampa.Player.listener.follow('destroy', restore);
+            Lampa.Player.listener.follow('end', restore);
+        }
+
+        var navRefreshTimer = null;
+
+        /** Просить Lampa перечитати набір елементів, доступних пульту. */
+        function refreshNavigation() {
+            if (navRefreshTimer) clearTimeout(navRefreshTimer);
+
+            navRefreshTimer = setTimeout(function () {
+                navRefreshTimer = null;
+                try {
+                    var active = Lampa.Controller.enabled();
+                    if (active && active.name === 'full_start') Lampa.Controller.toggle('full_start');
+                } catch (e) { }
+            }, 300);
+        }
+
         function stopTrailer() {
             if (trailerTimer) clearTimeout(trailerTimer);
             trailerTimer = null;
@@ -5091,14 +5126,27 @@
                     var box = $('<div class="likhtar-preview selector"></div>');
                     var frame = $('<iframe allow="autoplay" frameborder="0" scrolling="no"></iframe>');
 
-                    frame.attr('src', 'https://www.youtube.com/embed/' + key +
-                        '?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=' + key);
+                    // Помилка 153 — це «не вказано джерело запиту»: Lampa часто
+                    // віддає сторінку без Referer, і плеєр відмовляється грати.
+                    // referrerpolicy змушує браузер надіслати походження,
+                    // а origin у параметрах підтверджує його для плеєра.
+                    frame.attr('referrerpolicy', 'origin');
+
+                    var origin = '';
+                    try { origin = window.location.origin || ''; } catch (e) { }
+
+                    frame.attr('src', 'https://www.youtube-nocookie.com/embed/' + key +
+                        '?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1' +
+                        '&loop=1&playlist=' + key +
+                        (origin && origin.indexOf('http') === 0 ? '&origin=' + encodeURIComponent(origin) : ''));
 
                     box.append(frame);
                     box.append('<div class="likhtar-preview__hint">Трейлер · відкрити зі звуком</div>');
 
                     box.on('hover:enter click', function () {
                         stopTrailer();
+                        // Повертаємо превʼю, коли плеєр закриють
+                        waitPlayerClose(side, movie);
 
                         var item = {
                             title: movie.title || movie.name || 'Трейлер',
@@ -5115,6 +5163,7 @@
                     });
 
                     side.append(box);
+                    refreshNavigation();
                 });
             }, DWELL_MS);
         }
@@ -5179,7 +5228,10 @@
                 if (timer) return;
                 timer = setTimeout(function () {
                     timer = null;
-                    try { collectSections(scope, holder); } catch (e) { }
+                    try {
+                        collectSections(scope, holder);
+                        refreshNavigation();
+                    } catch (e) { }
                 }, 300);
             });
 
@@ -5241,6 +5293,11 @@
             scope.find('.full-descr').addClass('likhtar-card__hidden');
             collectSections(scope, holder);
             watchSections(scope, holder);
+
+            // Lampa збирає список елементів для пульта один раз при відкритті
+            // сторінки. Наші кнопки й превʼю зʼявляються пізніше, тож без
+            // перезбирання фокус на них просто не переходить.
+            refreshNavigation();
 
             console.log('Ліхтар: нова картка — розділів', scope.find('.items-line').length,
                 '· опис', descr.length ? 'знайдено' : 'немає');
