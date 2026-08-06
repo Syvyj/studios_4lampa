@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.31';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.32';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4817,7 +4817,7 @@
                 })));
 
                 group('Інше');
-                body.append(hubEntry('Вікіпедія', MODULE_ICONS.dots, fromHub(function () { openWiki(movie); })));
+                body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, fromHub(function () { openWiki(movie); })));
 
                 var comments = hubScope && hubScope.find('.items-line').filter(function () {
                     return /комент|comment|review/i.test(sectionTitle($(this)));
@@ -4837,14 +4837,25 @@
             });
         }
 
+        // Розділи статті, де живуть саме факти, а не переказ сюжету
+        var WIKI_FACT_SECTIONS = /цікав|виробництв|передістор|фільмуванн|знімальн|знімання|кастинг|створенн|розробк|музика|маркетинг|сприйняття|критик|касов|нагород|реакція|сиквел|продовженн/i;
+        var WIKI_SKIP_SECTIONS = /сюжет|у ролях|акторськ|примітки|посилання|джерела|див\. також|зовнішні/i;
+
         /**
-         * Довідка з української Вікіпедії: у неї відкритий CORS і не треба
-         * ні підписок, ні генерацій. Статтю шукаємо за назвою і роком.
+         * Цікаві факти з української Вікіпедії: беремо повний текст статті
+         * і лишаємо тільки розділи про виробництво, знімання, сприйняття
+         * тощо. Вступ і сюжет відкидаємо — це переказ, який на сторінці
+         * і так уже є. Без підписок і генерацій: CORS у Вікіпедії відкритий.
          */
-        function wikiExtract(movie, callback) {
-            var key = 'wiki_' + (isSeries(movie) ? 'tv' : 'movie') + '_' + movie.id;
+        function wikiFacts(movie, callback) {
+            var key = 'wikifacts_' + (isSeries(movie) ? 'tv' : 'movie') + '_' + movie.id;
             var cached = LikhtarCache.get(key);
             if (cached !== undefined) return callback(cached);
+
+            var finish = function (result) {
+                LikhtarCache.set(key, result, LikhtarCache.TTL.WEEK);
+                callback(result);
+            };
 
             var title = movie.title || movie.name || '';
             var year = (movie.release_date || movie.first_air_date || '').substr(0, 4);
@@ -4854,42 +4865,68 @@
 
             $.get(searchUrl).done(function (found) {
                 var hit = found && found.query && found.query.search && found.query.search[0];
-                if (!hit) {
-                    LikhtarCache.set(key, null, LikhtarCache.TTL.WEEK);
-                    return callback(null);
-                }
+                if (!hit) return finish(null);
 
                 var extractUrl = 'https://uk.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1' +
-                    '&format=json&origin=*&exchars=2800&titles=' + encodeURIComponent(hit.title);
+                    '&format=json&origin=*&titles=' + encodeURIComponent(hit.title);
 
                 $.get(extractUrl).done(function (data) {
                     var pages = data && data.query && data.query.pages;
                     var page = pages && pages[Object.keys(pages)[0]];
-                    var result = page && page.extract
-                        ? { title: hit.title, text: page.extract }
-                        : null;
+                    var sections = splitWikiSections(page && page.extract);
 
-                    LikhtarCache.set(key, result, LikhtarCache.TTL.WEEK);
-                    callback(result);
+                    finish(sections.length ? { title: hit.title, sections: sections } : null);
                 }).fail(function () { callback(null); });
             }).fail(function () { callback(null); });
         }
 
-        function openWiki(movie) {
-            openPanel('Вікіпедія', movie.title || movie.name || '', function (body) {
-                body.append('<div class="likhtar-panel__loading">Шукаємо статтю…</div>');
+        /** Ріже plaintext-витяг на розділи за заголовками «== Назва ==». */
+        function splitWikiSections(text) {
+            if (!text) return [];
 
-                wikiExtract(movie, function (article) {
+            var parts = String(text).split(/\n==+\s*([^=\n]+?)\s*==+\n?/);
+            var sections = [];
+
+            // parts: [вступ, назва1, текст1, назва2, текст2, …]
+            for (var i = 1; i < parts.length - 1; i += 2) {
+                var name = parts[i].trim();
+                var bodyText = (parts[i + 1] || '').trim();
+
+                if (!bodyText || bodyText.length < 80) continue;
+                if (WIKI_SKIP_SECTIONS.test(name)) continue;
+                if (!WIKI_FACT_SECTIONS.test(name)) continue;
+
+                sections.push({
+                    name: name,
+                    text: bodyText.length > 1600 ? bodyText.slice(0, 1600).replace(/\s+\S*$/, '') + '…' : bodyText
+                });
+
+                if (sections.length >= 6) break;
+            }
+
+            return sections;
+        }
+
+        function openWiki(movie) {
+            openPanel('Цікаві факти', movie.title || movie.name || '', function (body) {
+                body.append('<div class="likhtar-panel__loading">Шукаємо у Вікіпедії…</div>');
+
+                wikiFacts(movie, function (article) {
                     if (!panel) return;
                     body.empty();
 
                     if (!article) {
-                        body.append('<div class="likhtar-panel__loading">В українській Вікіпедії статті не знайшлося</div>');
+                        body.append('<div class="likhtar-panel__loading">У статті немає розділів із фактами</div>');
                         return;
                     }
 
-                    body.append($('<div class="likhtar-panel__group"></div>').text(article.title));
-                    body.append($('<div class="likhtar-panel__text selector"></div>').text(article.text));
+                    article.sections.forEach(function (section) {
+                        body.append($('<div class="likhtar-panel__group"></div>').text(section.name));
+                        body.append($('<div class="likhtar-panel__text selector"></div>').text(section.text));
+                    });
+
+                    body.append($('<div class="likhtar-panel__loading"></div>')
+                        .text('Джерело: Вікіпедія · ' + article.title));
                     refocusPanel();
                 });
             });
