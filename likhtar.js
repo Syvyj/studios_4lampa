@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.15';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.16';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4275,6 +4275,22 @@
             Lampa.Controller.toggle(PANEL_CONTROLLER);
         }
 
+        /** Прокручує тіло панелі так, щоб сфокусований елемент було видно цілком. */
+        function followFocus(body) {
+            body.on('hover:focus', '.selector', function () {
+                var el = this;
+                var container = body[0];
+                var elTop = el.offsetTop - container.offsetTop;
+                var elBottom = elTop + el.offsetHeight;
+                var viewTop = container.scrollTop;
+                var viewBottom = viewTop + container.clientHeight;
+                var margin = 24;
+
+                if (elTop < viewTop + margin) container.scrollTop = elTop - margin;
+                else if (elBottom > viewBottom - margin) container.scrollTop = elBottom - container.clientHeight + margin;
+            });
+        }
+
         function openPanel(title, subtitle, fill) {
             closePanel();
 
@@ -4287,7 +4303,9 @@
             panel.find('.likhtar-panel__title').text(title);
             panel.find('.likhtar-panel__sub').text(subtitle || '');
 
-            fill(panel.find('.likhtar-panel__body'));
+            var panelBody = panel.find('.likhtar-panel__body');
+            followFocus(panelBody);
+            fill(panelBody);
             $('body').append(panel);
 
             // Клас додаємо наступним кадром, інакше переходу не буде видно
@@ -4579,24 +4597,28 @@
         // ===== Списки фільмів у панелі (рекомендації, подібні, колекція) =====
 
         function titleRow(item) {
-            var row = $('<div class="likhtar-title selector">' +
-                '<div class="likhtar-title__poster"></div>' +
-                '<div class="likhtar-title__text"><div class="likhtar-title__name"></div>' +
-                '<div class="likhtar-title__meta"></div></div>' +
-                '<div class="likhtar-person__chevron">›</div></div>');
+            var tile = $('<div class="likhtar-title selector">' +
+                '<div class="likhtar-title__poster"><div class="likhtar-title__rating"></div></div>' +
+                '<div class="likhtar-title__name"></div>' +
+                '<div class="likhtar-title__meta"></div></div>');
 
-            row.find('.likhtar-title__name').text(item.title || item.name || '');
+            tile.find('.likhtar-title__name').text(item.title || item.name || '');
 
             var year = (item.release_date || item.first_air_date || '').substr(0, 4);
-            var rating = item.vote_average ? '★ ' + Number(item.vote_average).toFixed(1) : '';
-            row.find('.likhtar-title__meta').text([year, rating].filter(Boolean).join(' · '));
+            tile.find('.likhtar-title__meta').text(year);
 
-            if (item.poster_path) {
-                row.find('.likhtar-title__poster')
-                    .css('background-image', 'url(' + Lampa.TMDB.image('t/p/w154' + item.poster_path) + ')');
+            if (item.vote_average) {
+                tile.find('.likhtar-title__rating').text('★ ' + Number(item.vote_average).toFixed(1));
+            } else {
+                tile.find('.likhtar-title__rating').remove();
             }
 
-            row.on('hover:enter click', function () {
+            if (item.poster_path) {
+                tile.find('.likhtar-title__poster')
+                    .css('background-image', 'url(' + Lampa.TMDB.image('t/p/w342' + item.poster_path) + ')');
+            }
+
+            tile.on('hover:enter click', function () {
                 closePanel();
                 Lampa.Activity.push({
                     url: '', component: 'full', id: item.id,
@@ -4605,7 +4627,7 @@
                 });
             });
 
-            return row;
+            return tile;
         }
 
         /** Список тайтлів TMDB із кешем: рекомендації, подібні, частини колекції. */
@@ -4644,9 +4666,11 @@
                         return;
                     }
 
+                    var grid = $('<div class="likhtar-panel__grid"></div>');
                     items.slice(0, 20).forEach(function (item) {
-                        if (item && item.id) body.append(titleRow(item));
+                        if (item && item.id) grid.append(titleRow(item));
                     });
+                    body.append(grid);
                     refocusPanel();
                 });
             });
@@ -5251,16 +5275,20 @@
                 '.likhtar-episode__date--upcoming { background: rgba(46,160,67,.8); }' +
                 '.likhtar-episode__date--unknown { opacity: .5; }' +
 
-                /* Списки тайтлів у панелі */
-                '.likhtar-title { display: flex; align-items: center; gap: .9em; padding: .55em .6em;' +
-                ' border-radius: .7em; }' +
-                '.likhtar-title.focus { background: rgba(255,255,255,.16); }' +
-                '.likhtar-title__poster { width: 3.1em; height: 4.6em; border-radius: .45em;' +
-                ' flex: 0 0 auto; background: #22242e center/cover no-repeat; }' +
-                '.likhtar-title__text { flex: 1; min-width: 0; }' +
-                '.likhtar-title__name { font-weight: 600; overflow: hidden; text-overflow: ellipsis;' +
-                ' white-space: nowrap; }' +
-                '.likhtar-title__meta { font-size: .85em; opacity: .55; margin-top: .15em; }' +
+                /* Списки тайтлів у панелі — плитки з постерами */
+                '.likhtar-panel__grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9em;' +
+                ' padding: .3em .2em .6em; }' +
+                '.likhtar-title { border-radius: .8em; padding: .35em; }' +
+                '.likhtar-title.focus { background: rgba(255,255,255,.14);' +
+                ' outline: 2px solid rgba(255,255,255,.55); }' +
+                '.likhtar-title__poster { position: relative; padding-top: 150%; border-radius: .6em;' +
+                ' background: #22242e center/cover no-repeat; }' +
+                '.likhtar-title__rating { position: absolute; top: .5em; left: .5em;' +
+                ' background: rgba(10,12,18,.75); border-radius: .4em; padding: .15em .5em;' +
+                ' font-size: .78em; font-weight: 700; color: #eec37a; }' +
+                '.likhtar-title__name { font-size: .9em; font-weight: 600; margin-top: .5em;' +
+                ' overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }' +
+                '.likhtar-title__meta { font-size: .8em; opacity: .5; margin-top: .1em; }' +
 
                 /* Перенесена секція має вміщатись у вужчу панель */
                 '.likhtar-panel .items-line { margin: 0; }' +
