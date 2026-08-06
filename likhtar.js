@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.30';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.31';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4227,7 +4227,8 @@
 
         var moved = [];        // що саме ми перенесли в панель — щоб повернути на місце
         var panel = null;
-        var panelBack = null;  // куди веде «Назад» усередині панелі (з епізодів — до сезонів)
+        var panelBack = null;        // куди веде «Назад» усередині панелі (з епізодів — до сезонів)
+        var pendingPanelBack = null; // «Назад» для панелі, яку зараз відкриють (розділи хаба)
         var sectionObserver = null;
 
         function isEnabled() {
@@ -4320,6 +4321,11 @@
 
             panel.find('.likhtar-panel__title').text(title);
             panel.find('.likhtar-panel__sub').text(subtitle || '');
+
+            // Розділ, відкритий із хаба, на «Назад» повертається в хаб
+            panelBack = pendingPanelBack;
+            pendingPanelBack = null;
+            panel.find('.likhtar-panel__hint').text(panelBack ? 'Назад — до Ліхтарика' : 'Назад — закрити панель');
 
             fill(panel.find('.likhtar-panel__body'));
             $('body').append(panel);
@@ -4545,6 +4551,8 @@
         }
 
         function openSeasons(movie) {
+            var backToHub = null;
+
             function render() {
                 fillPanel('Перелік серій', 'Дати виходу за сезонами', function (body) {
                     body.append('<div class="likhtar-panel__loading">Завантаження…</div>');
@@ -4583,10 +4591,11 @@
 
                         refocusPanel();
                     });
-                }, null);
+                }, backToHub);
             }
 
             openPanel('Перелік серій', 'Дати виходу за сезонами', function () { });
+            backToHub = panelBack;   // openPanel щойно підхопив «назад до хаба»
             render();
         }
 
@@ -4768,48 +4777,47 @@
         function openHub(movie, hero) {
             var mediaType = isSeries(movie) ? 'tv' : 'movie';
 
+            // Кожен розділ, відкритий звідси, на «Назад» повертається сюди ж
+            function fromHub(open) {
+                return function () {
+                    pendingPanelBack = function () { openHub(movie, hero); };
+                    open();
+                };
+            }
+
             openPanel('Ліхтарик', movie.title || movie.name || '', function (body) {
                 function group(title) {
                     body.append($('<div class="likhtar-panel__group"></div>').text(title));
                 }
 
                 group('Глибше');
-                body.append(hubEntry('Актори та автори', MODULE_ICONS.cast, function () { openCast(movie); }));
+                body.append(hubEntry('Актори та автори', MODULE_ICONS.cast, fromHub(function () { openCast(movie); })));
 
                 if (isSeries(movie)) {
-                    body.append(hubEntry('Перелік серій', MODULE_ICONS.seasons, function () { openSeasons(movie); }));
-                    body.append(hubEntry('Попередній сезон: коротко', MODULE_ICONS.comments, function () { openSeasonRecap(movie); }));
+                    body.append(hubEntry('Перелік серій', MODULE_ICONS.seasons, fromHub(function () { openSeasons(movie); })));
+                    body.append(hubEntry('Попередній сезон: коротко', MODULE_ICONS.comments, fromHub(function () { openSeasonRecap(movie); })));
                 }
 
                 var franchiseSlot = $('<div></div>');
                 body.append(franchiseSlot);
                 collectionOf(movie, function (collection) {
                     if (!collection || !panel) return;
-                    franchiseSlot.append(hubEntry(collection.name || 'Франшиза', MODULE_ICONS.collection, function () {
+                    franchiseSlot.append(hubEntry(collection.name || 'Франшиза', MODULE_ICONS.collection, fromHub(function () {
                         openTitleList(collection.name || 'Франшиза', 'collection/' + collection.id);
-                    }));
+                    })));
                     refocusPanel();
                 });
 
                 group('Що далі');
-                body.append(hubEntry('Рекомендації', MODULE_ICONS.recommend, function () {
+                body.append(hubEntry('Рекомендації', MODULE_ICONS.recommend, fromHub(function () {
                     openTitleList('Рекомендації', mediaType + '/' + movie.id + '/recommendations');
-                }));
-                body.append(hubEntry('Подібні', MODULE_ICONS.similar, function () {
+                })));
+                body.append(hubEntry('Подібні', MODULE_ICONS.similar, fromHub(function () {
                     openTitleList('Подібні', mediaType + '/' + movie.id + '/similar');
-                }));
+                })));
 
                 group('Інше');
-                body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, function () {
-                    // Готовий компонент Lampa: факти тягнуться з CUB, без генерацій
-                    closePanel();
-                    Lampa.Activity.push({
-                        url: '',
-                        title: Lampa.Lang.translate('title_facts') || 'Цікаві факти',
-                        component: 'ai_facts',
-                        card: movie
-                    });
-                }));
+                body.append(hubEntry('Вікіпедія', MODULE_ICONS.dots, fromHub(function () { openWiki(movie); })));
 
                 var comments = hubScope && hubScope.find('.items-line').filter(function () {
                     return /комент|comment|review/i.test(sectionTitle($(this)));
@@ -4820,19 +4828,70 @@
                         anchor = $('<div class="likhtar-card__anchor"></div>').insertBefore(comments);
                         comments.data('likhtar-anchor', anchor);
                     }
-                    body.append(hubEntry('Коментарі', MODULE_ICONS.comments, function () {
+                    body.append(hubEntry('Коментарі', MODULE_ICONS.comments, fromHub(function () {
                         openSection('Коментарі', comments, anchor);
-                    }));
+                    })));
                 }
 
-                body.append(hubEntry('Стандартні дії Lampa', MODULE_ICONS.dots, function () {
-                    // Рідне меню «Ще» не переписуємо — викликаємо приховану кнопку
-                    closePanel();
-                    var native = hero.find('.button--options').first();
-                    if (native.length) native.trigger('hover:enter');
-                }));
-
                 refocusPanel();
+            });
+        }
+
+        /**
+         * Довідка з української Вікіпедії: у неї відкритий CORS і не треба
+         * ні підписок, ні генерацій. Статтю шукаємо за назвою і роком.
+         */
+        function wikiExtract(movie, callback) {
+            var key = 'wiki_' + (isSeries(movie) ? 'tv' : 'movie') + '_' + movie.id;
+            var cached = LikhtarCache.get(key);
+            if (cached !== undefined) return callback(cached);
+
+            var title = movie.title || movie.name || '';
+            var year = (movie.release_date || movie.first_air_date || '').substr(0, 4);
+
+            var searchUrl = 'https://uk.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*' +
+                '&srlimit=1&srsearch=' + encodeURIComponent(title + ' ' + year);
+
+            $.get(searchUrl).done(function (found) {
+                var hit = found && found.query && found.query.search && found.query.search[0];
+                if (!hit) {
+                    LikhtarCache.set(key, null, LikhtarCache.TTL.WEEK);
+                    return callback(null);
+                }
+
+                var extractUrl = 'https://uk.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1' +
+                    '&format=json&origin=*&exchars=2800&titles=' + encodeURIComponent(hit.title);
+
+                $.get(extractUrl).done(function (data) {
+                    var pages = data && data.query && data.query.pages;
+                    var page = pages && pages[Object.keys(pages)[0]];
+                    var result = page && page.extract
+                        ? { title: hit.title, text: page.extract }
+                        : null;
+
+                    LikhtarCache.set(key, result, LikhtarCache.TTL.WEEK);
+                    callback(result);
+                }).fail(function () { callback(null); });
+            }).fail(function () { callback(null); });
+        }
+
+        function openWiki(movie) {
+            openPanel('Вікіпедія', movie.title || movie.name || '', function (body) {
+                body.append('<div class="likhtar-panel__loading">Шукаємо статтю…</div>');
+
+                wikiExtract(movie, function (article) {
+                    if (!panel) return;
+                    body.empty();
+
+                    if (!article) {
+                        body.append('<div class="likhtar-panel__loading">В українській Вікіпедії статті не знайшлося</div>');
+                        return;
+                    }
+
+                    body.append($('<div class="likhtar-panel__group"></div>').text(article.title));
+                    body.append($('<div class="likhtar-panel__text selector"></div>').text(article.text));
+                    refocusPanel();
+                });
             });
         }
 
