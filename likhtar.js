@@ -4596,14 +4596,11 @@
         }
 
         function buildModules(hero, movie) {
-            var holder = hero.find('.likhtar-modules').first();
-
-            if (!holder.length) {
-                holder = $('<div class="likhtar-modules"></div>');
-                var after = hero.find('.full-start-new__buttons, .full-start__buttons').first();
-                if (!after.length) return null;
-                after.after(holder);
-            }
+            // Наші кнопки — в один рядок із рідними: спільний контейнер
+            // означає і спільну навігацію пультом, без стрибка між рядками
+            var holder = hero.find('.full-start-new__buttons, .full-start__buttons').first();
+            if (!holder.length) return null;
+            holder.addClass('likhtar-modules');
 
             if (!holder.find('.likhtar-module--cast').length) {
                 holder.append(moduleButton('Актори та автори', '', function () { openCast(movie); })
@@ -4666,69 +4663,196 @@
          * Складаємо їх в одну картку збоку — там вони читаються як довідка,
          * а не як стіна тексту.
          */
-        function buildMetrics(hero) {
+        var MONTHS_UA = ['січня', 'лютого', 'березня', 'квітня', 'травня', 'червня',
+            'липня', 'серпня', 'вересня', 'жовтня', 'листопада', 'грудня'];
+
+        var CARD_STATUS = {
+            'Returning Series': { text: 'Онгоїнг', mod: 'live' },
+            'In Production': { text: 'У виробництві', mod: 'live' },
+            'Planned': { text: 'Заплановано', mod: 'live' },
+            'Ended': { text: 'Завершено', mod: 'ended' },
+            'Canceled': { text: 'Скасовано', mod: 'canceled' },
+            'Cancelled': { text: 'Скасовано', mod: 'canceled' },
+            'Released': { text: 'Випущено', mod: 'live' }
+        };
+
+        /** Деталі для бічної картки одним запитом, із кешем на день. */
+        function detailsFor(movie, callback) {
+            var type = isSeries(movie) ? 'tv' : 'movie';
+            var key = 'carddet_' + type + '_' + movie.id;
+
+            var cached = LikhtarCache.get(key);
+            if (cached) return callback(cached);
+
+            var append = type === 'movie' ? 'release_dates' : 'content_ratings';
+            var url = Lampa.TMDB.api(type + '/' + movie.id + '?api_key=' + getTmdbKey() +
+                '&language=' + Lampa.Storage.get('language', 'uk') + '&append_to_response=' + append);
+
+            new Lampa.Reguest().silent(url, function (data) {
+                if (!data || !data.id) return callback(null);
+                LikhtarCache.set(key, data, LikhtarCache.TTL.DAY);
+                callback(data);
+            }, function () {
+                callback(null);
+            });
+        }
+
+        function certificationOf(details) {
+            try {
+                if (details.release_dates) {
+                    var us = details.release_dates.results.filter(function (r) { return r.iso_3166_1 === 'US'; })[0];
+                    var entry = us && us.release_dates.filter(function (r) { return r.certification; })[0];
+                    return entry ? entry.certification : '';
+                }
+                if (details.content_ratings) {
+                    var rating = details.content_ratings.results.filter(function (r) { return r.iso_3166_1 === 'US'; })[0];
+                    return rating ? rating.rating : '';
+                }
+            } catch (e) { }
+            return '';
+        }
+
+        function humanDate(iso) {
+            if (!iso) return '';
+            var parts = String(iso).split('-');
+            if (parts.length !== 3) return iso;
+            return parseInt(parts[2], 10) + ' ' + (MONTHS_UA[parseInt(parts[1], 10) - 1] || '') + ' ' + parts[0];
+        }
+
+        function inDays(iso) {
+            var target = new Date(iso + 'T00:00:00');
+            if (isNaN(target.getTime())) return null;
+            var today = new Date(); today.setHours(0, 0, 0, 0);
+            return Math.round((target - today) / 86400000);
+        }
+
+        function whenText(days) {
+            if (days === 0) return 'сьогодні';
+            if (days === 1) return 'завтра';
+            if (days > 1 && days < 30) return 'через ' + days + ' дн.';
+            return '';
+        }
+
+        function factRow(grid, name, value) {
+            if (!value) return;
+            grid.append($('<div class="likhtar-metrics__fname"></div>').text(name));
+            grid.append($('<div class="likhtar-metrics__fvalue"></div>').text(value));
+        }
+
+        /**
+         * Бічна картка за макетом «Редизайн блоків» (1a): рейтинг і вік,
+         * ряд плашок, факти таблицею, внизу акцентний блок. Збирається
+         * власною розміткою з даних TMDB — рідні елементи Lampa влаштовані
+         * інакше, і дотягнути їх до макета стилями не виходить.
+         */
+        function buildMetrics(hero, movie) {
             if (hero.find('.likhtar-metrics').length) return;
 
             var body = hero.find('.full-start-new__body, .full-start__body').first();
             if (!body.length) return;
 
-            var card = $('<div class="likhtar-metrics"></div>');
-
-            [
-                '.full-start-new__rate-line', '.full-start__rate-line',
-                '.full-start-new__head',
-                '.full-start-new__details', '.full-start__details',
-                '.likhtar-info-line'
+            // Рідні рядки з тими ж даними ховаємо — але не чіпаємо, щоб
+            // «вимкнути новий вигляд» повертало все як було
+            ['.full-start-new__rate-line', '.full-start__rate-line',
+             '.full-start-new__head',
+             '.full-start-new__details', '.full-start__details'
             ].forEach(function (sel) {
-                var node = hero.find(sel).first();
-                if (node.length) card.append(node.detach());
+                hero.find(sel).first().addClass('likhtar-card__hidden');
             });
 
-            if (!card.children().length) return;
+            var card = $('<div class="likhtar-metrics"></div>');
+
+            // Ярус 1: рейтинг і вік
+            var top = $('<div class="likhtar-metrics__top"></div>');
+            var rating = movie.vote_average ? Number(movie.vote_average).toFixed(1) : '';
+            if (rating && rating !== '0.0') {
+                top.append($('<div class="likhtar-metrics__rating"></div>')
+                    .append($('<span class="likhtar-metrics__num"></span>').text(rating))
+                    .append('<span class="likhtar-metrics__src">TMDB</span>'));
+            }
+            var age = $('<div class="likhtar-metrics__age likhtar-card__hidden"></div>');
+            top.append(age);
+            card.append(top);
+
+            // Ярус 2: статус + мітки якості (їх домалює модуль міток)
+            var chips = $('<div class="likhtar-metrics__chips"></div>');
+            var statusChip = $('<div class="likhtar-metrics__status likhtar-card__hidden"><i></i><span></span></div>');
+            chips.append(statusChip);
+            chips.append('<div class="likhtar-metrics__badges"></div>');
+            card.append(chips);
+
+            // Ярус 3: факти
+            var facts = $('<div class="likhtar-metrics__facts"></div>');
+            card.append(facts);
+
+            // Акцент внизу
+            var accent = $('<div class="likhtar-metrics__accent likhtar-card__hidden"></div>');
+            card.append(accent);
+
             body.append(card);
 
-            // Факти з блоку «Детально» (дата, бюджет, країни) — теж сюди.
-            // Вони рендеряться пізніше за подію, тому чекаємо на них.
-            fillFacts(card);
-        }
+            detailsFor(movie, function (details) {
+                if (!details) return;
 
-        /**
-         * Дата релізу, бюджет і країни живуть у блоці опису, який ми ховаємо.
-         * Переносимо самі факти в картку метрик — решта блоку (жанри, теги,
-         * виробництво) відкривається кнопкою «Деталі».
-         */
-        function fillFacts(card) {
-            var scope = card.closest('.likhtar-card');
-            if (!scope.length) scope = $('body');
+                var cert = certificationOf(details);
+                if (cert) age.text(cert).removeClass('likhtar-card__hidden');
 
-            var attempts = 0;
-            var timer = setInterval(function () {
-                var details = scope.find('.full-descr__details .full-descr__info, .full-descr__info');
-
-                if (!details.length) {
-                    if (++attempts > 20) clearInterval(timer);
-                    return;
+                var status = CARD_STATUS[details.status];
+                if (status) {
+                    statusChip.find('span').text(status.text);
+                    statusChip.addClass('likhtar-metrics__status--' + status.mod).removeClass('likhtar-card__hidden');
                 }
 
-                clearInterval(timer);
-                if (card.find('.likhtar-metrics__facts').length) return;
+                var year = (details.release_date || details.first_air_date || '').substr(0, 4);
+                var country = details.production_countries && details.production_countries[0]
+                    ? details.production_countries[0].name : '';
+                factRow(facts, 'Рік', [year, country].filter(Boolean).join(' · '));
 
-                var facts = $('<div class="likhtar-metrics__facts"></div>');
+                if (isSeries(movie)) {
+                    var seasons = details.number_of_seasons
+                        ? details.number_of_seasons + (details.number_of_episodes ? ' · ' + details.number_of_episodes + ' серій' : '')
+                        : '';
+                    factRow(facts, 'Сезони', seasons);
+                } else if (details.runtime) {
+                    var h = Math.floor(details.runtime / 60), m = details.runtime % 60;
+                    factRow(facts, 'Тривалість', (h ? h + ' год ' : '') + m + ' хв');
+                }
 
-                details.each(function () {
-                    var name = $(this).find('.full-descr__info-name').text().trim();
-                    var value = $(this).find('.full-descr__info-body').text().trim();
-                    if (!name || !value) return;
+                if (details.genres && details.genres.length) {
+                    factRow(facts, 'Жанр', details.genres.map(function (g) { return g.name; }).slice(0, 4).join(', '));
+                }
 
-                    var row = $('<div class="likhtar-fact"><span class="likhtar-fact__name"></span>' +
-                        '<span class="likhtar-fact__value"></span></div>');
-                    row.find('.likhtar-fact__name').text(name);
-                    row.find('.likhtar-fact__value').text(value);
-                    facts.append(row);
-                });
+                factRow(facts, 'Реліз', humanDate(details.release_date || details.first_air_date));
 
-                if (facts.children().length) card.append(facts);
-            }, 400);
+                if (details.budget && details.budget > 0) {
+                    factRow(facts, 'Бюджет', '$ ' + String(details.budget).replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
+                }
+
+                // Акцент: наступна серія — або, для фільму, кінець сеансу і цифра
+                var next = details.next_episode_to_air;
+                if (next && next.air_date) {
+                    var days = inDays(next.air_date);
+                    var code = 'S' + ('0' + (next.season_number || 0)).slice(-2) +
+                        'E' + ('0' + (next.episode_number || 0)).slice(-2);
+
+                    accent.empty()
+                        .append($('<div class="likhtar-metrics__arow"></div>')
+                            .append('<span class="likhtar-metrics__alabel">Наступна серія</span>')
+                            .append($('<span class="likhtar-metrics__awhen"></span>').text(whenText(days) || humanDate(next.air_date))))
+                        .append($('<div class="likhtar-metrics__acode"></div>')
+                            .append($('<b></b>').text(code))
+                            .append($('<span></span>').text(humanDate(next.air_date))));
+                    accent.removeClass('likhtar-card__hidden');
+                } else if (!isSeries(movie) && details.runtime) {
+                    var end = new Date(Date.now() + details.runtime * 60000);
+                    accent.empty()
+                        .append($('<div class="likhtar-metrics__arow"></div>')
+                            .append('<span class="likhtar-metrics__alabel">Закінчиться</span>')
+                            .append($('<span class="likhtar-metrics__awhen"></span>')
+                                .text('о ' + ('0' + end.getHours()).slice(-2) + ':' + ('0' + end.getMinutes()).slice(-2))));
+                    accent.removeClass('likhtar-card__hidden');
+                }
+            });
         }
 
         /**
@@ -4817,7 +4941,7 @@
                 short.insertAfter(details);
             }
 
-            buildMetrics(hero);
+            buildMetrics(hero, movie);
 
             var holder = buildModules(hero, movie);
             if (!holder) return;
@@ -4840,6 +4964,11 @@
                 /* Герой */
                 'body.likhtar-card-on .full-start-new__body, body.likhtar-card-on .full-start__body' +
                 ' { position: relative; min-height: 78vh; }' +
+                /* Рідні кнопки й наші розділи — один рядок і спільна навігація */
+                'body.likhtar-card-on .full-start-new__buttons, body.likhtar-card-on .full-start__buttons' +
+                ' { display: flex; flex-wrap: wrap; align-items: center; gap: .7em;' +
+                ' overflow: visible !important; }' +
+                'body.likhtar-card-on .full-start-new__buttons .likhtar-module { margin: 0; }' +
                 /* Рідний фон Lampa прив'язаний до вмісту сторінки, тому під шапкою
                    лишалася сіра смуга. Кріпимо його до екрана — тоді кадр
                    заходить і під шапку, і на всю висоту. */
@@ -4854,49 +4983,58 @@
                 ' rgba(7,9,15,.55) 58%, rgba(7,9,15,.1) 85%, rgba(7,9,15,.05) 100%),' +
                 ' linear-gradient(to top, rgba(7,9,15,.95) 0%, rgba(7,9,15,.2) 40%, transparent 70%); }' +
 
-                /* Бічна картка: три яруси, один янтарний акцент (макет 1a) */
-                '.likhtar-metrics { position: absolute; top: 0; right: 0; width: 21em;' +
+                /* Бічна картка за макетом 1a — власна розмітка */
+                '.likhtar-metrics { position: absolute; top: 0; right: 0; width: 23em;' +
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
-                ' border-radius: 1.1em; padding: 1.15em 1.25em; display: flex; flex-direction: column;' +
-                ' gap: .8em; backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }' +
-                '.likhtar-metrics > * { margin: 0 !important; }' +
+                ' border-radius: 1.1em; overflow: hidden; display: flex; flex-direction: column;' +
+                ' backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); }' +
 
-                /* Ярус 1: великий рейтинг, вік праворуч */
-                '.likhtar-metrics .full-start-new__rate-line { display: flex; align-items: flex-start;' +
-                ' flex-wrap: wrap; gap: .5em; }' +
-                '.likhtar-metrics .rate--tmdb { background: none !important; padding: 0 !important;' +
-                ' display: flex; align-items: baseline; gap: .45em; }' +
-                '.likhtar-metrics .rate--tmdb > div:first-child { font-size: 2.6em; font-weight: 800;' +
-                ' line-height: 1; letter-spacing: -.03em; color: #eec37a; }' +
-                '.likhtar-metrics .rate--tmdb .source--name { font-size: .72em; font-weight: 700;' +
-                ' letter-spacing: .16em; opacity: .45; }' +
-                '.likhtar-metrics .full-start__pg { margin-left: auto !important;' +
-                ' border: 1px solid rgba(255,255,255,.22) !important; background: none !important;' +
-                ' border-radius: .5em; font-weight: 700; opacity: .85; }' +
+                '.likhtar-metrics__top { display: flex; align-items: flex-start;' +
+                ' justify-content: space-between; padding: 1.3em 1.3em 1em; }' +
+                '.likhtar-metrics__rating { display: flex; align-items: baseline; gap: .55em; }' +
+                '.likhtar-metrics__num { font-size: 2.7em; font-weight: 800; line-height: 1;' +
+                ' letter-spacing: -.03em; color: #eec37a; }' +
+                '.likhtar-metrics__src { font-size: .72em; font-weight: 700; letter-spacing: .16em;' +
+                ' color: rgba(233,233,236,.45); }' +
+                '.likhtar-metrics__age { border: 1px solid rgba(255,255,255,.22); border-radius: .45em;' +
+                ' padding: .2em .6em; font-size: .82em; font-weight: 700; color: rgba(233,233,236,.75);' +
+                ' align-self: flex-start; }' +
 
-                /* Ярус 2: статус і мітки — однакові тихі плашки */
-                '.likhtar-metrics .full-start__status, .likhtar-metrics .likhtar-full-badge {' +
-                ' background: rgba(255,255,255,.07) !important; border: none !important;' +
-                ' border-radius: .55em !important; padding: .3em .8em !important;' +
-                ' font-size: .82em !important; font-weight: 700; color: rgba(233,233,236,.82) !important; }' +
-                '.likhtar-metrics .full-start__status:before { content: ""; display: inline-block;' +
-                ' width: .5em; height: .5em; border-radius: 50%; background: #3fb46a; margin-right: .5em; }' +
+                '.likhtar-metrics__chips { display: flex; flex-wrap: wrap; align-items: center;' +
+                ' gap: .5em; padding: 0 1.3em 1.2em; }' +
+                '.likhtar-metrics__status { display: inline-flex; align-items: center; gap: .5em;' +
+                ' height: 2.1em; padding: 0 .8em; border-radius: .55em; background: rgba(255,255,255,.07);' +
+                ' font-size: .82em; font-weight: 600; color: rgba(233,233,236,.82); }' +
+                '.likhtar-metrics__status i { width: .5em; height: .5em; border-radius: 50%;' +
+                ' background: #3fb46a; }' +
+                '.likhtar-metrics__status--ended i { background: rgba(233,233,236,.4); }' +
+                '.likhtar-metrics__status--canceled i { background: #d9534f; }' +
+                '.likhtar-metrics__badges { display: inline-flex; flex-wrap: wrap; gap: .5em; }' +
+                '.likhtar-metrics__badges .likhtar-full-badge { background: rgba(255,255,255,.07) !important;' +
+                ' border: none !important; border-radius: .55em !important; height: 2.1em;' +
+                ' display: inline-flex; align-items: center; padding: 0 .8em !important; margin: 0 !important;' +
+                ' font-size: .82em !important; font-weight: 700 !important;' +
+                ' letter-spacing: .03em; color: rgba(233,233,236,.82) !important; }' +
 
-                /* Ярус 3: факти таблицею «назва — значення» */
-                '.likhtar-metrics .full-start-new__head, .likhtar-metrics .full-start-new__details' +
-                ' { font-size: .92em; opacity: .8; line-height: 1.5; }' +
-                '.likhtar-metrics__facts { border-top: 1px solid rgba(255,255,255,.08);' +
-                ' padding-top: .8em; display: grid; grid-template-columns: 6.5em 1fr; gap: .5em .9em; }' +
-                '.likhtar-fact { display: contents; }' +
-                '.likhtar-fact__name { font-size: .85em; color: rgba(233,233,236,.42); }' +
-                '.likhtar-fact__value { font-size: .92em; font-weight: 600; }' +
+                '.likhtar-metrics__facts { display: grid; grid-template-columns: 6.2em 1fr;' +
+                ' gap: .55em .9em; padding: 1.1em 1.3em; border-top: 1px solid rgba(255,255,255,.08); }' +
+                '.likhtar-metrics__facts:empty { display: none; }' +
+                '.likhtar-metrics__fname { font-size: .85em; color: rgba(233,233,236,.42); }' +
+                '.likhtar-metrics__fvalue { font-size: .92em; font-weight: 600; line-height: 1.4; }' +
 
-                /* Акцентний блок: наступна серія */
-                '.likhtar-metrics .likhtar-info-line { border-top: 1px solid rgba(255,255,255,.08);' +
-                ' padding-top: .8em; display: flex; flex-direction: column; gap: .5em; }' +
-                '.likhtar-metrics .likhtar-chip { background: rgba(255,255,255,.07); font-size: .85em; }' +
-                '.likhtar-metrics .likhtar-chip--next { background: none; padding: 0; font-size: 1em;' +
-                ' font-weight: 800; color: #eec37a; }' +
+                '.likhtar-metrics__accent { display: flex; flex-direction: column; gap: .55em;' +
+                ' padding: 1.1em 1.3em 1.25em; border-top: 1px solid rgba(255,255,255,.08);' +
+                ' background: rgba(255,255,255,.03); }' +
+                '.likhtar-metrics__arow { display: flex; align-items: center; justify-content: space-between; }' +
+                '.likhtar-metrics__alabel { font-size: .72em; font-weight: 700; letter-spacing: .16em;' +
+                ' text-transform: uppercase; color: rgba(233,233,236,.45); }' +
+                '.likhtar-metrics__awhen { font-size: .85em; font-weight: 700; color: #eec37a; }' +
+                '.likhtar-metrics__acode { display: flex; align-items: baseline; gap: .7em; }' +
+                '.likhtar-metrics__acode b { font-size: 1.4em; font-weight: 800; letter-spacing: -.01em; }' +
+                '.likhtar-metrics__acode span { font-size: .9em; color: rgba(233,233,236,.6); }' +
+
+                /* Дубль плашок під логотипом ховаємо — вони тепер у картці */
+                'body.likhtar-card-on .likhtar-info-line { display: none !important; }' +
                 'body.likhtar-card-on .full-start-new__left, body.likhtar-card-on .full-start__left' +
                 ' { display: none !important; }' +
                 'body.likhtar-card-on .full-start-new__right, body.likhtar-card-on .full-start__right' +
