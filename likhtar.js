@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.14';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.15';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -5064,6 +5064,20 @@
 
             buildMetrics(hero, movie);
 
+            // Притискаємо вміст до низу екрана: висота героя — від його реальної
+            // позиції на сторінці до низу вікна. Константа тут не працює,
+            // бо висота шапки різна між збірками й розмірами екрана.
+            var heroBody = hero.find('.full-start-new__body, .full-start__body').first();
+            if (heroBody.length) {
+                setTimeout(function () {
+                    try {
+                        var top = heroBody[0].getBoundingClientRect().top;
+                        var free = window.innerHeight - top - 16;
+                        if (free > 380) heroBody.css('min-height', free + 'px');
+                    } catch (e) { }
+                }, 50);
+            }
+
             var holder = buildModules(hero, movie);
             if (!holder) return;
 
@@ -5084,12 +5098,13 @@
 
                 /* Герой */
                 'body.likhtar-card-on .full-start-new__body, body.likhtar-card-on .full-start__body' +
-                ' { position: relative; min-height: calc(100vh - 11em); }' +
-                /* Рідні кнопки й наші розділи — один рядок і спільна навігація */
+                ' { position: relative; min-height: 26em; }' +
+                /* Рідні кнопки й наші розділи — один ряд із прокруткою, як у Lampa:
+                   перенос на другий ряд ламає навігацію пультом (вниз по діагоналі
+                   Navigator не ходить) */
                 'body.likhtar-card-on .full-start-new__buttons, body.likhtar-card-on .full-start__buttons' +
-                ' { display: flex; flex-wrap: wrap; align-items: center; gap: .7em;' +
-                ' overflow: visible !important; }' +
-                'body.likhtar-card-on .full-start-new__buttons .likhtar-module { margin: 0; }' +
+                ' { display: flex; flex-wrap: nowrap; align-items: center; gap: .7em; }' +
+                'body.likhtar-card-on .full-start-new__buttons .likhtar-module { margin: 0; flex: 0 0 auto; }' +
                 /* Рідний фон Lampa прив'язаний до вмісту сторінки, тому під шапкою
                    лишалася сіра смуга. Кріпимо його до екрана — тоді кадр
                    заходить і під шапку, і на всю висоту. */
