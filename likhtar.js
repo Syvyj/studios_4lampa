@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.25';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.26';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -3027,6 +3027,9 @@
         /** Шукає україномовний трейлер; англійський Lampa показує й сама, тож дублювати його не треба. */
         function injectUkrainianTrailer(movie, $render) {
             if (!isSettingEnabled('likhtar_full_trailer_ua', true)) return;
+            // У новому вигляді трейлер живе в бічній колонці — або превʼю,
+            // або кнопка. Другої кнопки в рядку не треба.
+            if (isSettingEnabled('likhtar_new_card', true)) return;
 
             var holder = buttonsContainer($render);
             if (!holder.length || holder.find('.likhtar-trailer-ua').length) return;
@@ -4969,7 +4972,7 @@
 
             side.append(card);
             body.append(side);
-            mountTrailer(side, movie);
+            mountTrailerSlot(side, movie);
 
             detailsFor(movie, function (details) {
                 if (!details) return;
@@ -5090,7 +5093,7 @@
             function close() {
                 cinema.remove();
                 Lampa.Controller.toggle('full_start');
-                if (side && side.closest('body').length) mountTrailer(side, movie);
+                if (side && side.closest('body').length) mountTrailerSlot(side, movie);
             }
 
             Lampa.Controller.add('likhtar_cinema', {
@@ -5124,6 +5127,7 @@
             if (trailerTimer) clearTimeout(trailerTimer);
             trailerTimer = null;
             $('.likhtar-preview').remove();
+            $('.likhtar-side-button').remove();
         }
 
         /**
@@ -5132,6 +5136,50 @@
          * автозапуск зі звуком браузери й так блокують, — а повний екран
          * зі звуком відкриває рідний плеєр Lampa.
          */
+        /**
+         * Одне місце — два стани. Коли превʼю ввімкнене й сервер указано,
+         * показуємо сам трейлер; інакше — кнопку, яка відкриває його на весь
+         * екран. Так на слабких пристроях місце не пустує, а на потужних
+         * кнопка не дублює те, що вже грає поруч.
+         */
+        function mountTrailerSlot(side, movie) {
+            var preview = isSettingEnabled('likhtar_trailer_preview', false) && LikhtarNet.hasWorker();
+
+            if (preview) mountTrailer(side, movie);
+            else mountTrailerButton(side, movie);
+        }
+
+        function mountTrailerButton(side, movie) {
+            trailerKey(movie, function (key) {
+                if (!key || !side.closest('body').length) return;
+                if (side.find('.likhtar-side-button').length) return;
+
+                var btn = $('<div class="likhtar-side-button selector">' +
+                    '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">' +
+                    '<path d="M8 5v14l11-7z"/></svg><span>Трейлер UA</span></div>');
+
+                btn.on('hover:enter click', function () {
+                    if (LikhtarNet.hasWorker()) return openCinema(key, side, movie);
+
+                    // Без сервера лишається рідний плеєр Lampa
+                    var item = {
+                        title: movie.title || movie.name || 'Трейлер',
+                        id: key, youtube: true,
+                        url: 'https://www.youtube.com/watch?v=' + key
+                    };
+                    if (Lampa.Manifest.app_digital >= 183) {
+                        Lampa.Player.play(item);
+                        Lampa.Player.playlist([item]);
+                    } else {
+                        Lampa.YouTube.play(key);
+                    }
+                });
+
+                side.append(btn);
+                refreshNavigation();
+            });
+        }
+
         function mountTrailer(side, movie) {
             stopTrailer();
             if (!isSettingEnabled('likhtar_trailer_preview', false)) return;
@@ -5329,13 +5377,19 @@
                 ' linear-gradient(to top, rgba(7,9,15,.95) 0%, rgba(7,9,15,.2) 40%, transparent 70%); }' +
 
                 /* Бічна картка за макетом 1a — власна розмітка */
-                '.likhtar-side { position: absolute; top: .6em; right: 0; width: 23em;' +
+                '.likhtar-side { position: absolute; top: .6em; right: 0; width: 19em;' +
                 ' display: flex; flex-direction: column; gap: .8em; }' +
                 '.likhtar-preview { position: relative; padding-top: 56.25%; border-radius: 1em;' +
                 ' overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,.08); }' +
                 '.likhtar-preview iframe { position: absolute; inset: 0; width: 100%; height: 100%;' +
                 ' pointer-events: none; }' +
                 '.likhtar-preview.focus { border-color: #eec37a; box-shadow: 0 0 0 2px #eec37a; }' +
+                '.likhtar-side-button { display: flex; align-items: center; justify-content: center;' +
+                ' gap: .6em; padding: .9em 1.1em; border-radius: 1.1em; font-weight: 600;' +
+                ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
+                ' backdrop-filter: blur(45px); -webkit-backdrop-filter: blur(45px); }' +
+                '.likhtar-side-button svg { width: 1.4em; height: 1.4em; flex: 0 0 auto; }' +
+                '.likhtar-side-button.focus { background: #fff; color: #000; border-color: #fff; }' +
                 '.likhtar-cinema { position: fixed; inset: 0; z-index: 200; background: #000; }' +
                 '.likhtar-cinema iframe { width: 100%; height: 100%; border: 0; }' +
                 '.likhtar-cinema__hint { position: absolute; left: 1.5em; bottom: 1em; font-size: .85em;' +
@@ -5346,8 +5400,7 @@
                 '.likhtar-metrics { position: relative; width: 100%;' +
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
                 ' border-radius: 1.1em; overflow: hidden; display: flex; flex-direction: column;' +
-                ' backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);' +
-                ' transition: width .18s ease-out; }' +
+                ' backdrop-filter: blur(45px); -webkit-backdrop-filter: blur(45px); }' +
 
 
                 '.likhtar-metrics__top { display: flex; align-items: flex-start;' +
@@ -5412,7 +5465,7 @@
                 /* Рідна кнопка «Деталі» дублює нашу панель */
                 'body.likhtar-card-on .full-start__button.view--category,' +
                 ' body.likhtar-card-on .button--details { display: none !important; }' +
-                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5; max-width: 36em;' +
+                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5; max-width: 38em;' +
                 ' margin: .8em 0 .2em; padding: 1em 1.2em; border-radius: 1em;' +
                 ' background: rgba(14,14,17,.5); border: 1px solid rgba(255,255,255,.07);' +
                 ' backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);' +
