@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.21';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.22';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -2106,6 +2106,12 @@
             component: 'likhtar_plugin',
             param: { name: 'likhtar_new_card', type: 'trigger', default: true },
             field: { name: 'Нова сторінка фільму', description: 'Уся інформація в один екран, а актори, коментарі й решта — за кнопками в бічній панелі. Вимкніть, щоб повернути звичайний вигляд Lampa.' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_trailer_preview', type: 'trigger', default: false },
+            field: { name: 'Превʼю трейлера', description: 'Беззвучний трейлер у куті сторінки фільму, натискання відкриває його на весь екран зі звуком. Вантажить слабкі пристрої — типово вимкнено.' }
         });
 
         Lampa.SettingsApi.addParam({
@@ -4932,6 +4938,7 @@
                 hero.find(sel).first().addClass('likhtar-card__hidden');
             });
 
+            var side = $('<div class="likhtar-side"></div>');
             var card = $('<div class="likhtar-metrics"></div>');
 
             // Ярус 1: рейтинг і вік
@@ -4960,7 +4967,9 @@
             var accent = $('<div class="likhtar-metrics__accent likhtar-card__hidden"></div>');
             card.append(accent);
 
-            body.append(card);
+            side.append(card);
+            body.append(side);
+            mountTrailer(side, movie);
 
             detailsFor(movie, function (details) {
                 if (!details) return;
@@ -5026,6 +5035,88 @@
                     accent.removeClass('likhtar-card__hidden');
                 });
             });
+        }
+
+        // ===== Беззвучне превʼю трейлера =====
+
+        var DWELL_MS = 2500;
+        var trailerTimer = null;
+
+        function trailerKey(movie, callback) {
+            var type = isSeries(movie) ? 'tv' : 'movie';
+            var key = 'trailer_' + type + '_' + movie.id;
+
+            var cached = LikhtarCache.get(key);
+            if (cached !== undefined) return callback(cached);
+
+            var url = Lampa.TMDB.api(type + '/' + movie.id + '/videos?api_key=' + getTmdbKey() +
+                '&language=' + Lampa.Storage.get('language', 'uk'));
+
+            new Lampa.Reguest().silent(url, function (data) {
+                var videos = (data && data.results) || [];
+                var pick = videos.filter(function (v) {
+                    return v.site === 'YouTube' && (v.type === 'Trailer' || v.type === 'Teaser');
+                }).sort(function (a, b) {
+                    return (a.type === 'Trailer' ? 0 : 1) - (b.type === 'Trailer' ? 0 : 1);
+                })[0];
+
+                var found = pick ? pick.key : null;
+                LikhtarCache.set(key, found, LikhtarCache.TTL.WEEK);
+                callback(found);
+            }, function () {
+                callback(null);
+            });
+        }
+
+        function stopTrailer() {
+            if (trailerTimer) clearTimeout(trailerTimer);
+            trailerTimer = null;
+            $('.likhtar-preview').remove();
+        }
+
+        /**
+         * Превʼю стартує не одразу, а після паузи: інакше кожен випадковий
+         * захід на сторінку качав би відео. Звук лишається вимкненим —
+         * автозапуск зі звуком браузери й так блокують, — а повний екран
+         * зі звуком відкриває рідний плеєр Lampa.
+         */
+        function mountTrailer(side, movie) {
+            stopTrailer();
+            if (!isSettingEnabled('likhtar_trailer_preview', false)) return;
+
+            trailerTimer = setTimeout(function () {
+                trailerKey(movie, function (key) {
+                    if (!key || !side.closest('body').length) return;
+
+                    var box = $('<div class="likhtar-preview selector"></div>');
+                    var frame = $('<iframe allow="autoplay" frameborder="0" scrolling="no"></iframe>');
+
+                    frame.attr('src', 'https://www.youtube.com/embed/' + key +
+                        '?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=' + key);
+
+                    box.append(frame);
+                    box.append('<div class="likhtar-preview__hint">Трейлер · відкрити зі звуком</div>');
+
+                    box.on('hover:enter click', function () {
+                        stopTrailer();
+
+                        var item = {
+                            title: movie.title || movie.name || 'Трейлер',
+                            id: key, youtube: true,
+                            url: 'https://www.youtube.com/watch?v=' + key
+                        };
+
+                        if (Lampa.Manifest.app_digital >= 183) {
+                            Lampa.Player.play(item);
+                            Lampa.Player.playlist([item]);
+                        } else {
+                            Lampa.YouTube.play(key);
+                        }
+                    });
+
+                    side.append(box);
+                });
+            }, DWELL_MS);
         }
 
         /**
@@ -5186,7 +5277,17 @@
                 ' linear-gradient(to top, rgba(7,9,15,.95) 0%, rgba(7,9,15,.2) 40%, transparent 70%); }' +
 
                 /* Бічна картка за макетом 1a — власна розмітка */
-                '.likhtar-metrics { position: absolute; top: .6em; right: 0; width: 23em;' +
+                '.likhtar-side { position: absolute; top: .6em; right: 0; width: 23em;' +
+                ' display: flex; flex-direction: column; gap: .8em; }' +
+                '.likhtar-preview { position: relative; padding-top: 56.25%; border-radius: 1em;' +
+                ' overflow: hidden; background: #000; border: 1px solid rgba(255,255,255,.08); }' +
+                '.likhtar-preview iframe { position: absolute; inset: 0; width: 100%; height: 100%;' +
+                ' pointer-events: none; }' +
+                '.likhtar-preview.focus { border-color: #eec37a; box-shadow: 0 0 0 2px #eec37a; }' +
+                '.likhtar-preview__hint { position: absolute; left: 0; right: 0; bottom: 0;' +
+                ' padding: .5em .8em; font-size: .78em; color: rgba(233,233,236,.8);' +
+                ' background: linear-gradient(to top, rgba(8,8,10,.9), transparent); }' +
+                '.likhtar-metrics { position: relative; width: 100%;' +
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
                 ' border-radius: 1.1em; overflow: hidden; display: flex; flex-direction: column;' +
                 ' backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);' +
@@ -5380,7 +5481,10 @@
 
                 // Виходячи зі сторінки, панель треба прибрати за собою
                 Lampa.Listener.follow('activity', function (e) {
-                    if (e.type === 'archive' || e.type === 'destroy') closePanel();
+                    if (e.type === 'archive' || e.type === 'destroy') {
+                        closePanel();
+                        stopTrailer();
+                    }
                 });
             }
         };

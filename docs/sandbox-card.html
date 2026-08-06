@@ -59,6 +59,7 @@
     <button id="btn-movie" class="on">Фільм</button>
     <button id="btn-series">Серіал</button>
     <button id="btn-toggle">Новий вигляд: увімк.</button>
+    <button id="btn-trailer">Трейлер: вимк.</button>
     <button id="btn-reload">Перезібрати</button>
     <span class="note">TMDB-ключ:</span>
     <input id="tmdb-key" size="22" placeholder="без ключа — тестові дані">
@@ -173,6 +174,9 @@ function episodeDate(i) { var d = new Date(); d.setDate(d.getDate() - 40 + i * 7
 
 /** Підбирає фікстуру під URL, коли справжнього ключа немає. */
 function fixtureFor(url) {
+  if (url.indexOf('/videos') !== -1) {
+    return { results: [{ site: 'YouTube', type: 'Trailer', key: currentKind === 'tv' ? 'DotnJ7tTA34' : 'JfVOs4VSpmA' }] };
+  }
   if (url.indexOf('/credits') !== -1) return FIXTURES.credits;
   if (/\/season\/\d+/.test(url)) return FIXTURES.episodes;
   if (url.indexOf('/recommendations') !== -1 || url.indexOf('/similar') !== -1) return FIXTURES.list;
@@ -251,7 +255,13 @@ var enabled = true;
 
 // Модуль звертається до цих імен як до сусідів по файлу
 window.LikhtarCache = {
-  get: function (k) { try { return JSON.parse(sessionStorage.getItem('sb_' + k)); } catch (e) { return undefined; } },
+  // Порожній ключ має давати undefined, а не null: null — це збережене
+  // значення «нічого не знайшлося», і плагін на ньому припиняє пошук
+  get: function (k) {
+    var raw = sessionStorage.getItem('sb_' + k);
+    if (raw === null) return undefined;
+    try { return JSON.parse(raw); } catch (e) { return undefined; }
+  },
   set: function (k, v) { try { sessionStorage.setItem('sb_' + k, JSON.stringify(v)); } catch (e) { } },
   TTL: { HOUR: 1, DAY: 2, WEEK: 3, MONTH: 4 }
 };
@@ -265,6 +275,7 @@ window.LikhtarSections = {
 window.getTmdbKey = function () { return (document.getElementById('tmdb-key').value || 'KEY').trim() || 'KEY'; };
 window.isSettingEnabled = function (name, def) {
   if (name === 'likhtar_new_card') return enabled;
+  if (name === 'likhtar_trailer_preview') return document.getElementById('btn-trailer').classList.contains('on');
   return def === undefined ? true : def;
 };
 
@@ -282,7 +293,7 @@ function loadCardModule() {
 
       // eslint-disable-next-line no-new-func
       return new Function('return (function(){ ' + body +
-        ' return { apply: apply, closePanel: closePanel, addStyles: addStyles }; })()')();
+        ' return { apply: apply, closePanel: closePanel, addStyles: addStyles, mountTrailer: mountTrailer, trailerKey: trailerKey }; })()')();
     });
 }
 
@@ -350,6 +361,11 @@ $('#btn-series').on('click', function () {
 $('#btn-toggle').on('click', function () {
   enabled = !enabled;
   $(this).text('Новий вигляд: ' + (enabled ? 'увімк.' : 'вимк.')).toggleClass('on', enabled);
+  render();
+});
+$('#btn-trailer').on('click', function () {
+  $(this).toggleClass('on');
+  $(this).text('Трейлер: ' + ($(this).hasClass('on') ? 'увімк.' : 'вимк.'));
   render();
 });
 $('#btn-reload').on('click', boot);
