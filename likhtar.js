@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.28';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.29';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4223,7 +4223,7 @@
 
         // Розділи, які вже покриті власними кнопками або нічого не дають.
         // Без цього поруч стоять наші «Актори та автори» і рідні «Актори».
-        var SKIP_SECTIONS = /^(shots?|актори|акторський склад|у ролях|режисер|детально|деталі|cast|actors|director|details|description|сезон\s*\d+|season\s*\d+|рекомендації|recommendations|подібн.*|схоже|similar|колекція|collection)$/i;
+        var SKIP_SECTIONS = /^(shots?|актори|акторський склад|у ролях|режисер|детально|деталі|cast|actors|director|details|description|сезон\s*\d+|season\s*\d+|рекомендації|recommendations|подібн.*|схоже|similar|колекція|collection|коментарі|comments|reviews?)$/i;
 
         var moved = [];        // що саме ми перенесли в панель — щоб повернути на місце
         var panel = null;
@@ -4747,45 +4747,138 @@
             return $(line).find('.items-line__title').first().text().trim();
         }
 
+        /**
+         * Хаб «Ліхтарик»: усі розділи сторінки за однією кнопкою на місці
+         * рідного «Ще». Рядок кнопок стискається до дій Lampa + наша одна,
+         * а розділи відкриваються групами в бічній панелі. Вміст тягнеться
+         * з готових джерел — TMDB і компонента фактів Lampa, без генерацій.
+         */
+        function hubEntry(label, iconPath, onEnter) {
+            var row = $('<div class="likhtar-hub selector">' +
+                '<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">' +
+                '<path d="' + iconPath + '"/></svg>' +
+                '<span class="likhtar-hub__label"></span>' +
+                '<div class="likhtar-person__chevron">›</div></div>');
+
+            row.find('.likhtar-hub__label').text(label);
+            row.on('hover:enter click', onEnter);
+            return row;
+        }
+
+        function openHub(movie, hero) {
+            var mediaType = isSeries(movie) ? 'tv' : 'movie';
+
+            openPanel('Ліхтарик', movie.title || movie.name || '', function (body) {
+                function group(title) {
+                    body.append($('<div class="likhtar-panel__group"></div>').text(title));
+                }
+
+                group('Глибше');
+                body.append(hubEntry('Актори та автори', MODULE_ICONS.cast, function () { openCast(movie); }));
+
+                if (isSeries(movie)) {
+                    body.append(hubEntry('Перелік серій', MODULE_ICONS.seasons, function () { openSeasons(movie); }));
+                    body.append(hubEntry('Попередній сезон: коротко', MODULE_ICONS.comments, function () { openSeasonRecap(movie); }));
+                }
+
+                var franchiseSlot = $('<div></div>');
+                body.append(franchiseSlot);
+                collectionOf(movie, function (collection) {
+                    if (!collection || !panel) return;
+                    franchiseSlot.append(hubEntry(collection.name || 'Франшиза', MODULE_ICONS.collection, function () {
+                        openTitleList(collection.name || 'Франшиза', 'collection/' + collection.id);
+                    }));
+                    refocusPanel();
+                });
+
+                group('Що далі');
+                body.append(hubEntry('Рекомендації', MODULE_ICONS.recommend, function () {
+                    openTitleList('Рекомендації', mediaType + '/' + movie.id + '/recommendations');
+                }));
+                body.append(hubEntry('Подібні', MODULE_ICONS.similar, function () {
+                    openTitleList('Подібні', mediaType + '/' + movie.id + '/similar');
+                }));
+
+                group('Інше');
+                body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, function () {
+                    // Готовий компонент Lampa: факти тягнуться з CUB, без генерацій
+                    closePanel();
+                    Lampa.Activity.push({
+                        url: '',
+                        title: Lampa.Lang.translate('title_facts') || 'Цікаві факти',
+                        component: 'ai_facts',
+                        card: movie
+                    });
+                }));
+
+                var comments = hubScope && hubScope.find('.items-line').filter(function () {
+                    return /комент|comment|review/i.test(sectionTitle($(this)));
+                }).first();
+                if (comments && comments.length) {
+                    var anchor = comments.data('likhtar-anchor');
+                    if (!anchor) {
+                        anchor = $('<div class="likhtar-card__anchor"></div>').insertBefore(comments);
+                        comments.data('likhtar-anchor', anchor);
+                    }
+                    body.append(hubEntry('Коментарі', MODULE_ICONS.comments, function () {
+                        openSection('Коментарі', comments, anchor);
+                    }));
+                }
+
+                body.append(hubEntry('Стандартні дії Lampa', MODULE_ICONS.dots, function () {
+                    // Рідне меню «Ще» не переписуємо — викликаємо приховану кнопку
+                    closePanel();
+                    var native = hero.find('.button--options').first();
+                    if (native.length) native.trigger('hover:enter');
+                }));
+
+                refocusPanel();
+            });
+        }
+
+        /** Попередній сезон: опис із TMDB — тягнеться, а не генерується. */
+        function openSeasonRecap(movie) {
+            seasonsOf(movie, function (seasons) {
+                var aired = (seasons || []).filter(function (x) {
+                    return x.season_number > 0 && x.air_date &&
+                        new Date(x.air_date + 'T00:00:00') <= new Date();
+                });
+                var prev = aired.length > 1 ? aired[aired.length - 2] : aired[aired.length - 1];
+
+                if (!prev) return Lampa.Noty.show('Про сезони ще немає даних');
+
+                var show = function (overview) {
+                    openPanel(prev.name || ('Сезон ' + prev.season_number), 'Коротко про сезон', function (body) {
+                        body.append($('<div class="likhtar-panel__text selector"></div>')
+                            .text(overview || 'TMDB ще не має опису цього сезону.'));
+                        refocusPanel();
+                    });
+                };
+
+                if (prev.overview) return show(prev.overview);
+
+                var url = Lampa.TMDB.api('tv/' + movie.id + '/season/' + prev.season_number +
+                    '?api_key=' + getTmdbKey() + '&language=' + Lampa.Storage.get('language', 'uk'));
+                new Lampa.Reguest().silent(url, function (data) {
+                    show(data && data.overview);
+                }, function () {
+                    show('');
+                });
+            });
+        }
+
+        var hubScope = null;   // сторінка, на якій живуть секції для хаба
+
         function buildModules(hero, movie) {
-            // Наші кнопки — в один рядок із рідними: спільний контейнер
-            // означає і спільну навігацію пультом, без стрибка між рядками
             var holder = hero.find('.full-start-new__buttons, .full-start__buttons').first();
             if (!holder.length) return null;
             holder.addClass('likhtar-modules');
 
-            if (!holder.find('.likhtar-module--cast').length) {
-                holder.append(moduleButton('Актори та автори', '', function () { openCast(movie); },
-                    MODULE_ICONS.cast).addClass('likhtar-module--cast'));
+            if (!holder.find('.likhtar-module--hub').length) {
+                holder.append(moduleButton('Ліхтарик', '', function () { openHub(movie, hero); },
+                    'M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z')
+                    .addClass('likhtar-module--hub'));
             }
-
-            if (isSeries(movie) && !holder.find('.likhtar-module--seasons').length) {
-                holder.append(moduleButton('Перелік серій', movie.number_of_seasons ? movie.number_of_seasons + ' сез.' : '',
-                    function () { openSeasons(movie); }, MODULE_ICONS.seasons).addClass('likhtar-module--seasons'));
-            }
-
-            var mediaType = isSeries(movie) ? 'tv' : 'movie';
-
-            if (!holder.find('.likhtar-module--recommend').length) {
-                holder.append(moduleButton('Рекомендації', '', function () {
-                    openTitleList('Рекомендації', mediaType + '/' + movie.id + '/recommendations');
-                }, MODULE_ICONS.recommend).addClass('likhtar-module--recommend'));
-            }
-
-            if (!holder.find('.likhtar-module--similar').length) {
-                holder.append(moduleButton('Подібні', '', function () {
-                    openTitleList('Подібні', mediaType + '/' + movie.id + '/similar');
-                }, MODULE_ICONS.similar).addClass('likhtar-module--similar'));
-            }
-
-            // Франшизу показуємо, лише коли колекція справді існує
-            collectionOf(movie, function (collection) {
-                if (!collection || !holder.length || holder.find('.likhtar-module--franchise').length) return;
-
-                holder.append(moduleButton('Франшиза', '', function () {
-                    openTitleList(collection.name || 'Франшиза', 'collection/' + collection.id);
-                }, MODULE_ICONS.collection).addClass('likhtar-module--franchise'));
-            });
 
             return holder;
         }
@@ -5367,6 +5460,8 @@
 
             pinToBottom(hero);
 
+            hubScope = scope;
+
             var holder = buildModules(hero, movie);
             if (!holder) return;
 
@@ -5475,7 +5570,7 @@
                 '.likhtar-metrics__fvalue { font-size: .92em; font-weight: 600; line-height: 1.4; }' +
                 '.likhtar-metrics__genres { display: flex; flex-wrap: wrap; gap: .35em; }' +
                 '.likhtar-genre { padding: .1em .45em; margin: -.1em 0; border-radius: .4em;' +
-                ' border: 1px solid transparent; }' +
+                ' border: 1px solid rgba(255,255,255,.25); }' +
                 '.likhtar-genre.focus { background: #fff; color: #000; border-color: #fff; }' +
 
                 '.likhtar-metrics__accent { display: flex; flex-direction: column; gap: .55em;' +
@@ -5503,6 +5598,8 @@
                 'body.likhtar-card-on .full-start__button.focus { background: #fff !important; color: #000 !important; }' +
                 'body.likhtar-card-on .full-start__button.focus svg { fill: #000 !important; }' +
                 'body.likhtar-card-on .full-start-new__reactions { display: none !important; }' +
+                /* Рідне «Ще» замінює хаб «Ліхтарик»; самі дії викликаються з нього */
+                'body.likhtar-card-on .button--options { display: none !important; }' +
                 /* Рідна кнопка «Деталі» дублює нашу панель */
                 'body.likhtar-card-on .full-start__button.view--category,' +
                 ' body.likhtar-card-on .button--details { display: none !important; }' +
@@ -5573,6 +5670,13 @@
                 '.likhtar-episode__date--soon { background: linear-gradient(135deg,#0057b7,#0072e8); }' +
                 '.likhtar-episode__date--upcoming { background: rgba(46,160,67,.8); }' +
                 '.likhtar-episode__date--unknown { opacity: .5; }' +
+
+                /* Рядки хаба «Ліхтарик» */
+                '.likhtar-hub { display: flex; align-items: center; gap: .9em; padding: .75em .7em;' +
+                ' border-radius: .7em; }' +
+                '.likhtar-hub.focus { background: rgba(255,255,255,.16); }' +
+                '.likhtar-hub svg { width: 1.4em; height: 1.4em; flex: 0 0 auto; opacity: .8; }' +
+                '.likhtar-hub__label { flex: 1; font-weight: 600; }' +
 
                 /* Списки тайтлів у панелі — широкі банери 16:9 (макет 3a) */
                 '.likhtar-title { position: relative; padding-top: 56%; border-radius: 1em;' +
