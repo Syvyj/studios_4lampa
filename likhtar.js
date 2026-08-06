@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.16';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.17';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4257,6 +4257,7 @@
         /** Панель наповнюється асинхронно — коли рядки з'явились, фокус треба поставити ще раз. */
         function refocusPanel() {
             if (!panel || !panel.find('.selector').length) return;
+            wireFocusScroll();
             Lampa.Controller.toggle(PANEL_CONTROLLER);
         }
 
@@ -4275,19 +4276,27 @@
             Lampa.Controller.toggle(PANEL_CONTROLLER);
         }
 
-        /** Прокручує тіло панелі так, щоб сфокусований елемент було видно цілком. */
-        function followFocus(body) {
-            body.on('hover:focus', '.selector', function () {
+        /**
+         * Прокручує тіло панелі до сфокусованого елемента. Обробник чіпляємо
+         * на кожен елемент напряму: делеговану подію hover:focus Lampa не
+         * підіймає до контейнера, тому «на панелі» вона не ловилась.
+         */
+        function wireFocusScroll() {
+            if (!panel) return;
+            var container = panel.find('.likhtar-panel__body')[0];
+            if (!container) return;
+
+            panel.find('.selector').off('hover:focus.likhtarscroll').on('hover:focus.likhtarscroll', function () {
                 var el = this;
-                var container = body[0];
-                var elTop = el.offsetTop - container.offsetTop;
-                var elBottom = elTop + el.offsetHeight;
-                var viewTop = container.scrollTop;
-                var viewBottom = viewTop + container.clientHeight;
+                var top = el.offsetTop - container.offsetTop;
+                var bottom = top + el.offsetHeight;
                 var margin = 24;
 
-                if (elTop < viewTop + margin) container.scrollTop = elTop - margin;
-                else if (elBottom > viewBottom - margin) container.scrollTop = elBottom - container.clientHeight + margin;
+                if (top < container.scrollTop + margin) {
+                    container.scrollTop = top - margin;
+                } else if (bottom > container.scrollTop + container.clientHeight - margin) {
+                    container.scrollTop = bottom - container.clientHeight + margin;
+                }
             });
         }
 
@@ -4303,10 +4312,9 @@
             panel.find('.likhtar-panel__title').text(title);
             panel.find('.likhtar-panel__sub').text(subtitle || '');
 
-            var panelBody = panel.find('.likhtar-panel__body');
-            followFocus(panelBody);
-            fill(panelBody);
+            fill(panel.find('.likhtar-panel__body'));
             $('body').append(panel);
+            wireFocusScroll();
 
             // Клас додаємо наступним кадром, інакше переходу не буде видно
             setTimeout(function () { if (panel) panel.addClass('likhtar-panel--open'); }, 10);
@@ -4597,28 +4605,31 @@
         // ===== Списки фільмів у панелі (рекомендації, подібні, колекція) =====
 
         function titleRow(item) {
-            var tile = $('<div class="likhtar-title selector">' +
-                '<div class="likhtar-title__poster"><div class="likhtar-title__rating"></div></div>' +
+            var banner = $('<div class="likhtar-title selector">' +
+                '<div class="likhtar-title__shade"></div>' +
+                '<div class="likhtar-title__caption">' +
                 '<div class="likhtar-title__name"></div>' +
-                '<div class="likhtar-title__meta"></div></div>');
+                '<div class="likhtar-title__meta"></div>' +
+                '</div></div>');
 
-            tile.find('.likhtar-title__name').text(item.title || item.name || '');
+            banner.find('.likhtar-title__name').text(item.title || item.name || '');
 
-            var year = (item.release_date || item.first_air_date || '').substr(0, 4);
-            tile.find('.likhtar-title__meta').text(year);
-
+            var meta = banner.find('.likhtar-title__meta');
             if (item.vote_average) {
-                tile.find('.likhtar-title__rating').text('★ ' + Number(item.vote_average).toFixed(1));
-            } else {
-                tile.find('.likhtar-title__rating').remove();
+                meta.append($('<span class="likhtar-title__rate"></span>')
+                    .text(Number(item.vote_average).toFixed(1)));
             }
+            var year = (item.release_date || item.first_air_date || '').substr(0, 4);
+            if (year) meta.append($('<span></span>').text(year));
+            meta.append($('<span></span>').text(item.name || item.first_air_date ? 'Серіал' : 'Фільм'));
 
-            if (item.poster_path) {
-                tile.find('.likhtar-title__poster')
-                    .css('background-image', 'url(' + Lampa.TMDB.image('t/p/w342' + item.poster_path) + ')');
-            }
+            // Банер — це кадр: беремо горизонтальний backdrop, постер лише як запас
+            var image = item.backdrop_path
+                ? Lampa.TMDB.image('t/p/w780' + item.backdrop_path)
+                : (item.poster_path ? Lampa.TMDB.image('t/p/w500' + item.poster_path) : '');
+            if (image) banner.css('background-image', 'url(' + image + ')');
 
-            tile.on('hover:enter click', function () {
+            banner.on('hover:enter click', function () {
                 closePanel();
                 Lampa.Activity.push({
                     url: '', component: 'full', id: item.id,
@@ -4627,7 +4638,7 @@
                 });
             });
 
-            return tile;
+            return banner;
         }
 
         /** Список тайтлів TMDB із кешем: рекомендації, подібні, частини колекції. */
@@ -4666,11 +4677,9 @@
                         return;
                     }
 
-                    var grid = $('<div class="likhtar-panel__grid"></div>');
                     items.slice(0, 20).forEach(function (item) {
-                        if (item && item.id) grid.append(titleRow(item));
+                        if (item && item.id) body.append(titleRow(item));
                     });
-                    body.append(grid);
                     refocusPanel();
                 });
             });
@@ -5275,20 +5284,22 @@
                 '.likhtar-episode__date--upcoming { background: rgba(46,160,67,.8); }' +
                 '.likhtar-episode__date--unknown { opacity: .5; }' +
 
-                /* Списки тайтлів у панелі — плитки з постерами */
-                '.likhtar-panel__grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9em;' +
-                ' padding: .3em .2em .6em; }' +
-                '.likhtar-title { border-radius: .8em; padding: .35em; }' +
-                '.likhtar-title.focus { background: rgba(255,255,255,.14);' +
-                ' outline: 2px solid rgba(255,255,255,.55); }' +
-                '.likhtar-title__poster { position: relative; padding-top: 150%; border-radius: .6em;' +
-                ' background: #22242e center/cover no-repeat; }' +
-                '.likhtar-title__rating { position: absolute; top: .5em; left: .5em;' +
-                ' background: rgba(10,12,18,.75); border-radius: .4em; padding: .15em .5em;' +
-                ' font-size: .78em; font-weight: 700; color: #eec37a; }' +
-                '.likhtar-title__name { font-size: .9em; font-weight: 600; margin-top: .5em;' +
+                /* Списки тайтлів у панелі — широкі банери 16:9 (макет 3a) */
+                '.likhtar-title { position: relative; padding-top: 56%; border-radius: 1em;' +
+                ' overflow: hidden; margin: 0 .2em .9em; background: #16181f center/cover no-repeat; }' +
+                '.likhtar-title.focus { box-shadow: 0 0 0 2px #eec37a, 0 16px 36px rgba(0,0,0,.5); }' +
+                '.likhtar-title__shade { position: absolute; inset: 0;' +
+                ' background: linear-gradient(0deg, rgba(8,8,10,.92) 0%, rgba(8,8,10,.25) 48%,' +
+                ' rgba(8,8,10,0) 78%); pointer-events: none; }' +
+                '.likhtar-title__caption { position: absolute; left: 1em; right: 1em; bottom: .85em; }' +
+                '.likhtar-title__name { font-size: 1.15em; font-weight: 800; letter-spacing: -.015em;' +
                 ' overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }' +
-                '.likhtar-title__meta { font-size: .8em; opacity: .5; margin-top: .1em; }' +
+                '.likhtar-title__meta { display: flex; align-items: center; gap: .6em; margin-top: .3em;' +
+                ' font-size: .82em; color: rgba(233,233,236,.7); }' +
+                '.likhtar-title__meta span + span:before { content: ""; display: inline-block;' +
+                ' width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.3);' +
+                ' margin-right: .6em; vertical-align: middle; }' +
+                '.likhtar-title__rate { font-weight: 800; color: #eec37a; }' +
 
                 /* Перенесена секція має вміщатись у вужчу панель */
                 '.likhtar-panel .items-line { margin: 0; }' +
