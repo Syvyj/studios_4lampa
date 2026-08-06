@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.20';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.21';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4887,6 +4887,24 @@
             return '';
         }
 
+        function shortDate(iso) {
+            var parts = String(iso || '').split('-');
+            return parts.length === 3 ? parts[2] + '.' + parts[1] + '.' + parts[0] : (iso || '');
+        }
+
+        /** Акцентний блок: підпис і «через N дн.» угорі, велика дата нижче. */
+        function fillAccent(accent, label, iso, secondary) {
+            var row = $('<div class="likhtar-metrics__arow"></div>')
+                .append($('<span class="likhtar-metrics__alabel"></span>').text(label))
+                .append($('<span class="likhtar-metrics__awhen"></span>').text(whenText(inDays(iso))));
+
+            var line = $('<div class="likhtar-metrics__acode"></div>');
+            if (secondary) line.append($('<span></span>').text(secondary));
+            line.append($('<b></b>').text(shortDate(iso)));
+
+            accent.empty().append(row).append(line).removeClass('likhtar-card__hidden');
+        }
+
         function factRow(grid, name, value) {
             if (!value) return;
             grid.append($('<div class="likhtar-metrics__fname"></div>').text(name));
@@ -4929,10 +4947,9 @@
             card.append(top);
 
             // Ярус 2: статус + мітки якості (їх домалює модуль міток)
-            var chips = $('<div class="likhtar-metrics__chips"></div>');
-            var statusChip = $('<div class="likhtar-metrics__status likhtar-card__hidden"><i></i><span></span></div>');
-            chips.append(statusChip);
-            chips.append('<div class="likhtar-metrics__badges"></div>');
+            // Один елемент замість вкладеного: порожній ряд ховається через :empty,
+            // а мітки якості приземляються сюди ж
+            var chips = $('<div class="likhtar-metrics__chips likhtar-metrics__badges"></div>');
             card.append(chips);
 
             // Ярус 3: факти
@@ -4952,10 +4969,7 @@
                 if (cert) age.text(cert).removeClass('likhtar-card__hidden');
 
                 var status = CARD_STATUS[details.status];
-                if (status) {
-                    statusChip.find('span').text(status.text);
-                    statusChip.addClass('likhtar-metrics__status--' + status.mod).removeClass('likhtar-card__hidden');
-                }
+                if (status) factRow(facts, 'Статус', status.text);
 
                 var year = (details.release_date || details.first_air_date || '').substr(0, 4);
                 var country = details.production_countries && details.production_countries[0]
@@ -4985,19 +4999,24 @@
                 // Акцент: наступна серія — або, для фільму, кінець сеансу і цифра
                 var next = details.next_episode_to_air;
                 if (next && next.air_date) {
-                    var days = inDays(next.air_date);
                     var code = 'S' + ('0' + (next.season_number || 0)).slice(-2) +
                         'E' + ('0' + (next.episode_number || 0)).slice(-2);
+                    fillAccent(accent, 'Наступна серія', next.air_date, code);
+                    return;
+                }
 
-                    accent.empty()
-                        .append($('<div class="likhtar-metrics__arow"></div>')
-                            .append('<span class="likhtar-metrics__alabel">Наступна серія</span>')
-                            .append($('<span class="likhtar-metrics__awhen"></span>').text(whenText(days) || humanDate(next.air_date))))
-                        .append($('<div class="likhtar-metrics__acode"></div>')
-                            .append($('<b></b>').text(code))
-                            .append($('<span></span>').text(humanDate(next.air_date))));
-                    accent.removeClass('likhtar-card__hidden');
-                } else if (!isSeries(movie) && details.runtime) {
+                if (isSeries(movie)) return;
+
+                // Для фільму головна новина того ж штибу — коли його можна
+                // буде подивитись удома, тож показуємо в тому самому місці
+                LikhtarSections.getDigitalDate(details.id, function (digital) {
+                    if (digital && inDays(digital) >= 0) {
+                        fillAccent(accent, 'В цифрі', digital, '');
+                        return;
+                    }
+
+                    if (!details.runtime) return;
+
                     var end = new Date(Date.now() + details.runtime * 60000);
                     accent.empty()
                         .append($('<div class="likhtar-metrics__arow"></div>')
@@ -5005,7 +5024,7 @@
                             .append($('<span class="likhtar-metrics__awhen"></span>')
                                 .text('о ' + ('0' + end.getHours()).slice(-2) + ':' + ('0' + end.getMinutes()).slice(-2))));
                     accent.removeClass('likhtar-card__hidden');
-                }
+                });
             });
         }
 
@@ -5187,6 +5206,7 @@
 
                 '.likhtar-metrics__chips { display: flex; flex-wrap: wrap; align-items: center;' +
                 ' gap: .5em; padding: 0 1.3em 1.2em; }' +
+                '.likhtar-metrics__chips:empty { display: none; }' +
                 '.likhtar-metrics__status { display: inline-flex; align-items: center; gap: .5em;' +
                 ' height: 2.1em; padding: 0 .8em; border-radius: .55em; background: rgba(255,255,255,.07);' +
                 ' font-size: .82em; font-weight: 600; color: rgba(233,233,236,.82); }' +
@@ -5215,8 +5235,10 @@
                 ' text-transform: uppercase; color: rgba(233,233,236,.45); }' +
                 '.likhtar-metrics__awhen { font-size: .85em; font-weight: 700; color: #eec37a; }' +
                 '.likhtar-metrics__acode { display: flex; align-items: baseline; gap: .7em; }' +
+                /* Головне тут — дата, а не номер серії: саме її шукають очима */
                 '.likhtar-metrics__acode b { font-size: 1.4em; font-weight: 800; letter-spacing: -.01em; }' +
-                '.likhtar-metrics__acode span { font-size: .9em; color: rgba(233,233,236,.6); }' +
+                '.likhtar-metrics__acode span { font-size: .95em; font-weight: 600;' +
+                ' color: rgba(233,233,236,.45); }' +
 
                 /* Дубль плашок під логотипом ховаємо — вони тепер у картці */
                 'body.likhtar-card-on .likhtar-info-line { display: none !important; }' +

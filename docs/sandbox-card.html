@@ -255,6 +255,13 @@ window.LikhtarCache = {
   set: function (k, v) { try { sessionStorage.setItem('sb_' + k, JSON.stringify(v)); } catch (e) { } },
   TTL: { HOUR: 1, DAY: 2, WEEK: 3, MONTH: 4 }
 };
+// Модуль картки питає в сусіда дату цифрового релізу
+window.LikhtarSections = {
+  getDigitalDate: function (id, cb) {
+    var soon = new Date(); soon.setDate(soon.getDate() + 24);
+    cb(id === 634649 ? soon.toISOString().substr(0, 10) : null);
+  }
+};
 window.getTmdbKey = function () { return (document.getElementById('tmdb-key').value || 'KEY').trim() || 'KEY'; };
 window.isSettingEnabled = function (name, def) {
   if (name === 'likhtar_new_card') return enabled;
