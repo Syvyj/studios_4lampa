@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.23';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.24';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -2111,7 +2111,7 @@
         Lampa.SettingsApi.addParam({
             component: 'likhtar_plugin',
             param: { name: 'likhtar_trailer_preview', type: 'trigger', default: false },
-            field: { name: 'Превʼю трейлера', description: 'Беззвучний трейлер у куті сторінки фільму, натискання відкриває його на весь екран зі звуком. Вантажить слабкі пристрої — типово вимкнено.' }
+            field: { name: 'Превʼю трейлера', description: 'Беззвучний трейлер у куті сторінки фільму, натискання відкриває його на весь екран зі звуком. Потрібна адреса сервера. Вантажить слабкі пристрої — типово вимкнено.' }
         });
 
         Lampa.SettingsApi.addParam({
@@ -5118,6 +5118,7 @@
         function mountTrailer(side, movie) {
             stopTrailer();
             if (!isSettingEnabled('likhtar_trailer_preview', false)) return;
+            if (!LikhtarNet.hasWorker()) return;   // без сервера буде лише плашка помилки
 
             trailerTimer = setTimeout(function () {
                 trailerKey(movie, function (key) {
@@ -5126,19 +5127,11 @@
                     var box = $('<div class="likhtar-preview selector"></div>');
                     var frame = $('<iframe allow="autoplay" frameborder="0" scrolling="no"></iframe>');
 
-                    // Помилка 153 — це «не вказано джерело запиту»: Lampa часто
-                    // віддає сторінку без Referer, і плеєр відмовляється грати.
-                    // referrerpolicy змушує браузер надіслати походження,
-                    // а origin у параметрах підтверджує його для плеєра.
-                    frame.attr('referrerpolicy', 'origin');
-
-                    var origin = '';
-                    try { origin = window.location.origin || ''; } catch (e) { }
-
-                    frame.attr('src', 'https://www.youtube-nocookie.com/embed/' + key +
-                        '?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1' +
-                        '&loop=1&playlist=' + key +
-                        (origin && origin.indexOf('http') === 0 ? '&origin=' + encodeURIComponent(origin) : ''));
+                    // Плеєр YouTube відмовляється грати (помилка 153), коли не бачить
+                    // походження запиту, а застосунок Lampa відкриває сторінки не з
+                    // веб-адреси. Тому вантажимо його через сторінку нашого сервера:
+                    // для YouTube це нормальний домен, і питань більше немає.
+                    frame.attr('src', LikhtarNet.workerUrl() + '/yt?v=' + encodeURIComponent(key));
 
                     box.append(frame);
                     box.append('<div class="likhtar-preview__hint">Трейлер · відкрити зі звуком</div>');

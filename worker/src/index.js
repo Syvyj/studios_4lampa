@@ -492,6 +492,34 @@ async function ai(request, env) {
     return json({ query: query.trim(), titles: result.titles });
 }
 
+/**
+ * Сторінка-посередник для превʼю трейлера.
+ *
+ * Плеєр YouTube відмовляється працювати (помилка 153), коли не бачить
+ * походження запиту — а застосунок Lampa відкриває сторінки не з
+ * звичайної веб-адреси. Вбудований у цю сторінку плеєр бачить нормальний
+ * домен воркера, тож питань не має.
+ */
+function youtubeFrame(key) {
+    if (!key || !/^[\w-]{6,20}$/.test(key)) return json({ error: 'bad_key' }, 400);
+
+    const src = 'https://www.youtube.com/embed/' + key +
+        '?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&playsinline=1&loop=1&playlist=' + key;
+
+    const html = '<!doctype html><meta charset="utf-8">' +
+        '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}' +
+        'iframe{border:0;width:100%;height:100%;display:block}</style>' +
+        '<iframe src="' + src + '" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+
+    return new Response(html, {
+        headers: {
+            'Content-Type': 'text/html; charset=utf-8',
+            'Cache-Control': 'public, max-age=3600',
+            ...CORS_HEADERS
+        }
+    });
+}
+
 /** QR для екрана телевізора: SVG масштабується без розмиття на будь-якій діагоналі. */
 async function qr(text) {
     if (!text) return json({ error: 'no_text' }, 400);
@@ -539,6 +567,10 @@ export default {
 
         if (path === '/api/proxy' && request.method === 'GET') {
             return proxy(request);
+        }
+
+        if (path === '/yt' && request.method === 'GET') {
+            return youtubeFrame(url.searchParams.get('v'));
         }
 
         if (path === '/api/qr' && request.method === 'GET') {

@@ -266,6 +266,7 @@ window.LikhtarCache = {
   TTL: { HOUR: 1, DAY: 2, WEEK: 3, MONTH: 4 }
 };
 // Модуль картки питає в сусіда дату цифрового релізу
+window.LikhtarNet = { workerUrl: function(){ return 'http://127.0.0.1:8787'; }, hasWorker: function(){ return true; } };
 window.LikhtarSections = {
   getDigitalDate: function (id, cb) {
     var soon = new Date(); soon.setDate(soon.getDate() + 24);
