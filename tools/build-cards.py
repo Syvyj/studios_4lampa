@@ -163,21 +163,22 @@ PUNCT = re.compile(r"[^\w\s]", re.U)
 def same_title(found, expected):
     """Чи стаття справді про нашу назву.
 
-    Пошук Вікіпедії завжди щось повертає: на «Друзі та сусіди» він віддав
-    статтю про «Друзі». Далі це перетворилось би на впевнений переказ
-    чужого сюжету, тож беремо лише точний збіг назви — уточнення в дужках
-    («(телесеріал)», «(фільм)») відкидаємо.
+    Пошук Вікіпедії завжди щось повертає, тож беремо лише точний збіг назви —
+    уточнення в дужках («(телесеріал)», «(фільм)») відкидаємо.
     """
-    def words(s):
-        s = re.sub(r"\s*\([^)]*\)\s*$", " ", s or "")
-        return PUNCT.sub(" ", s).lower().split()
+    def normalize_title(s):
+        s = s or ""
+        s = re.sub(r"\s*\([^)]*\)\s*$", " ", s)
+        s = s.lower()
+        s = s.replace("ґ", "г")
+        s = s.replace("’", "'").replace("`", "'")
+        return " ".join(PUNCT.sub(" ", s).split())
 
-    f, e = words(found), words(expected)
+    f = normalize_title(found)
+    e = normalize_title(expected)
     if not f or not e:
         return False
-    # Назва статті може бути довшою («Нова надія» → «Зоряні війни: Нова надія»),
-    # але не коротшою: коротша означає, що ми потрапили на інший твір.
-    return " ".join(e) in " ".join(f)
+    return f == e
 
 
 def find_article(item):
@@ -452,7 +453,17 @@ def main():
 
     for i, item in enumerate(items, 1):
         path = card_path(item)
+        should_skip = False
         if os.path.exists(path):
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    existing = json.load(f)
+                if existing.get("source") and (existing.get("ending_explained") or existing.get("easter_eggs")):
+                    should_skip = True
+            except Exception:
+                pass
+        
+        if should_skip:
             skipped += 1
             continue
 
