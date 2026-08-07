@@ -34,6 +34,8 @@ SOURCES = [("movie", 2026), ("movie", 2025), ("tv", 2025)]
 
 
 def needs_work(card, mode):
+    if mode == "all":
+        return True
     if not card.get("source"):
         return True
     if mode == "weak":
@@ -62,8 +64,9 @@ def en_title(kind, tmdb_id):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--size", type=int, default=15, help="назв у пачці")
-    parser.add_argument("--need", choices=("empty", "weak"), default="empty",
-                        help="empty — лише без джерела; weak — ще й порожні за змістом")
+    parser.add_argument("--need", choices=("empty", "weak", "all"), default="empty",
+                        help="empty — лише без джерела; weak — ще й порожні за змістом; "
+                             "all — усі, щоб модель перевірила й наявні картки")
     parser.add_argument("--limit", type=int, default=0, help="0 — усі знайдені")
     parser.add_argument("--no-wiki", action="store_true",
                         help="не шукати статті наперед — швидше, але модель шукатиме сама")
@@ -139,6 +142,17 @@ def main():
         # Стаття, яку ми вже перевірили за назвою і роком. Модель не мусить
         # шукати наосліп — і не потрапить на однойменний твір, на чому ми
         # вже двічі горіли.
+        # Те, що вже стоїть у базі: модель має це перевірити, а не повторити
+        # наосліп. Помилку в наявній картці видно лише поруч із джерелом.
+        card = load_card(item["kind"], item["id"])
+        if card:
+            entry["current"] = {
+                "summary": card.get("summary") or "",
+                "ending_explained": card.get("ending_explained") or "",
+                "easter_eggs": card.get("easter_eggs") or [],
+                "source": card.get("source"),
+            }
+
         note = ""
         if not args.no_wiki:
             art = bc.find_article(item)
