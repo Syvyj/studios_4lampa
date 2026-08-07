@@ -5,7 +5,7 @@
 (function () {
     'use strict';
 
-    window.LIKHTAR_STUDIOS_VER = '3.1-dev.33';
+    window.LIKHTAR_STUDIOS_VER = '3.1-dev.34';
     window.LIKHTAR_STUDIOS_LOADED = false;
     window.LIKHTAR_STUDIOS_ERROR = null;
 
@@ -4471,17 +4471,43 @@
             var cached = LikhtarCache.get(key);
             if (cached) return callback(cached);
 
-            var url = Lampa.TMDB.api('tv/' + movie.id + '/season/' + seasonNumber +
-                '?api_key=' + getTmdbKey() + '&language=' + Lampa.Storage.get('language', 'uk'));
+            var base = 'tv/' + movie.id + '/season/' + seasonNumber + '?api_key=' + getTmdbKey();
+            var url = Lampa.TMDB.api(base + '&language=' + Lampa.Storage.get('language', 'uk'));
 
             new Lampa.Reguest().silent(url, function (data) {
                 var episodes = (data && data.episodes) || [];
-                // Сезон, що ще виходить, кешуємо ненадовго: дати уточнюються
-                var hasUpcoming = episodes.some(function (ep) {
-                    return ep.air_date && new Date(ep.air_date + 'T00:00:00') > new Date();
-                });
-                LikhtarCache.set(key, episodes, hasUpcoming ? LikhtarCache.TTL.DAY : LikhtarCache.TTL.WEEK);
-                callback(episodes);
+
+                // Українські описи серій у TMDB часто порожні — доповнюємо
+                // англійськими, бо порожній рядок гірший за чужу мову
+                var gaps = episodes.filter(function (ep) { return !ep.overview; }).length;
+                if (episodes.length && gaps > episodes.length / 2) {
+                    return new Lampa.Reguest().silent(Lampa.TMDB.api(base + '&language=en'), function (en) {
+                        var byNumber = {};
+                        ((en && en.episodes) || []).forEach(function (ep) { byNumber[ep.episode_number] = ep; });
+
+                        episodes.forEach(function (ep) {
+                            var fallback = byNumber[ep.episode_number];
+                            if (!fallback) return;
+                            if (!ep.overview) ep.overview = fallback.overview;
+                            if (!ep.name || /^\s*(епізод|серія|episode)\s*\d+\s*$/i.test(ep.name)) {
+                                ep.name = fallback.name || ep.name;
+                            }
+                        });
+
+                        finish(episodes);
+                    }, function () { finish(episodes); });
+                }
+
+                finish(episodes);
+
+                function finish(list) {
+                    // Сезон, що ще виходить, кешуємо ненадовго: дати уточнюються
+                    var hasUpcoming = list.some(function (ep) {
+                        return ep.air_date && new Date(ep.air_date + 'T00:00:00') > new Date();
+                    });
+                    LikhtarCache.set(key, list, hasUpcoming ? LikhtarCache.TTL.DAY : LikhtarCache.TTL.WEEK);
+                    callback(list);
+                }
             }, function () {
                 callback([]);
             });
@@ -4507,7 +4533,7 @@
         }
 
         function episodeRow(episode) {
-            var row = $('<div class="likhtar-episode">' +
+            var row = $('<div class="likhtar-episode selector">' +
                 '<div class="likhtar-episode__num"></div>' +
                 '<div class="likhtar-episode__text"><div class="likhtar-episode__name"></div>' +
                 '<div class="likhtar-episode__descr"></div></div>' +
@@ -4522,6 +4548,23 @@
             row.addClass('likhtar-episode--' + date.mod);
 
             return row;
+        }
+
+        /** Повний опис серії: у списку він обрізаний одним рядком. */
+        function openEpisode(episode, backToList) {
+            var date = episodeDateLabel(episode.air_date);
+            var code = 'Серія ' + (episode.episode_number || '?');
+
+            fillPanel(episode.name || code, code + ' · ' + date.text, function (body) {
+                if (episode.still_path) {
+                    body.append($('<div class="likhtar-episode__still"></div>')
+                        .css('background-image', 'url(' + Lampa.TMDB.image('t/p/w500' + episode.still_path) + ')'));
+                }
+
+                body.append($('<div class="likhtar-panel__text selector"></div>')
+                    .text(episode.overview || 'Опису цієї серії ще немає.'));
+                refocusPanel();
+            }, backToList);
         }
 
         function openEpisodes(movie, season, backToSeasons) {
@@ -4544,7 +4587,13 @@
                             .text('Попереду ще ' + upcoming.length + ' сер.'));
                     }
 
-                    episodes.forEach(function (ep) { body.append(episodeRow(ep)); });
+                    episodes.forEach(function (ep) {
+                        var row = episodeRow(ep);
+                        row.on('hover:enter click', function () {
+                            openEpisode(ep, function () { openEpisodes(movie, season, backToSeasons); });
+                        });
+                        body.append(row);
+                    });
                     refocusPanel();
                 });
             }, backToSeasons);
@@ -4931,7 +4980,65 @@
             });
         }
 
-        /** Попередній сезон: опис із TMDB — тягнеться, а не генерується. */
+        /**
+         * Переказ попереднього сезону.
+         *
+         * TMDB майже завжди віддає порожній опис сезону — навіть для топових
+         * серіалів. Тому основне джерело — українська Вікіпедія: у неї є
+         * окремі статті «Назва (N-й сезон)» зі вступом і сюжетом. TMDB
+         * лишається запасним варіантом.
+         */
+        function wikiSeason(title, seasonNumber, callback) {
+            var key = 'wikiseason_' + title.toLowerCase().replace(/[^a-zа-яіїєґ0-9]+/gi, '_') + '_' + seasonNumber;
+            var cached = LikhtarCache.get(key);
+            if (cached !== undefined) return callback(cached);
+
+            var finish = function (result) {
+                LikhtarCache.set(key, result, LikhtarCache.TTL.WEEK);
+                callback(result);
+            };
+
+            // Стаття про сезон називається по-різному: «(2-й сезон)» або «(сезон 2)»
+            var variants = [
+                title + ' (' + seasonNumber + '-й сезон)',
+                title + ' (сезон ' + seasonNumber + ')',
+                title + ' ' + seasonNumber + ' сезон'
+            ];
+
+            function tryVariant(index) {
+                if (index >= variants.length) return finish(null);
+
+                var url = 'https://uk.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1' +
+                    '&redirects=1&format=json&origin=*&titles=' + encodeURIComponent(variants[index]);
+
+                $.get(url).done(function (data) {
+                    var pages = data && data.query && data.query.pages;
+                    var page = pages && pages[Object.keys(pages)[0]];
+                    var text = page && page.extract;
+
+                    if (!text || text.length < 200) return tryVariant(index + 1);
+
+                    // Вступ статті — це і є переказ сезону; далі беремо сюжет, якщо є
+                    var intro = text.split(/\n==/)[0].trim();
+                    var plot = '';
+                    var sections = String(text).split(/\n==+\s*([^=\n]+?)\s*==+\n?/);
+                    for (var i = 1; i < sections.length - 1; i += 2) {
+                        if (/сюжет|огляд|синопсис/i.test(sections[i])) {
+                            plot = (sections[i + 1] || '').trim();
+                            break;
+                        }
+                    }
+
+                    finish({
+                        title: page.title || variants[index],
+                        text: (intro + (plot ? '\n\n' + plot : '')).slice(0, 3000)
+                    });
+                }).fail(function () { tryVariant(index + 1); });
+            }
+
+            tryVariant(0);
+        }
+
         function openSeasonRecap(movie) {
             seasonsOf(movie, function (seasons) {
                 var aired = (seasons || []).filter(function (x) {
@@ -4942,22 +5049,39 @@
 
                 if (!prev) return Lampa.Noty.show('Про сезони ще немає даних');
 
-                var show = function (overview) {
-                    openPanel(prev.name || ('Сезон ' + prev.season_number), 'Коротко про сезон', function (body) {
-                        body.append($('<div class="likhtar-panel__text selector"></div>')
-                            .text(overview || 'TMDB ще не має опису цього сезону.'));
+                var heading = prev.name || ('Сезон ' + prev.season_number);
+
+                openPanel(heading, 'Коротко про сезон', function (body) {
+                    body.append('<div class="likhtar-panel__loading">Шукаємо переказ…</div>');
+
+                    var show = function (text, source) {
+                        if (!panel) return;
+                        body.empty();
+
+                        if (!text) {
+                            body.append('<div class="likhtar-panel__loading">Переказу цього сезону ніде немає</div>');
+                            return;
+                        }
+
+                        body.append($('<div class="likhtar-panel__text selector"></div>').text(text));
+                        if (source) {
+                            body.append($('<div class="likhtar-panel__loading"></div>').text('Джерело: ' + source));
+                        }
                         refocusPanel();
+                    };
+
+                    wikiSeason(movie.name || movie.title || '', prev.season_number, function (article) {
+                        if (article) return show(article.text, 'Вікіпедія · ' + article.title);
+
+                        // Запасний варіант — опис сезону з TMDB, якщо він узагалі є
+                        if (prev.overview) return show(prev.overview, 'TMDB');
+
+                        var url = Lampa.TMDB.api('tv/' + movie.id + '/season/' + prev.season_number +
+                            '?api_key=' + getTmdbKey() + '&language=' + Lampa.Storage.get('language', 'uk'));
+                        new Lampa.Reguest().silent(url, function (data) {
+                            show(data && data.overview, data && data.overview ? 'TMDB' : '');
+                        }, function () { show(''); });
                     });
-                };
-
-                if (prev.overview) return show(prev.overview);
-
-                var url = Lampa.TMDB.api('tv/' + movie.id + '/season/' + prev.season_number +
-                    '?api_key=' + getTmdbKey() + '&language=' + Lampa.Storage.get('language', 'uk'));
-                new Lampa.Reguest().silent(url, function (data) {
-                    show(data && data.overview);
-                }, function () {
-                    show('');
                 });
             });
         }
@@ -5168,18 +5292,11 @@
 
             var side = $('<div class="likhtar-side"></div>');
 
-            // Картка фокусована: без трейлера в бічній колонці не було жодного
-            // selector'а, і Navigator не знаходив дороги до жанрів. Сама картка
-            // висока, тож пульт бачить її з будь-якого рядка зліва, а Enter
-            // заводить фокус усередину — на перший жанр.
-            var card = $('<div class="likhtar-metrics selector"></div>');
-
-            card.on('hover:enter', function () {
-                var genre = card.find('.likhtar-genre').first();
-                if (genre.length && Lampa.Controller.collectionFocus) {
-                    Lampa.Controller.collectionFocus(genre[0], hero[0] || false);
-                }
-            });
+            // Картка навмисно НЕ selector: коли вона перехоплювала фокус,
+            // до жанру доводилось іти у два кроки, а між жанрами — через
+            // повернення на картку. Жанри самі є selector'ами, тож пульт
+            // ходить по них напряму.
+            var card = $('<div class="likhtar-metrics"></div>');
 
             // Ярус 1: рейтинг і вік
             var top = $('<div class="likhtar-metrics__top"></div>');
@@ -5640,7 +5757,6 @@
                 ' background: rgba(14,14,17,.4); border: 1px solid rgba(255,255,255,.08);' +
                 ' border-radius: 1.1em; overflow: hidden; display: flex; flex-direction: column;' +
                 ' backdrop-filter: blur(50px); -webkit-backdrop-filter: blur(50px); }' +
-                '.likhtar-metrics.selector.focus { border-color: rgba(255,255,255,.45); }' +
 
 
                 '.likhtar-metrics__top { display: flex; align-items: flex-start;' +
@@ -5780,6 +5896,9 @@
                 '.likhtar-episode__date--soon { background: linear-gradient(135deg,#0057b7,#0072e8); }' +
                 '.likhtar-episode__date--upcoming { background: rgba(46,160,67,.8); }' +
                 '.likhtar-episode__date--unknown { opacity: .5; }' +
+                '.likhtar-episode.focus { background: rgba(255,255,255,.16); }' +
+                '.likhtar-episode__still { width: 100%; padding-top: 56%; border-radius: .7em;' +
+                ' background: #16181f center/cover no-repeat; margin-bottom: .8em; }' +
 
                 /* Рядки хаба «Ліхтарик» */
                 '.likhtar-hub { display: flex; align-items: center; gap: .9em; padding: .75em .7em;' +
