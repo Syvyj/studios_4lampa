@@ -31,6 +31,7 @@ spec.loader.exec_module(bc)
 
 # Що саме шукати: рік і тип, у порядку важливості
 SOURCES = [("movie", 2026), ("movie", 2025), ("tv", 2025)]
+KIND_WORD = {"movie": "фільми", "tv": "серіали"}
 
 
 def needs_work(card, mode):
@@ -84,6 +85,9 @@ def main():
         page = 1
         while True:
             data = bc.discover(kind, year, 5, page)
+            pages = min(data.get("total_pages", 1), 500)
+            print(f"  {KIND_WORD[kind]} {year}: сторінка {page}/{pages}, "
+                  f"назв у списку {len(todo)}", flush=True)
             for raw in data.get("results", []):
                 item = bc.normalize(raw, kind)
                 key = (kind, item["id"])
@@ -139,9 +143,6 @@ def main():
             "tmdb": f"https://www.themoviedb.org/{item['kind']}/{item['id']}",
         }
 
-        # Стаття, яку ми вже перевірили за назвою і роком. Модель не мусить
-        # шукати наосліп — і не потрапить на однойменний твір, на чому ми
-        # вже двічі горіли.
         # Те, що вже стоїть у базі: модель має це перевірити, а не повторити
         # наосліп. Помилку в наявній картці видно лише поруч із джерелом.
         card = load_card(item["kind"], item["id"])
@@ -154,7 +155,19 @@ def main():
             }
 
         note = ""
-        if not args.no_wiki:
+        # Джерело, яке ми вже знайшли й перевірили раніше, шукати вдруге
+        # не треба: з --need all таких тисяча, і це години марної роботи.
+        known = (card or {}).get("source")
+        if known and known.get("wiki"):
+            entry["wikipedia"] = {
+                "title": known["wiki"],
+                "lang": known.get("lang") or "en",
+                "url": f"https://{known.get('lang') or 'en'}.wikipedia.org/wiki/"
+                       + known["wiki"].replace(" ", "_"),
+            }
+            with_wiki += 1
+            note = f"стаття вже відома: {known['wiki'][:36]}"
+        elif not args.no_wiki:
             art = bc.find_article(item)
             if art:
                 entry["wikipedia"] = {
