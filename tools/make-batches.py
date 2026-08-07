@@ -65,6 +65,8 @@ def main():
     parser.add_argument("--need", choices=("empty", "weak"), default="empty",
                         help="empty — лише без джерела; weak — ще й порожні за змістом")
     parser.add_argument("--limit", type=int, default=0, help="0 — усі знайдені")
+    parser.add_argument("--no-wiki", action="store_true",
+                        help="не шукати статті наперед — швидше, але модель шукатиме сама")
     args = parser.parse_args()
 
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -85,7 +87,7 @@ def main():
                 if card and not needs_work(card, args.need):
                     continue
 
-                items.append({
+                entry = {
                     "id": item["id"],
                     "kind": kind,
                     "title_uk": item["title"],
@@ -94,7 +96,24 @@ def main():
                     "year": item["year"],
                     "overview": item["overview"],
                     "tmdb": f"https://www.themoviedb.org/{kind}/{item['id']}",
-                })
+                }
+
+                # Стаття, яку ми вже перевірили за назвою і роком. Модель не
+                # мусить шукати наосліп — і не потрапить на однойменний твір,
+                # на чому ми вже двічі горіли.
+                if not args.no_wiki:
+                    art = bc.find_article(item)
+                    if art:
+                        entry["wikipedia"] = {
+                            "title": art["title"],
+                            "lang": art["lang"],
+                            "url": f"https://{art['lang']}.wikipedia.org/wiki/"
+                                   + art["title"].replace(" ", "_"),
+                        }
+
+                items.append(entry)
+                if len(items) % 25 == 0:
+                    print(f"  зібрано {len(items)}…", flush=True)
                 if args.limit and len(items) >= args.limit:
                     break
 

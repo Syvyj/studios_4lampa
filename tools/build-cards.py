@@ -171,6 +171,23 @@ def card_path(item):
 PUNCT = re.compile(r"[^\w\s]", re.U)
 
 
+# Позначки версії у назві TMDB: у Вікіпедії їх не буває, тож для звірки
+# й для пошуку вони лише заважають. «The Toxic Avenger Unrated» — це стаття
+# «The Toxic Avenger».
+EDITION = re.compile(
+    r"\s*[-–—:]?\s*\b(unrated|uncut|extended|theatrical|director'?s?\s+cut|"
+    r"special\s+edition|final\s+cut|remastered|imax|4k|3d|"
+    r"режисерська\s+версія|розширена\s+версія)\b\s*$", re.I)
+
+
+def strip_edition(s):
+    prev = None
+    while prev != s:                       # «Extended Director's Cut» — два хвости
+        prev = s
+        s = EDITION.sub("", s or "").strip()
+    return s
+
+
 def same_title(found, expected):
     """Чи стаття справді про нашу назву.
 
@@ -178,7 +195,7 @@ def same_title(found, expected):
     уточнення в дужках («(телесеріал)», «(фільм)») відкидаємо.
     """
     def normalize_title(s):
-        s = s or ""
+        s = strip_edition(s or "")
         s = re.sub(r"\s*\([^)]*\)\s*$", " ", s)
         s = s.lower()
         s = s.replace("ґ", "г")
@@ -199,27 +216,84 @@ def find_article(item):
     віддає статтю про однойменний фільм.
     """
     year = item["year"]
-    
-    # Спробуємо спочатку український пошук
+    title = strip_edition(item["title"])
+
+    # Рік у запиті — палиця з двома кінцями. Він відсіює однойменні твори,
+    # але статтю часто називають за роком зйомок: «The Toxic Avenger
+    # (2023 film)» вийшов у прокат 2025-го, і запит із «2025» його не бачить.
+    # Тому після спроби з роком повторюємо без нього — від чужих статей
+    # захищає не рік у запиті, а звірка назви.
     if item["kind"] == "tv":
         uk_attempts = [
-            ("uk", f"{item['title']} телесеріал", item["title"]),
-            ("uk", f"{item['title']} {year}", item["title"]),
+            ("uk", f"{title} телесеріал", title),
+            ("uk", f"{title} {year}", title),
+            ("uk", title, title),
         ]
     else:
         uk_attempts = [
-            ("uk", f"{item['title']} {year}", item["title"]),
+            ("uk", f"{title} {year}", title),
+            ("uk", f"{title} фільм", title),
+            ("uk", title, title),
         ]
 
-    for lang, query, expected in uk_attempts:
+    article = try_attempts(uk_attempts, year)
+    if article:
+        return article
+
+    # Українською не знайшлось — лениво беремо англійську назву з TMDB.
+    # Саме англійську, а не оригінальну: стаття про «പ്രകമ്പനം» зветься
+    # «Prakambanam», і за оригінальним написанням її не знайти.
+    en = None
+    try:
+        en_data = tmdb(f"{item['kind']}/{item['id']}?language=en-US")
+        en = en_data.get("title") or en_data.get("name")
+    except Exception:
+        pass
+    en = strip_edition(en or item["original"] or "")
+    if not en:
+        return None
+
+    kind_word = "TV series" if item["kind"] == "tv" else "film"
+    return try_attempts([
+        ("en", f"{en} {year} {kind_word}", en),
+        ("en", f"{en} {kind_word}", en),
+        ("en", en, en),
+    ], year)
+
+
+def same_work(found_title, text, year):
+    """Чи це той самий твір, а не однойменний з іншого десятиліття.
+
+    Запит без року знаходить більше, але й ловить тезок: «Богомол» віддав
+    статтю про фільм 1982 року. Розбіжність у рік-два нормальна — статтю
+    часто називають за роком зйомок, а не прокату.
+    """
+    if not year or not year.isdigit():
+        return True
+
+    ours = int(year)
+    m = re.search(r"\((?:[^)]*?)(1[89]\d\d|20\d\d)[^)]*\)", found_title or "")
+    if m:
+        return abs(int(m.group(1)) - ours) <= 3
+
+    # Року в назві статті немає — вимагаємо, щоб він згадувався в тексті
+    return any(str(y) in (text or "")[:4000] for y in range(ours - 2, ours + 2))
+
+
+def try_attempts(attempts, year=""):
+    """Проходить запити по черзі й повертає перший, що дав придатну статтю."""
+    for lang, query, expected in attempts:
         if not query.strip():
             continue
         try:
-            title = wiki_search(lang, query)
-            if not title or not same_title(title, expected):
+            found = wiki_search(lang, query)
+            if not found or not same_title(found, expected):
                 continue
-            text = wiki_extract(lang, title)
+            text = wiki_extract(lang, found)
         except Exception:
+            continue
+
+        if not same_work(found, text, year):
             continue
 
         if len(text) < 1200:
@@ -234,41 +308,8 @@ def find_article(item):
             f"{name}:\n{body}" for name, body in sections.items()
             if PROD_SECTIONS.search(name) and len(body) > 200
         )
-        return {"lang": lang, "title": title, "plot": plot, "production": production, "raw": text}
-
-    # Якщо український пошук не дав результатів, лениво шукаємо англійську назву з TMDB
-    en_title = None
-    try:
-        path = f"movie/{item['id']}?language=en-US" if item["kind"] == "movie" else f"tv/{item['id']}?language=en-US"
-        en_data = tmdb(path)
-        en_title = en_data.get("title") if item["kind"] == "movie" else en_data.get("name")
-    except Exception:
-        pass
-
-    if not en_title:
-        en_title = item["original"]
-
-    if en_title:
-        if item["kind"] == "tv":
-            en_query = f"{en_title} {year} TV series"
-        else:
-            en_query = f"{en_title} {year} film"
-
-        try:
-            title = wiki_search("en", en_query)
-            if title and same_title(title, en_title):
-                text = wiki_extract("en", title)
-                if len(text) >= 1200:
-                    sections = split_sections(text)
-                    plot = next((sections[k] for k in PLOT_SECTIONS if len(sections.get(k, "")) > 300), "")
-                    if plot:
-                        production = "\n\n".join(
-                            f"{name}:\n{body}" for name, body in sections.items()
-                            if PROD_SECTIONS.search(name) and len(body) > 200
-                        )
-                        return {"lang": "en", "title": title, "plot": plot, "production": production, "raw": text}
-        except Exception:
-            pass
+        return {"lang": lang, "title": found, "plot": plot,
+                "production": production, "raw": text}
 
     return None
 
