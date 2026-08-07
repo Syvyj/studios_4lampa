@@ -1,0 +1,219 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ліхтар — пісочниця карток</title>
+
+<!--
+  Пісочниця карток: як читатимуться три майбутні пункти хаба «Ліхтарик» —
+  «Чи варто дивитись?», «Цікаві факти» і «Пояснення фіналу».
+
+  На відміну від sandbox-card.html, тут не жива поведінка плагіна, а вміст:
+  сторінка бере справжні файли з cards/ і показує їх у стилях Lampa. Потрібна,
+  щоб оцінити якість текстів до того, як вони поїдуть у likhtar.js.
+-->
+
+<link rel="stylesheet" href="https://yumata.github.io/lampa/css/app.css?v=4.56">
+
+<style>
+  html, body { margin: 0; background: #07090f; color: #fff;
+               font-family: system-ui, sans-serif; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 18px 16px 60px; }
+
+  .bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+         padding: 10px; margin-bottom: 18px;
+         background: rgba(255,255,255,.04); border-radius: 12px; font-size: 14px; }
+  .bar button, .bar input, .bar select {
+    background: #1d1f27; color: #eee; border: 1px solid #333;
+    border-radius: 8px; padding: 8px 12px; font: inherit; }
+  .bar button { cursor: pointer; }
+  .bar button.on { background: #0057b7; border-color: #0057b7; }
+  .bar .note { opacity: .55; }
+
+  .head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+          margin-bottom: 4px; }
+  .head h1 { font-size: 26px; margin: 0; }
+  .head .year { opacity: .5; }
+  .src { font-size: 13px; opacity: .45; margin-bottom: 20px; }
+  .src.none { color: #d98c3f; opacity: .8; }
+
+  /* Пункт хаба: у Lampa це рядок, який розкривається. Тут показуємо
+     розкритим — оцінюємо текст, а не механіку. */
+  .item { background: rgba(255,255,255,.05); border-radius: 14px;
+          padding: 16px 18px; margin-bottom: 14px; }
+  .item h2 { font-size: 15px; letter-spacing: .04em; text-transform: uppercase;
+             opacity: .55; margin: 0 0 12px; font-weight: 600; }
+  .item p { margin: 0 0 10px; line-height: 1.5; }
+  .item .label { opacity: .5; }
+
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 12px 0 4px; }
+  .chip { background: rgba(255,255,255,.1); border-radius: 999px;
+          padding: 4px 12px; font-size: 13px; }
+
+  .metrics { display: grid; grid-template-columns: 130px 1fr; gap: 8px 12px;
+             align-items: center; margin-top: 14px; }
+  .metrics .name { opacity: .55; font-size: 14px; }
+  .dots { display: flex; gap: 4px; align-items: center; }
+  .dot { width: 22px; height: 6px; border-radius: 3px; background: rgba(255,255,255,.14); }
+  .dot.on { background: #0057b7; }
+  .dot.warn.on { background: #c9482f; }
+  .metrics .why { grid-column: 2; font-size: 13px; opacity: .5; margin-top: -4px; }
+
+  ul.facts { margin: 0; padding-left: 18px; }
+  ul.facts li { margin-bottom: 8px; line-height: 1.5; }
+
+  .spoiler .warn { color: #d98c3f; font-size: 14px; margin-bottom: 10px; }
+  .spoiler button { background: #1d1f27; color: #eee; border: 1px solid #444;
+                    border-radius: 8px; padding: 10px 16px; font: inherit; cursor: pointer; }
+  .spoiler .text { display: none; line-height: 1.55; }
+  .spoiler.open .text { display: block; }
+  .spoiler.open button { display: none; }
+
+  .empty { opacity: .4; font-style: italic; }
+</style>
+
+<div class="wrap">
+  <div class="bar">
+    <button id="rnd">Випадкова картка</button>
+    <select id="kind">
+      <option value="movie">фільми</option>
+      <option value="tv">серіали</option>
+    </select>
+    <select id="filter">
+      <option value="full">повні (фінал + факти)</option>
+      <option value="any">будь-які</option>
+      <option value="bare">без джерела</option>
+    </select>
+    <input id="id" size="10" placeholder="tmdb id">
+    <button id="go">Показати</button>
+    <span class="note" id="status">завантаження…</span>
+  </div>
+
+  <div id="card"></div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+let index = { ids: [], tv: [] };
+
+const esc = s => String(s == null ? '' : s)
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+function dots(score, max, warn) {
+  let out = '';
+  for (let i = 1; i <= max; i++)
+    out += `<div class="dot${warn ? ' warn' : ''}${i <= score ? ' on' : ''}"></div>`;
+  return `<div class="dots">${out}</div>`;
+}
+
+function metric(name, block, max, warn) {
+  if (!block) return '';
+  return `<div class="name">${esc(name)}</div>${dots(block.score, max, warn)}` +
+         (block.description ? `<div class="why">${esc(block.description)}</div>` : '');
+}
+
+function render(c) {
+  const watch = c.watch || {};
+  const eggs = c.easter_eggs || [];
+  const kids = c.children || {};
+
+  const parts = [];
+
+  parts.push(`<div class="head"><h1>${esc(c.title)}</h1>
+    <span class="year">${esc(c.year)}</span>
+    <span class="year">${c.kind === 'tv' ? 'серіал' : 'фільм'}</span></div>`);
+
+  parts.push(c.source
+    ? `<div class="src">джерело: ${esc(c.source.wiki)} · ${esc(c.source.lang)}</div>`
+    : `<div class="src none">джерела немає — лише оцінки, без фіналу й фактів</div>`);
+
+  if (c.summary) parts.push(`<div class="item"><h2>Про що</h2><p>${esc(c.summary)}</p></div>`);
+
+  // «Чи варто дивитись?» — оцінки й кому підійде
+  parts.push(`<div class="item"><h2>Чи варто дивитись?</h2>
+    ${watch.worth ? `<p>${esc(watch.worth)}</p>` : '<p class="empty">немає</p>'}
+    ${watch.for ? `<p><span class="label">підійде:</span> ${esc(watch.for)}</p>` : ''}
+    ${watch.not_for ? `<p><span class="label">не підійде:</span> ${esc(watch.not_for)}</p>` : ''}
+    ${(c.mood || []).length ? `<div class="chips">${c.mood.map(m => `<span class="chip">${esc(m)}</span>`).join('')}</div>` : ''}
+    <div class="metrics">
+      ${metric('Складність', c.complexity, 5, false)}
+      ${metric('Насильство', c.violence, 5, true)}
+      ${metric('Еротика', c.erotica, 5, true)}
+      <div class="name">Дітям</div>
+      <div>${kids.recommended ? 'підійде' : 'не варто'}</div>
+      ${kids.description ? `<div class="why">${esc(kids.description)}</div>` : ''}
+    </div></div>`);
+
+  parts.push(`<div class="item"><h2>Цікаві факти</h2>${
+    eggs.length
+      ? `<ul class="facts">${eggs.map(e => `<li>${esc(e)}</li>`).join('')}</ul>`
+      : '<p class="empty">фактів немає — джерело не дало підтверджених деталей</p>'
+  }</div>`);
+
+  // Фінал ховаємо: у хабі це буде окремий пункт із таким самим попередженням
+  parts.push(`<div class="item"><h2>${c.kind === 'tv' ? 'Чим завершується' : 'Пояснення фіналу'}</h2>${
+    c.ending_explained
+      ? `<div class="spoiler"><div class="warn">⚠ Далі спойлери — фінал розкрито повністю</div>
+         <button onclick="this.parentNode.classList.add('open')">Все одно показати</button>
+         <div class="text">${esc(c.ending_explained)}</div></div>`
+      : `<p class="empty">${c.kind === 'tv' ? 'історія триває або сюжету в джерелі немає' : 'сюжету в джерелі немає'}</p>`
+  }</div>`);
+
+  $('#card').innerHTML = parts.join('');
+}
+
+async function load(id, kind) {
+  const file = (kind === 'tv' ? 'tv' : '') + id;
+  const r = await fetch(`../cards/${file}.json`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(file + ': ' + r.status);
+  const c = await r.json();
+  if (!c.kind) c.kind = kind;          // картки старого прогону поля не мають
+  return c;
+}
+
+function matches(c, mode) {
+  if (mode === 'any') return true;
+  if (mode === 'bare') return !c.source;
+  return c.ending_explained && (c.easter_eggs || []).length;
+}
+
+async function random() {
+  const kind = $('#kind').value;
+  const pool = kind === 'tv' ? index.tv : index.ids;
+  const mode = $('#filter').value;
+  $('#status').textContent = 'шукаю…';
+
+  // Картки лежать окремими файлами, тож фільтр — це перебір навмання.
+  // 40 спроб вистачає навіть для рідкісного «без джерела».
+  for (let i = 0; i < 40; i++) {
+    const id = pool[Math.floor(Math.random() * pool.length)];
+    try {
+      const c = await load(id, kind);
+      if (matches(c, mode)) {
+        render(c);
+        $('#id').value = id;
+        $('#status').textContent = `${pool.length} карток у базі`;
+        return;
+      }
+    } catch (e) { /* пропущена картка — пробуємо іншу */ }
+  }
+  $('#status').textContent = 'не знайшов такої за 40 спроб';
+}
+
+(async () => {
+  try {
+    index = await (await fetch('../cards/index.json', { cache: 'no-store' })).json();
+    $('#status').textContent = `${index.ids.length} фільмів, ${(index.tv || []).length} серіалів`;
+    random();
+  } catch (e) {
+    $('#status').textContent = 'не читається cards/index.json — запустіть tools/serve.py';
+  }
+})();
+
+$('#rnd').onclick = random;
+$('#kind').onchange = random;
+$('#filter').onchange = random;
+$('#go').onclick = async () => {
+  try { render(await load($('#id').value.trim(), $('#kind').value)); }
+  catch (e) { $('#status').textContent = String(e.message); }
+};
+</script>
