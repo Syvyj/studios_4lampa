@@ -70,7 +70,12 @@ def main():
     args = parser.parse_args()
 
     os.makedirs(OUT_DIR, exist_ok=True)
-    items, seen = [], set()
+
+    # Спершу список назв — це швидко, лише TMDB. Пошук статей іде окремим
+    # проходом, щоб було видно, скільки лишилось, і щоб Ctrl+C не з'їдав
+    # усю роботу: пачки пишуться щойно назбирається розмір.
+    print("збираю список назв із TMDB…", flush=True)
+    todo, seen = [], set()
 
     for kind, year in SOURCES:
         page = 1
@@ -87,58 +92,81 @@ def main():
                 if card and not needs_work(card, args.need):
                     continue
 
-                entry = {
-                    "id": item["id"],
-                    "kind": kind,
-                    "title_uk": item["title"],
-                    "title_original": item["original"],
-                    "title_en": en_title(kind, item["id"]),
-                    "year": item["year"],
-                    "overview": item["overview"],
-                    "tmdb": f"https://www.themoviedb.org/{kind}/{item['id']}",
-                }
-
-                # Стаття, яку ми вже перевірили за назвою і роком. Модель не
-                # мусить шукати наосліп — і не потрапить на однойменний твір,
-                # на чому ми вже двічі горіли.
-                if not args.no_wiki:
-                    art = bc.find_article(item)
-                    if art:
-                        entry["wikipedia"] = {
-                            "title": art["title"],
-                            "lang": art["lang"],
-                            "url": f"https://{art['lang']}.wikipedia.org/wiki/"
-                                   + art["title"].replace(" ", "_"),
-                        }
-
-                items.append(entry)
-                if len(items) % 25 == 0:
-                    print(f"  зібрано {len(items)}…", flush=True)
-                if args.limit and len(items) >= args.limit:
+                todo.append(item)
+                if args.limit and len(todo) >= args.limit:
                     break
 
-            if args.limit and len(items) >= args.limit:
+            if args.limit and len(todo) >= args.limit:
                 break
             if page >= min(data.get("total_pages", 1), 500):
                 break
             page += 1
             time.sleep(0.15)
 
-        if args.limit and len(items) >= args.limit:
+        if args.limit and len(todo) >= args.limit:
             break
 
-    batches = [items[i:i + args.size] for i in range(0, len(items), args.size)]
+    print(f"назв до опрацювання: {len(todo)}")
+    if not args.no_wiki:
+        print("шукаю статті наперед — це найдовше; перервати можна будь-коли,\n"
+              "готові пачки вже лежатимуть у batches/\n", flush=True)
+
     for old in os.listdir(OUT_DIR):
         if old.startswith("batch-") and old.endswith(".json"):
             os.remove(os.path.join(OUT_DIR, old))
 
-    for n, batch in enumerate(batches, 1):
+    def flush_batch(batch, n):
         path = os.path.join(OUT_DIR, f"batch-{n:03d}.json")
         with open(path, "w", encoding="utf-8") as f:
             json.dump(batch, f, ensure_ascii=False, indent=1)
+        print(f"   → {os.path.basename(path)} готова ({len(batch)} назв)", flush=True)
 
-    print(f"назв до опрацювання: {len(items)}")
-    print(f"пачок по {args.size}: {len(batches)} → {OUT_DIR}/batch-001.json …")
+    batch, batch_no, with_wiki = [], 1, 0
+    started = time.time()
+
+    for i, item in enumerate(todo, 1):
+        entry = {
+            "id": item["id"],
+            "kind": item["kind"],
+            "title_uk": item["title"],
+            "title_original": item["original"],
+            "title_en": en_title(item["kind"], item["id"]),
+            "year": item["year"],
+            "overview": item["overview"],
+            "tmdb": f"https://www.themoviedb.org/{item['kind']}/{item['id']}",
+        }
+
+        # Стаття, яку ми вже перевірили за назвою і роком. Модель не мусить
+        # шукати наосліп — і не потрапить на однойменний твір, на чому ми
+        # вже двічі горіли.
+        note = ""
+        if not args.no_wiki:
+            art = bc.find_article(item)
+            if art:
+                entry["wikipedia"] = {
+                    "title": art["title"],
+                    "lang": art["lang"],
+                    "url": f"https://{art['lang']}.wikipedia.org/wiki/"
+                           + art["title"].replace(" ", "_"),
+                }
+                with_wiki += 1
+                note = f"стаття: {art['lang']}:{art['title'][:40]}"
+            else:
+                note = "статті немає"
+
+        eta = (time.time() - started) / i * (len(todo) - i) / 60
+        print(f"{i}/{len(todo)} {item['title'][:32]:32} {note:52} ~{eta:.0f} хв", flush=True)
+
+        batch.append(entry)
+        if len(batch) >= args.size:
+            flush_batch(batch, batch_no)
+            batch, batch_no = [], batch_no + 1
+
+    if batch:
+        flush_batch(batch, batch_no)
+
+    print(f"\nпачок по {args.size}: {batch_no if batch else batch_no - 1}"
+          f" · зі знайденою статтею {with_wiki} із {len(todo)}")
     print("\nдалі: відкрий docs/prompt-cards-ai.md, скопіюй промт у чат,")
     print("прикріпи одну пачку, відповідь збережи як batches/done-001.json,")
     print("потім: python3 tools/import-cards.py batches/done-*.json")
