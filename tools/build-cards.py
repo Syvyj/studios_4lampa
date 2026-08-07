@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
-"""Генератор карток фільмів для Ліхтарика.
+"""Генератор карток фільмів і серіалів для Ліхтарика.
 
 Модель тут нічого не вигадує: вона лише переказує українською матеріал,
 який ми їй дали — статтю з Вікіпедії та опис із TMDB. Усе, що не
 підтверджується джерелом, відсіюється перед записом.
 
-Результат — по файлу на фільм у cards/<tmdb_id>.json, які плагін читає
-напряму. Ніякої бази й сервера: файли лежать поруч із likhtar.js.
+Результат — по файлу на назву в cards/, які плагін читає напряму.
+Ніякої бази й сервера: файли лежать поруч із likhtar.js. Фільм — це
+cards/<tmdb_id>.json, серіал — cards/tv<tmdb_id>.json: у TMDB нумерація
+фільмів і серіалів своя, і без префікса вони б затирали одне одного.
 
     python3 tools/build-cards.py --year 2026 --min-votes 5
+    python3 tools/build-cards.py --kind tv --year 2025 --limit 200
+
+Мультфільми й мультсеріали окремого запуску не потребують — вони
+йдуть у тих самих топах за популярністю.
 
 Запуск можна переривати й повторювати: готові картки пропускаються.
 """
@@ -45,7 +51,7 @@ SYSTEM = """Ти — редактор української медіатеки.
 Пиши природною українською, без рекламних фраз.
 Відповідай ТІЛЬКИ валідним JSON без Markdown."""
 
-TEMPLATE = """Матеріал про фільм «{title}» ({year}).
+TEMPLATE = """Матеріал про {kind_word} «{title}» ({year}).
 
 === ОПИС З TMDB ===
 {overview}
@@ -58,20 +64,37 @@ TEMPLATE = """Матеріал про фільм «{title}» ({year}).
 
 Склади JSON:
 {{
-  "summary": "Про що фільм, без спойлерів. До 400 символів.",
+  "summary": "Про що {kind_word}, без спойлерів. До 400 символів.",
   "watch": {{
     "worth": "Чи варто дивитись і чому. Одне-два речення.",
     "for": "Кому підійде.",
     "not_for": "Кому не підійде."
   }},
-  "mood": ["3-5 слів про настрій фільму"],
+  "mood": ["3-5 слів про настрій {kind_gen}"],
   "complexity": {{"score": 1, "description": "Наскільки складно дивитись."}},
   "violence": {{"score": 0, "description": "Скільки жорстокості."}},
   "erotica": {{"score": 0, "description": "Скільки відвертих сцен."}},
   "children": {{"recommended": false, "description": "Чи підійде дітям."}},
-  "ending_explained": "Пояснення фіналу, 300-700 символів. ТІЛЬКИ з розділу СЮЖЕТ. Якщо сюжету немає — порожній рядок.",
+  "ending_explained": "{ending_hint}",
   "easter_eggs": ["3-5 конкретних фактів про створення: імена, числа, назви. ТІЛЬКИ з розділу ВИРОБНИЦТВО. Якщо його немає — порожній масив."]
 }}"""
+
+# Серіал відрізняється від фільму трьома речами: словом у промпті, місцем,
+# де Вікіпедія тримає статтю, і тим, що фінал є не завжди — історія може
+# тривати. Решта конвеєра для них однакова.
+KINDS = {
+    "movie": {
+        "word": "фільм", "gen": "фільму", "plural": "фільмів", "prefix": "",
+        "ending_hint": ("Пояснення фіналу, 300-700 символів. ТІЛЬКИ з розділу СЮЖЕТ. "
+                        "Якщо сюжету немає — порожній рядок."),
+    },
+    "tv": {
+        "word": "серіал", "gen": "серіалу", "plural": "серіалів", "prefix": "tv",
+        "ending_hint": ("Чим завершується історія, 300-700 символів. ТІЛЬКИ з розділу СЮЖЕТ "
+                        "і лише якщо серіал завершено. Якщо історія триває "
+                        "або сюжету немає — порожній рядок."),
+    },
+}
 
 PROD_SECTIONS = re.compile(
     r"виробництв|фільмуванн|знімання|кошторис|музика|розробк|створенн|теми|"
@@ -79,7 +102,8 @@ PROD_SECTIONS = re.compile(
     r"visual effects|scientific",
     re.I,
 )
-PLOT_SECTIONS = ("Сюжет", "Plot", "Synopsis", "Сюжетна лінія")
+PLOT_SECTIONS = ("Сюжет", "Plot", "Synopsis", "Сюжетна лінія",
+                 "Зміст", "Premise", "Series overview", "Огляд")
 
 
 def fetch(url, timeout=40):
@@ -114,20 +138,73 @@ def split_sections(text):
     return {parts[i].strip(): parts[i + 1].strip() for i in range(1, len(parts) - 1, 2)}
 
 
-def find_article(film):
-    """Шукає статтю: спершу українську, потім англійську."""
-    year = (film.get("release_date") or "")[:4]
-    attempts = [
-        ("uk", f"{film.get('title', '')} {year}"),
-        ("en", f"{film.get('original_title', '')} {year} film"),
-    ]
+def normalize(item, kind):
+    """Зводить фільм і серіал до однакових полів: далі конвеєр їх не розрізняє."""
+    if kind == "tv":
+        return {"id": item["id"], "kind": "tv",
+                "title": item.get("name") or item.get("original_name") or "",
+                "original": item.get("original_name") or "",
+                "year": (item.get("first_air_date") or "")[:4],
+                "overview": item.get("overview") or ""}
+    return {"id": item["id"], "kind": "movie",
+            "title": item.get("title") or item.get("original_title") or "",
+            "original": item.get("original_title") or "",
+            "year": (item.get("release_date") or "")[:4],
+            "overview": item.get("overview") or ""}
 
-    for lang, query in attempts:
+
+def card_path(item):
+    return os.path.join(CARDS_DIR, f"{KINDS[item['kind']]['prefix']}{item['id']}.json")
+
+
+PUNCT = re.compile(r"[^\w\s]", re.U)
+
+
+def same_title(found, expected):
+    """Чи стаття справді про нашу назву.
+
+    Пошук Вікіпедії завжди щось повертає: на «Друзі та сусіди» він віддав
+    статтю про «Друзі». Далі це перетворилось би на впевнений переказ
+    чужого сюжету, тож беремо лише точний збіг назви — уточнення в дужках
+    («(телесеріал)», «(фільм)») відкидаємо.
+    """
+    def words(s):
+        s = re.sub(r"\s*\([^)]*\)\s*$", " ", s or "")
+        return PUNCT.sub(" ", s).lower().split()
+
+    f, e = words(found), words(expected)
+    if not f or not e:
+        return False
+    # Назва статті може бути довшою («Нова надія» → «Зоряні війни: Нова надія»),
+    # але не коротшою: коротша означає, що ми потрапили на інший твір.
+    return " ".join(e) in " ".join(f)
+
+
+def find_article(item):
+    """Шукає статтю: спершу українську, потім англійську.
+
+    Серіал шукаємо ще й за словом «телесеріал»: без нього Вікіпедія часто
+    віддає статтю про однойменний фільм.
+    """
+    year = item["year"]
+    if item["kind"] == "tv":
+        attempts = [
+            ("uk", f"{item['title']} телесеріал", item["title"]),
+            ("uk", f"{item['title']} {year}", item["title"]),
+            ("en", f"{item['original']} {year} TV series", item["original"]),
+        ]
+    else:
+        attempts = [
+            ("uk", f"{item['title']} {year}", item["title"]),
+            ("en", f"{item['original']} {year} film", item["original"]),
+        ]
+
+    for lang, query, expected in attempts:
         if not query.strip():
             continue
         try:
             title = wiki_search(lang, query)
-            if not title:
+            if not title or not same_title(title, expected):
                 continue
             text = wiki_extract(lang, title)
         except Exception:
@@ -277,13 +354,17 @@ def validate(card, article):
     return report
 
 
-def build(film):
-    article = find_article(film)
+def build(item):
+    article = find_article(item)
+    kind = KINDS[item["kind"]]
 
     prompt = TEMPLATE.format(
-        title=film.get("title") or film.get("original_title") or "",
-        year=(film.get("release_date") or "")[:4] or "невідомо",
-        overview=(film.get("overview") or "").strip() or "(немає)",
+        kind_word=kind["word"],
+        kind_gen=kind["gen"],
+        ending_hint=kind["ending_hint"],
+        title=item["title"],
+        year=item["year"] or "невідомо",
+        overview=item["overview"].strip() or "(немає)",
         plot=(article["plot"][:6000] if article else "(матеріалу немає)"),
         production=(article["production"][:8000] if article and article["production"] else "(матеріалу немає)"),
     )
@@ -299,17 +380,50 @@ def build(film):
 
     report = validate(card, article)
 
-    card["id"] = film["id"]
-    card["title"] = film.get("title")
-    card["year"] = (film.get("release_date") or "")[:4]
+    card["id"] = item["id"]
+    card["kind"] = item["kind"]
+    card["title"] = item["title"]
+    card["year"] = item["year"]
     card["source"] = ({"wiki": article["title"], "lang": article["lang"]} if article else None)
     card["generated"] = time.strftime("%Y-%m-%d")
 
     return card, report
 
 
+def discover(kind, year, min_votes, page):
+    if kind == "tv":
+        # Ток-шоу, новини й реаліті відсіюємо: у них немає ні сюжету,
+        # ні фіналу — картка вийшла б порожньою.
+        return tmdb(f"discover/tv?first_air_date_year={year}"
+                    f"&vote_count.gte={min_votes}&sort_by=popularity.desc"
+                    f"&without_genres=10763,10764,10767"
+                    f"&language=uk&page={page}")
+    return tmdb(f"discover/movie?primary_release_year={year}"
+                f"&vote_count.gte={min_votes}&sort_by=popularity.desc"
+                f"&language=uk&page={page}")
+
+
+def write_index():
+    """Індекс тримає фільми й серіали окремо — плагін шукає за своїм типом."""
+    movies, series = [], []
+    for name in os.listdir(CARDS_DIR):
+        if not name.endswith(".json"):
+            continue
+        stem = name[:-5]
+        if stem.startswith("tv") and stem[2:].isdigit():
+            series.append(int(stem[2:]))
+        elif stem.isdigit():
+            movies.append(int(stem))
+
+    with open(os.path.join(CARDS_DIR, "index.json"), "w", encoding="utf-8") as f:
+        json.dump({"ids": sorted(movies), "tv": sorted(series),
+                   "updated": time.strftime("%Y-%m-%d")}, f, separators=(",", ":"))
+    return movies, series
+
+
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--kind", choices=("movie", "tv"), default="movie")
     parser.add_argument("--year", type=int, default=2026)
     parser.add_argument("--min-votes", type=int, default=5)
     parser.add_argument("--limit", type=int, default=0, help="0 — усі знайдені")
@@ -317,42 +431,41 @@ def main():
     args = parser.parse_args()
 
     os.makedirs(CARDS_DIR, exist_ok=True)
+    plural = KINDS[args.kind]["plural"]
 
-    films, page = [], 1
+    items, page = [], 1
     while True:
-        data = tmdb(f"discover/movie?primary_release_year={args.year}"
-                    f"&vote_count.gte={args.min_votes}&sort_by=popularity.desc"
-                    f"&language=uk&page={page}")
-        films += data.get("results", [])
-        if page >= min(data.get("total_pages", 1), 500) or (args.limit and len(films) >= args.limit):
+        data = discover(args.kind, args.year, args.min_votes, page)
+        items += [normalize(x, args.kind) for x in data.get("results", [])]
+        if page >= min(data.get("total_pages", 1), 500) or (args.limit and len(items) >= args.limit):
             break
         page += 1
         time.sleep(0.2)
 
     if args.limit:
-        films = films[:args.limit]
+        items = items[:args.limit]
 
-    print(f"фільмів до обробки: {len(films)}", flush=True)
+    print(f"{plural} до обробки: {len(items)} ({args.year})", flush=True)
 
     made = skipped = failed = 0
     started = time.time()
 
-    for i, film in enumerate(films, 1):
-        path = os.path.join(CARDS_DIR, f"{film['id']}.json")
+    for i, item in enumerate(items, 1):
+        path = card_path(item)
         if os.path.exists(path):
             skipped += 1
             continue
 
         t0 = time.time()
         try:
-            card, report = build(film)
+            card, report = build(item)
         except Exception as e:
-            print(f"{i}/{len(films)} ✖ {film.get('title')}: {e}", flush=True)
+            print(f"{i}/{len(items)} ✖ {item['title']}: {e}", flush=True)
             failed += 1
             continue
 
         if not card:
-            print(f"{i}/{len(films)} ✖ {film.get('title')}: {report}", flush=True)
+            print(f"{i}/{len(items)} ✖ {item['title']}: {report}", flush=True)
             failed += 1
             continue
 
@@ -365,19 +478,17 @@ def main():
         ending = "є" if card.get("ending_explained") else "—"
         note = ("; " + "; ".join(report)) if report else ""
         elapsed = time.time() - started
-        eta = (elapsed / max(made, 1)) * (len(films) - i) / 60
+        eta = (elapsed / max(made, 1)) * (len(items) - i) / 60
 
-        print(f"{i}/{len(films)} ✔ {(film.get('title') or '')[:34]:34} "
+        print(f"{i}/{len(items)} ✔ {item['title'][:34]:34} "
               f"{time.time()-t0:4.1f}с  фінал:{ending} фактів:{eggs}{note}  "
               f"(лишилось ~{eta:.0f} хв)", flush=True)
 
     print(f"\nстворено {made}, пропущено {skipped}, помилок {failed}, "
           f"загалом {(time.time()-started)/60:.0f} хв", flush=True)
 
-    index = sorted(int(f[:-5]) for f in os.listdir(CARDS_DIR) if f.endswith(".json") and f[:-5].isdigit())
-    with open(os.path.join(CARDS_DIR, "index.json"), "w", encoding="utf-8") as f:
-        json.dump({"ids": index, "updated": time.strftime("%Y-%m-%d")}, f, separators=(",", ":"))
-    print(f"індекс: {len(index)} карток", flush=True)
+    movies, series = write_index()
+    print(f"індекс: {len(movies)} фільмів, {len(series)} серіалів", flush=True)
 
 
 if __name__ == "__main__":
