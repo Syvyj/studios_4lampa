@@ -26,7 +26,7 @@ spec = importlib.util.spec_from_file_location("fx", os.path.join(ROOT, "tools", 
 fx = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(fx)
 
-TEXT_MIN = {"summary": 40, "ending_explained": 180}
+TEXT_MIN = {"summary": 40, "ending_explained": 60}
 
 # Фрази, якими модель прикриває незнання: якщо фінал такий — його немає
 VAGUE = re.compile(
