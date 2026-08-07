@@ -85,6 +85,7 @@
     </select>
     <input id="id" size="10" placeholder="tmdb id">
     <button id="go">Показати</button>
+    <button id="cmp">Порівняти моделі</button>
     <span class="note" id="status">завантаження…</span>
   </div>
 
@@ -209,6 +210,56 @@ async function random() {
   }
 })();
 
+// Порівняння моделей: ті самі назви, зроблені локальною Gemma (cards/) і
+// моделлю з доступом до мережі (cards-web/). Показуємо поруч, бо різницю
+// в текстах на слово не оцінити.
+const COMPARE = [
+  { id: '338969',   kind: 'movie', title: 'Токсичний месник' },
+  { id: '253372',   kind: 'tv',    title: 'Інститут' },
+  { id: '1266800',  kind: 'movie', title: 'Книга пустелі' },
+];
+
+async function loadFrom(dir, id, kind) {
+  const file = (kind === 'tv' ? 'tv' : '') + id;
+  const r = await fetch(`../${dir}/${file}.json`, { cache: 'no-store' });
+  if (!r.ok) return null;
+  const c = await r.json();
+  if (!c.kind) c.kind = kind;
+  return c;
+}
+
+function block(title, c) {
+  if (!c) return `<div class="item"><h2>${esc(title)}</h2><p class="empty">картки немає</p></div>`;
+  const w = c.watch || {};
+  return `<div class="item"><h2>${esc(title)}</h2>
+    <p>${esc(c.summary) || '<span class="empty">порожньо</span>'}</p>
+    <p><span class="label">підійде:</span> ${esc(w.for) || '—'}</p>
+    <p><span class="label">джерело:</span> ${c.source ? esc(c.source.wiki) : '<span class="empty">немає</span>'}</p>
+    <p><span class="label">фінал:</span> ${c.ending_explained
+        ? esc(c.ending_explained.slice(0, 260)) + '…'
+        : '<span class="empty">порожньо</span>'}</p>
+    <p><span class="label">фактів:</span> ${(c.easter_eggs || []).length}</p>
+    ${(c.easter_eggs || []).length
+        ? `<ul class="facts">${c.easter_eggs.map(e => `<li>${esc(e)}</li>`).join('')}</ul>` : ''}
+  </div>`;
+}
+
+async function compare() {
+  $('#status').textContent = 'порівняння…';
+  const out = [];
+  for (const t of COMPARE) {
+    const [gemma, web] = await Promise.all([
+      loadFrom('cards', t.id, t.kind), loadFrom('cards-web', t.id, t.kind),
+    ]);
+    out.push(`<div class="head"><h1>${esc(t.title)}</h1></div>
+      ${block('Gemma 4 · локально, лише Вікіпедія', gemma)}
+      ${block('Модель із доступом до мережі', web)}`);
+  }
+  $('#card').innerHTML = out.join('<hr style="border:0;border-top:1px solid rgba(255,255,255,.1);margin:26px 0">');
+  $('#status').textContent = `${COMPARE.length} назви поруч`;
+}
+
+$('#cmp').onclick = compare;
 $('#rnd').onclick = random;
 $('#kind').onchange = random;
 $('#filter').onchange = random;
