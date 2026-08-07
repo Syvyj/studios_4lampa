@@ -139,7 +139,9 @@ def check(card):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("files", nargs="+")
+    parser.add_argument("files", nargs="*")
+    parser.add_argument("--clipboard", action="store_true",
+                        help="взяти відповідь просто з буфера обміну")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--overwrite", action="store_true",
                         help="перезаписувати картки, які вже мають джерело")
@@ -147,12 +149,38 @@ def main():
 
     added = replaced = skipped = rejected = 0
 
+    # Буфер обміну — щоб не створювати файл руками: скопіював відповідь у
+    # чаті й одразу залив. Для моделей, які не вміють писати на диск.
+    sources = []
+    if args.clipboard:
+        import subprocess
+        try:
+            # pbpaste віддає текст у кодуванні локалі, а якщо LANG не задано —
+            # трактує його як MacRoman, і кирилиця перетворюється на «–Ґ–Њ».
+            # Тому вимагаємо UTF-8 явно й декодуємо самі.
+            env = dict(os.environ, LANG="en_US.UTF-8", LC_CTYPE="UTF-8")
+            raw = subprocess.run(["pbpaste"], capture_output=True, check=True,
+                                 env=env).stdout
+            text = raw.decode("utf-8", "replace")
+        except Exception as e:
+            print(f"не вдалось прочитати буфер обміну: {e}")
+            return
+        sources.append(("буфер обміну", text))
+
     for path in args.files:
         with open(path, encoding="utf-8") as f:
-            payload = parse_payload(f.read())
+            sources.append((path, f.read()))
+
+    if not sources:
+        print("вкажіть файл або --clipboard")
+        return
+
+    for path, text in sources:
+        payload = parse_payload(text)
         if payload is None:
             print(f"{path}: не вдалось прочитати JSON")
             continue
+        print(f"{path}: карток у відповіді {len(payload)}")
 
         for raw in payload:
             card, notes = check(raw)
