@@ -188,19 +188,19 @@ def find_article(item):
     віддає статтю про однойменний фільм.
     """
     year = item["year"]
+    
+    # Спробуємо спочатку український пошук
     if item["kind"] == "tv":
-        attempts = [
+        uk_attempts = [
             ("uk", f"{item['title']} телесеріал", item["title"]),
             ("uk", f"{item['title']} {year}", item["title"]),
-            ("en", f"{item['original']} {year} TV series", item["original"]),
         ]
     else:
-        attempts = [
+        uk_attempts = [
             ("uk", f"{item['title']} {year}", item["title"]),
-            ("en", f"{item['original']} {year} film", item["original"]),
         ]
 
-    for lang, query, expected in attempts:
+    for lang, query, expected in uk_attempts:
         if not query.strip():
             continue
         try:
@@ -224,6 +224,40 @@ def find_article(item):
             if PROD_SECTIONS.search(name) and len(body) > 200
         )
         return {"lang": lang, "title": title, "plot": plot, "production": production, "raw": text}
+
+    # Якщо український пошук не дав результатів, лениво шукаємо англійську назву з TMDB
+    en_title = None
+    try:
+        path = f"movie/{item['id']}?language=en-US" if item["kind"] == "movie" else f"tv/{item['id']}?language=en-US"
+        en_data = tmdb(path)
+        en_title = en_data.get("title") if item["kind"] == "movie" else en_data.get("name")
+    except Exception:
+        pass
+
+    if not en_title:
+        en_title = item["original"]
+
+    if en_title:
+        if item["kind"] == "tv":
+            en_query = f"{en_title} {year} TV series"
+        else:
+            en_query = f"{en_title} {year} film"
+
+        try:
+            title = wiki_search("en", en_query)
+            if title and same_title(title, en_title):
+                text = wiki_extract("en", title)
+                if len(text) >= 1200:
+                    sections = split_sections(text)
+                    plot = next((sections[k] for k in PLOT_SECTIONS if len(sections.get(k, "")) > 300), "")
+                    if plot:
+                        production = "\n\n".join(
+                            f"{name}:\n{body}" for name, body in sections.items()
+                            if PROD_SECTIONS.search(name) and len(body) > 200
+                        )
+                        return {"lang": "en", "title": title, "plot": plot, "production": production, "raw": text}
+        except Exception:
+            pass
 
     return None
 
@@ -387,6 +421,10 @@ def build(item):
     card["year"] = item["year"]
     card["source"] = ({"wiki": article["title"], "lang": article["lang"]} if article else None)
     card["generated"] = time.strftime("%Y-%m-%d")
+    if not article:
+        card["searched"] = time.strftime("%Y-%m-%d")
+    else:
+        card.pop("searched", None)
 
     return card, report
 
@@ -429,6 +467,7 @@ def main():
     parser.add_argument("--min-votes", type=int, default=5)
     parser.add_argument("--limit", type=int, default=0, help="0 — усі знайдені")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--retry-empty", action="store_true")
     args = parser.parse_args()
 
     os.makedirs(CARDS_DIR, exist_ok=True)
@@ -459,6 +498,8 @@ def main():
                 with open(path, "r", encoding="utf-8") as f:
                     existing = json.load(f)
                 if existing.get("source") and (existing.get("ending_explained") or existing.get("easter_eggs")):
+                    should_skip = True
+                elif not args.retry_empty and existing.get("searched"):
                     should_skip = True
             except Exception:
                 pass
