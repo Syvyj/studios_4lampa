@@ -1,332 +1,162 @@
 [
  {
-  "id": 1146058,
+  "id": 1261188,
   "kind": "movie",
-  "title_uk": "The Pout-Pout Fish",
-  "title_original": "The Pout-Pout Fish",
-  "title_en": "The Pout-Pout Fish",
+  "title_uk": "Шведський звʼязок",
+  "title_original": "Den svenska länken",
+  "title_en": "The Swedish Connection",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1146058",
-  "current": {
-   "summary": "Життя риб у кораловому рифі перетинається з пригодами Mr. Fish та маленької морської драконихи Pip, які шукають допомоги у містичної риби Shimmer. Їхня подорож рятує не лише їхні домівки, але й ціле суспільство, вимагаючи від героїв співпраці та мужності.",
-   "ending_explained": "Після того, як Mr. Fish та Pip допомагають відновити риф і повертають коралів до своїх осель, Mr. Fish змушений перебудувати свій дім. Pip розкриває, що написала історію про фільм. Наприкінці Shimmer зустрічає Mr. Fish, який намагається її запросити на побачення, але тут випадково його дім руйнує їжак.",
-   "easter_eggs": [],
-   "source": {
-    "wiki": "The Pout-Pout Fish (film)",
-    "lang": "en"
-   }
-  },
+  "overview": "У цій маловідомій правдивій історії шведський бюрократ неочікувано стає героєм війни, коли починає рятувати життя євреїв у найтемніші дні Другої світової.",
+  "tmdb": "https://www.themoviedb.org/movie/1261188",
   "wikipedia": {
-   "title": "The Pout-Pout Fish (film)",
+   "title": "The Swedish Connection",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Pout-Pout_Fish_(film)"
+   "url": "https://en.wikipedia.org/wiki/The_Swedish_Connection"
   }
  },
  {
-  "id": 1515729,
+  "id": 1381151,
   "kind": "movie",
-  "title_uk": "Blast",
-  "title_original": "Blast",
-  "title_en": "Blast",
+  "title_uk": "Holy Days",
+  "title_original": "Holy Days",
+  "title_en": "Holy Days",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1515729",
-  "current": {
-   "summary": "У спокійне життя родини каратестів Раджарама, його дружини Нілавані та доньки Ніли втручається корпоративний бос Варун Даялан разом із його безжальним асамбістом. Вони планують видобувати рідкісний елемент з гори, що загрожує знищити сусіднє село.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Фільм був спочатку під робочою назвою AGS28",
-    "Зйомки розпочалися у серпні 2025 року в Ченнаї",
-    "Зйомки завершилися у лютому 2026 року"
-   ],
-   "source": {
-    "wiki": "Blast (2026 film)",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1381151"
+ },
+ {
+  "id": 1620034,
+  "kind": "movie",
+  "title_uk": "Марті, життя коротке",
+  "title_original": "Marty, Life Is Short",
+  "title_en": "Marty, Life Is Short",
+  "year": "2026",
+  "overview": "Документальний фільм, у якому Мартін Шорт згадує своє щасливе життя, містить класичні сцени, нові інтерв’ю і унікальні кадри з багатьма зірками.",
+  "tmdb": "https://www.themoviedb.org/movie/1620034"
+ },
+ {
+  "id": 1553969,
+  "kind": "movie",
+  "title_uk": "箱の中の羊",
+  "title_original": "箱の中の羊",
+  "title_en": "Sheep in the Box",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1553969"
+ },
+ {
+  "id": 1461254,
+  "kind": "movie",
+  "title_uk": "Сальмокджі",
+  "title_original": "살목지",
+  "title_en": "Salmokji: Whispering Water",
+  "year": "2026",
+  "overview": "Під час поїздки знімальної групи до водосховища для оновлення дорожнього огляду, де раніше зафіксували невідому фігуру, стається інцидент — вони стикаються з чимось у темних, глибоких водах.",
+  "tmdb": "https://www.themoviedb.org/movie/1461254",
   "wikipedia": {
-   "title": "Blast (2026 film)",
+   "title": "Salmokji: Whispering Water",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Blast_(2026_film)"
+   "url": "https://en.wikipedia.org/wiki/Salmokji:_Whispering_Water"
   }
  },
  {
-  "id": 1367220,
+  "id": 1278853,
   "kind": "movie",
-  "title_uk": "கருப்பு",
-  "title_original": "கருப்பு",
-  "title_en": "Karuppu",
+  "title_uk": "Хранителі лісу 2",
+  "title_original": "Woodwalkers 2",
+  "title_en": "Woodwalkers 2",
+  "year": "2026",
+  "overview": "Цього разу глядачів знову чекає захоплива подорож до школи Clearwater High, де навчання магії стає справжнім випробуванням характеру. Головний герой, учень-перевертень, стикається з моральною дилемою: наставник пропонує йому возз’єднання з родиною пум у обмін на неправдиві свідчення. Але коли над школою нависає небезпека, юнака чекає вибір від якого залежить не тільки його майбутнє, а й доля його друзів.",
+  "tmdb": "https://www.themoviedb.org/movie/1278853"
+ },
+ {
+  "id": 1617852,
+  "kind": "movie",
+  "title_uk": "Speed Faster",
+  "title_original": "Speed Faster",
+  "title_en": "Speed Faster",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1367220",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Karuppu (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Karuppu_(film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1617852"
  },
  {
-  "id": 1451078,
+  "id": 1501018,
   "kind": "movie",
-  "title_uk": "రాకాస",
-  "title_original": "రాకాస",
-  "title_en": "Raakaasa",
+  "title_uk": "Une Famille De Bâtards",
+  "title_original": "Une Famille De Bâtards",
+  "title_en": "A Family of Bastards",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1451078",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Raakaasa",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Raakaasa"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1501018"
  },
  {
-  "id": 1424435,
+  "id": 1220522,
   "kind": "movie",
-  "title_uk": "万米危机",
-  "title_original": "万米危机",
-  "title_en": "Wings of Dread",
+  "title_uk": "డెకాయిట్",
+  "title_original": "డెకాయిట్",
+  "title_en": "Dacoit",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1424435",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1220522"
  },
  {
-  "id": 1010755,
+  "id": 1611380,
   "kind": "movie",
-  "title_uk": "Незнайомці: Частина третя",
-  "title_original": "The Strangers: Chapter 3",
-  "title_en": "The Strangers: Chapter 3",
+  "title_uk": "Mi mejor enemiga",
+  "title_original": "Mi mejor enemiga",
+  "title_en": "My Worst Enemy",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1010755",
-  "current": {
-   "summary": "У невеликому містечку Вінус відбувається низка подій, коли жінка потрапляє в пастку групи таємничих людей. Сюжет розкриває темні таємниці місцевих жителів, змушуючи героїню боротися за власне життя.",
-   "ending_explained": "У фіналі Майя потрапляє в сховище злодіїв. Вона вистрілює по Шерифу Роттеру, а потім у конфронтації з Грегорі, він знімає маску. Після емоційного зв'язку вони обмінюються словами про втрачене, але Майя розкриває свій план: її пристрасть була лише вигадкою, щоб змусити його знизити охорону. Вона нападає на нього ножем, а потім добиває його його ж сокирою, після чого залишає сховище з маскою Грегорі.",
-   "easter_eggs": [
-    "Основна фотосъйомка трьох фільмів розпочалася у вересні 2022 року в Братиславі, Словаччина.",
-    "На Chapter 3 було присвячено три тижні решутувань.",
-    "Імена персонажів, які брали участь у створенні: Shelly Barnes, Jasmine, Gregory Rotter."
-   ],
-   "source": {
-    "wiki": "The Strangers – Chapter 3",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "The Strangers – Chapter 3",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Strangers_–_Chapter_3"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1611380"
  },
  {
-  "id": 1575337,
+  "id": 1365378,
   "kind": "movie",
-  "title_uk": "Космічна принцеса Каґуя!",
-  "title_original": "超かぐや姫！",
-  "title_en": "Cosmic Princess Kaguya!",
+  "title_uk": "Агенти на мільйон",
+  "title_original": "Le rêve américain",
+  "title_en": "The American Dream",
   "year": "2026",
-  "overview": "Життя Ірохи сходить зі звичної орбіти, коли безтурботна втікачка з Місяця Каґуя поселяється в неї та вмовляє її разом виступати у віртуальному світі.",
-  "tmdb": "https://www.themoviedb.org/movie/1575337",
-  "current": {
-   "summary": "Життя Ірохи змінюється, коли до неї потрапляє Каґуя — втікачка з Місяця. Вона переконує Іроху взяти участь у віртуальному світі.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Ніхто б не поставив на цих хлопців, один з яких застряг за прилавком відеопрокату, а інший - мив підлоги в аеропорту Орлі. Ні зав’язків, ні грошей, далеко не досконала англійська… Ніщо не вказувало на те, що одного дня вони стануть найвпливовішими агентами НБА та мільйонерами, що запалюють зірки!",
+  "tmdb": "https://www.themoviedb.org/movie/1365378"
  },
  {
-  "id": 898704,
+  "id": 1243741,
   "kind": "movie",
-  "title_uk": "Імперія пісків",
-  "title_original": "Desert Warrior",
-  "title_en": "Desert Warrior",
+  "title_uk": "Балістика",
+  "title_original": "Ballistic",
+  "title_en": "Ballistic",
   "year": "2026",
-  "overview": "VII століття. Час розрізнених племен і кривавих загарбників. Щоб врятувати свій народ від гніту Сасанідської імперії, принцеса має пройти крізь пекло нещадної пустелі та довірити своє життя загадковому воїну. Вона об'єднає тих, хто століттями ворогував між собою, щоб дати останній бій могутньому ворогу. Битва при Зу-Карі — це не просто війна за територію, це народження нової ери.",
-  "tmdb": "https://www.themoviedb.org/movie/898704",
-  "current": {
-   "summary": "У VII столітті, в епоху розрізнених племен та загарбників, принцеса мусить пройти через нещадну пустелю, щоб врятувати свій народ від гніту Сасанідської імперії. Вона об'єднає ворогувальні племена для останнього бою, що стане початком нової ери.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Мати, яка працює на компанію з виробництва боєприпасів, дізнається, що саме вона виготовила кулю, яка вбила її сина.",
+  "tmdb": "https://www.themoviedb.org/movie/1243741"
  },
  {
-  "id": 1414413,
+  "id": 1129104,
   "kind": "movie",
-  "title_uk": "Brothers Under Fire",
-  "title_original": "Brothers Under Fire",
-  "title_en": "Brothers Under Fire",
+  "title_uk": "Флавія. Юна детективка",
+  "title_original": "Flavia",
+  "title_en": "Flavia",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1414413",
-  "current": {
-   "summary": "Успішний військовий офіцер США потрапляє до Мексики на весілля колеги, де виявляється, що місцева родина перебуває під загрозою кримінального боса та його оточення. Група солдатів змушена втрутитися у складні конфлікти, щоб захистити невинних.",
-   "ending_explained": "Після низки боїв група солдатів протистоїть кримінальному босу Бейкеру. У кульмінації бою Карсon і Хіно гинуть, але Джордан Врайт та Денні виживають після того, як Врайт змушує Бейкера відступити. Вони в кінці зустрічаються з Ізабеллою на цвинтарі.",
-   "easter_eggs": [
-    "Продакшн розпочато у листопаді 2024 року в Колумбії.",
-    "В акторському складі є Кефер Сазерленд (Kiefer Sutherland), що грає Капітана Джордана Райта.",
-    "Сільлі Маклді (Solly McLeod) також був оголошений у кастингу."
-   ],
-   "source": {
-    "wiki": "Brothers Under Fire",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Brothers Under Fire",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Brothers_Under_Fire"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1129104"
  },
  {
-  "id": 1500890,
+  "id": 1636891,
   "kind": "movie",
-  "title_uk": "Lockbox",
-  "title_original": "Lockbox",
-  "title_en": "Lockbox",
+  "title_uk": "Mexicali",
+  "title_original": "Mexicali",
+  "title_en": "Mexicali",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1500890",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1636891"
  },
  {
-  "id": 662707,
+  "id": 1631485,
   "kind": "movie",
-  "title_uk": "Starbright",
-  "title_original": "Starbright",
-  "title_en": "Starbright",
+  "title_uk": "Незнайомці в парку",
+  "title_original": "Parque Lezama",
+  "title_en": "Strangers in the Park",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/662707",
-  "current": {
-   "summary": "У фільмі розповідається історія молодої сироти Айслінг, яка живе зі своїми бабусею та дідусем. Одного разу після затемнення на її фермі падає зірка, що привертає увагу архангела Рафаеля. Айслінг стає його несподіваною хранителькою цього живого світла, і їм доводиться втікати від злочинців.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Ізначально анонсовано у жовтні 2010 року як «3D fantasy fairytale adventure»."
-   ],
-   "source": {
-    "wiki": "Starbright (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Starbright (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Starbright_(film)"
-  }
- },
- {
-  "id": 1088434,
-  "kind": "movie",
-  "title_uk": "Hellfire",
-  "title_original": "Hellfire",
-  "title_en": "Hellfire",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1088434",
-  "current": {
-   "summary": "У фільмі розгортаються події у невеликому містечку Техасу 1988 року, де власник бару та його донька стикаються з кримінальним світом. До їхнього життя потрапляють різні персонажі, які виявляють зв'язок із місцевою організованою злочинністю.",
-   "ending_explained": "У фіналі Номада та Лена вбивають боса Джерамію, спалюючи його. Після цього вони проводять похорон Оуена і розходяться шляхами: Лена переїжджає до іншого міста, а Номад відходить від наркобізнесу у ще одне містечко.",
-   "easter_eggs": [],
-   "source": {
-    "wiki": "Hellfire (2026 film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Hellfire (2026 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Hellfire_(2026_film)"
-  }
- },
- {
-  "id": 1421155,
-  "kind": "movie",
-  "title_uk": "Ikatan Darah",
-  "title_original": "Ikatan Darah",
-  "title_en": "Ikatan Darah",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1421155",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1390382,
-  "kind": "movie",
-  "title_uk": "Кутюр",
-  "title_original": "Coutures",
-  "title_en": "Couture",
-  "year": "2026",
-  "overview": "Анджеліна Джолі вдало втілює образ американської кінорежисерки Максін. Переживаючи складний період розлучення та самостійно виховуючи доньку-підлітка, жінка стикається з новим, серйозним викликом в своєму житті. Але стосунки з колегою по знімальному майданчику у виконанні Луї Гареля допоможуть їй подолати зовнішні перешкоди.",
-  "tmdb": "https://www.themoviedb.org/movie/1390382",
-  "current": {
-   "summary": "Анджеліна Джолі грає американську кінорежисерку Максін, яка переживає складний період після розлучення та самостійно виховує доньку-підлітка. Їй доводиться зіткнутися з новим життєвим викликом, який може допомогти їй подолати труднощі завдяки стосункам із колегою по знімальному майданчику у Луї Гареля.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Кутюр (фільм)",
-   "lang": "uk",
-   "url": "https://uk.wikipedia.org/wiki/Кутюр_(фільм)"
-  }
- },
- {
-  "id": 1368881,
-  "kind": "movie",
-  "title_uk": "Спочатку дами",
-  "title_original": "Ladies First",
-  "title_en": "Ladies First",
-  "year": "2026",
-  "overview": "Сповнене інтрижок заможне життя пихатого, але харизматичного дамського угодника стає з ніг на голову, коли він прокидається в паралельному світі, яким керують жінки.",
-  "tmdb": "https://www.themoviedb.org/movie/1368881",
-  "current": {
-   "summary": "Заможний шовініст-угодник потрапляє до паралельного світу, де панує матріархат. Його пихате життя виринає з ніг на голову, коли він мусить адаптуватися до нового гендерного порядку.",
-   "ending_explained": "Після потрапляння у світ матріархату, Демієн помінявся ролями з Алекс. Він виявляє, що в новому світі він має стати генеральним директором «Atlas», а Алекс займає його старий офіс. Згодом вони переживають емоційні конфлікти: після того, як Алекс отримує посаду гендиректора, Демієн падає та прокидається у своєму світі. Наприкінці він вибачається перед нею і поступається їй офісом, а її ідея для кампанії «Guinness» здобуває успіх.",
-   "easter_eggs": [
-    "Фільм натхненний французьким фільмом 2018 року «Я не проста людина».",
-    "Сценарій написали Наталі Крінскі, Кеті Сільберман та Сінко Пол.",
-    "Режисеркою виступила Теа Шеррок.",
-    "Зйомки розпочалися у листопаді 2024 року на «Shepperton Studios»."
-   ],
-   "source": {
-    "wiki": "Спочатку дами",
-    "lang": "uk"
-   }
-  },
-  "wikipedia": {
-   "title": "Спочатку дами",
-   "lang": "uk",
-   "url": "https://uk.wikipedia.org/wiki/Спочатку_дами"
-  }
+  "overview": "Колишній комуністичний активіст і чоловік, що живе за принципом «сам живи й іншим не заважай», діляться щирими й кумедними історіями на лавці в парку й стають друзями.",
+  "tmdb": "https://www.themoviedb.org/movie/1631485"
  }
 ]

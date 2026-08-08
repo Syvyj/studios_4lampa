@@ -1,257 +1,162 @@
 [
  {
-  "id": 1451867,
+  "id": 1454741,
   "kind": "movie",
-  "title_uk": "Ghost Elephants",
-  "title_original": "Ghost Elephants",
-  "title_en": "Ghost Elephants",
+  "title_uk": "The Confession",
+  "title_original": "The Confession",
+  "title_en": "The Confession",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1451867",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1454741"
  },
  {
-  "id": 1610413,
+  "id": 1373956,
   "kind": "movie",
-  "title_uk": "Остання пригода. Дивні дива 5: За кадром",
-  "title_original": "One Last Adventure: The Making of Stranger Things 5",
-  "title_en": "One Last Adventure: The Making of Stranger Things 5",
-  "year": "2026",
-  "overview": "Погляд ізсередини на роки зусиль і праці, які лягли в основу серіалу братів Даффер, що став культовим для цілого покоління.",
-  "tmdb": "https://www.themoviedb.org/movie/1610413",
-  "current": {
-   "summary": "Фільм про погляд ізсередини на роки зусиль та праці, які стали основою для культового серіалу братів Даффер.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1684226,
-  "kind": "movie",
-  "title_uk": "Наречена року",
-  "title_original": "Bruid van die Jaar",
-  "title_en": "Bride of the Year",
-  "year": "2026",
-  "overview": "Коли мрія Лінкі створити свою сім’ю руйнується, дівчина розробляє підступний план: виграти конкурс «Наречена року» й помститися колишньому.",
-  "tmdb": "https://www.themoviedb.org/movie/1684226",
-  "current": {
-   "summary": "Після того, як мрія Лінкі створити сім'ю руйнується, вона розробляє підступний план: виграти конкурс «Наречена року», щоб помститися колишньому.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1620551,
-  "kind": "movie",
-  "title_uk": "Відчуй мій голос",
-  "title_original": "Non abbiam bisogno di parole",
-  "title_en": "Feel My Voice",
-  "year": "2026",
-  "overview": "Сором’язлива підлітка, яка єдина чує в сім’ї глухих, відкриває в собі талант до співу й мусить обирати між обов’язком і власним шляхом.",
-  "tmdb": "https://www.themoviedb.org/movie/1620551",
-  "current": {
-   "summary": "Сором'язлива підлітка, яка єдина чує у своїй сім'ї глухих, відкриває в собі талант до співу та мусить зробити вибір між обов'язком перед родиною і власним бажанням.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1629382,
-  "kind": "movie",
-  "title_uk": "Брати з передмістя 3",
-  "title_original": "Banlieusards 3",
-  "title_en": "Street Flow 3",
-  "year": "2026",
-  "overview": "Невтішні брати Траоре стикаються з наслідками своїх злочинів, але отримують останній шанс змінити свою долю в останній частині трилогії.",
-  "tmdb": "https://www.themoviedb.org/movie/1629382",
-  "current": {
-   "summary": "Невтішні брати Траоре стикаються з наслідками своїх злочинів, отримуючи останній шанс змінити свою долю у фінальній частині трилогії.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1469458,
-  "kind": "movie",
-  "title_uk": "സംഭവം അദ്ധ്യായം ഒന്ന്",
-  "title_original": "സംഭവം അദ്ധ്യായം ഒന്ന്",
-  "title_en": "Sambhavam Adhyayam Onnu",
+  "title_uk": "Die Ältern",
+  "title_original": "Die Ältern",
+  "title_en": "Die Ältern",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1469458",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1373956"
+ },
+ {
+  "id": 1684246,
+  "kind": "movie",
+  "title_uk": "Untold UK: Vinnie Jones",
+  "title_original": "Untold UK: Vinnie Jones",
+  "title_en": "Untold UK: Vinnie Jones",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1684246"
+ },
+ {
+  "id": 1189885,
+  "kind": "movie",
+  "title_uk": "The Morrigan",
+  "title_original": "The Morrigan",
+  "title_en": "The Morrigan",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1189885"
+ },
+ {
+  "id": 669356,
+  "kind": "movie",
+  "title_uk": "You Can't Win",
+  "title_original": "You Can't Win",
+  "title_en": "You Can't Win",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/669356"
+ },
+ {
+  "id": 1432306,
+  "kind": "movie",
+  "title_uk": "Sleepwalker",
+  "title_original": "Sleepwalker",
+  "title_en": "Sleepwalker",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1432306"
+ },
+ {
+  "id": 1400923,
+  "kind": "movie",
+  "title_uk": "You, Always",
+  "title_original": "You, Always",
+  "title_en": "You, Always",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1400923"
+ },
+ {
+  "id": 843342,
+  "kind": "movie",
+  "title_uk": "Гамлет",
+  "title_original": "Hamlet",
+  "title_en": "Hamlet",
+  "year": "2026",
+  "overview": "Гамлет повертається додому на похорон батька і дізнається, що його дядько Клавдій одружується з овдовілою матір’ю Гертрудою. Привид батька розкриває, що Клавдій його вбив, і Гамлет стає на шлях помсти та саморефлексії.",
+  "tmdb": "https://www.themoviedb.org/movie/843342"
+ },
+ {
+  "id": 1660612,
+  "kind": "movie",
+  "title_uk": "Wanda Sykes: Legacy",
+  "title_original": "Wanda Sykes: Legacy",
+  "title_en": "Wanda Sykes: Legacy",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1660612"
+ },
+ {
+  "id": 1595507,
+  "kind": "movie",
+  "title_uk": "वध 2",
+  "title_original": "वध 2",
+  "title_en": "Vadh 2",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1595507",
   "wikipedia": {
-   "title": "Sambhavam Adhyayam Onnu",
+   "title": "Vadh 2",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Sambhavam_Adhyayam_Onnu"
+   "url": "https://en.wikipedia.org/wiki/Vadh_2"
   }
  },
  {
-  "id": 1602727,
+  "id": 1263037,
   "kind": "movie",
-  "title_uk": "夜王",
-  "title_original": "夜王",
-  "title_en": "Night King",
+  "title_uk": "చీకటిలో",
+  "title_original": "చీకటిలో",
+  "title_en": "Cheekatilo",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1602727",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1263037",
   "wikipedia": {
-   "title": "Night King (film)",
+   "title": "Cheekatilo",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Night_King_(film)"
+   "url": "https://en.wikipedia.org/wiki/Cheekatilo"
   }
  },
  {
-  "id": 1629369,
+  "id": 1551507,
   "kind": "movie",
-  "title_uk": "Правда й трагедія Мораї Вілсон",
-  "title_original": "The Truth and Tragedy of Moriah Wilson",
-  "title_en": "The Truth and Tragedy of Moriah Wilson",
-  "year": "2026",
-  "overview": "Документальний фільм про насичене життя й страшну смерть професійної велосипедистки Мораї Вілсон. І про те, як далеко зайшла її вбивця, щоб уникнути покарання.",
-  "tmdb": "https://www.themoviedb.org/movie/1629369",
-  "current": {
-   "summary": "Документальний фільм розповідає про насичене життя та трагічну смерть професійної велосипедистки Мораї Вілсон, а також про дії її вбивці, який зробив усе можливе, щоб уникнути покарання.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1357449,
-  "kind": "movie",
-  "title_uk": "Ídolos",
-  "title_original": "Ídolos",
-  "title_en": "Ídolos",
+  "title_uk": "Svadba",
+  "title_original": "Svadba",
+  "title_en": "The Wedding",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1357449",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1551507"
  },
  {
-  "id": 1281195,
+  "id": 1517606,
   "kind": "movie",
-  "title_uk": "Truly Naked",
-  "title_original": "Truly Naked",
-  "title_en": "Truly Naked",
+  "title_uk": "Notte prima degli esami 3.0",
+  "title_original": "Notte prima degli esami 3.0",
+  "title_en": "Notte prima degli esami 3.0",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1281195",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1517606"
  },
  {
-  "id": 1437698,
+  "id": 1641962,
   "kind": "movie",
-  "title_uk": "Horst Schlämmer sucht das Glück",
-  "title_original": "Horst Schlämmer sucht das Glück",
-  "title_en": "Horst Schlämmer sucht das Glück",
+  "title_uk": "Нерозказане: Шах і мат",
+  "title_original": "Untold: Chess Mates",
+  "title_en": "Untold: Chess Mates",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1437698",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1641962"
  },
  {
-  "id": 1397373,
+  "id": 1649248,
   "kind": "movie",
-  "title_uk": "Cena di classe",
-  "title_original": "Cena di classe",
-  "title_en": "Cena di classe",
+  "title_uk": "Finding Satoshi",
+  "title_original": "Finding Satoshi",
+  "title_en": "Finding Satoshi",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1397373",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1602705,
-  "kind": "movie",
-  "title_uk": "ЛИСТ ДО МОЄЇ ЮНОСТІ",
-  "title_original": "Surat untuk Masa Mudaku",
-  "title_en": "A Letter to My Youth",
-  "year": "2026",
-  "overview": "Фільм розповідає історію бунтівного юнака, який живе в дитячому будинку, та стриманого психолога, які намагаються подолати минулі травми. Після складної першої зустрічі між ними зав'язується щира дружба та глибокий зв'язок, де досвід їхньої юності стає паливом для зцілення в дорослому віці. Оповідь, розказана з точки зору Кефаса (юнака), досліджує незабутні спогади під час його візиту до закладу через роки.",
-  "tmdb": "https://www.themoviedb.org/movie/1602705",
-  "current": {
-   "summary": "Фільм розповідає історію бунтівного юнака, який живе в дитячому будинку, та психолога, які намагаються подолати минулі травми. Після складної першої зустрічі між ними виникає щира дружба та глибокий зв'язок, де спогади з юності допомагають у зціленні дорослих.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1542352,
-  "kind": "movie",
-  "title_uk": "யூத்",
-  "title_original": "யூத்",
-  "title_en": "Youth",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1542352",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Youth (2026 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Youth_(2026_film)"
-  }
- },
- {
-  "id": 1442211,
-  "kind": "movie",
-  "title_uk": "Balandrau, vent salvatge",
-  "title_original": "Balandrau, vent salvatge",
-  "title_en": "Balandrau: Where the Fierce Wind Blew",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1442211",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1649248"
  }
 ]

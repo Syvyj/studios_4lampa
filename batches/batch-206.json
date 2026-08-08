@@ -1,0 +1,172 @@
+[
+ {
+  "id": 1368326,
+  "kind": "movie",
+  "title_uk": "ショウタイムセブン",
+  "title_original": "ショウタイムセブン",
+  "title_en": "SHOWTIME 7",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1368326"
+ },
+ {
+  "id": 1551194,
+  "kind": "movie",
+  "title_uk": "Siempre es invierno",
+  "title_original": "Siempre es invierno",
+  "title_en": "Always Winter",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1551194",
+  "wikipedia": {
+   "title": "Always Winter",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Always_Winter"
+  }
+ },
+ {
+  "id": 1084808,
+  "kind": "movie",
+  "title_uk": "Spectateurs !",
+  "title_original": "Spectateurs !",
+  "title_en": "Filmlovers!",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1084808"
+ },
+ {
+  "id": 1218602,
+  "kind": "movie",
+  "title_uk": "सरज़मीं",
+  "title_original": "सरज़मीं",
+  "title_en": "Sarzameen",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1218602",
+  "wikipedia": {
+   "title": "Sarzameen",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Sarzameen"
+  }
+ },
+ {
+  "id": 1452829,
+  "kind": "movie",
+  "title_uk": "Guardians of the Galapagos",
+  "title_original": "Guardians of the Galapagos",
+  "title_en": "Guardians of the Galapagos",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1452829"
+ },
+ {
+  "id": 1508562,
+  "kind": "movie",
+  "title_uk": "Я досі суперзірка",
+  "title_original": "Sigo siendo la misma",
+  "title_en": "I'm Still a Superstar",
+  "year": "2025",
+  "overview": "Документальний фільм про стрімкий злет популярності Тамари під псевдонімом «Юрена», галас у ЗМІ у 2000-х і сучасне життя її телесуперників.",
+  "tmdb": "https://www.themoviedb.org/movie/1508562"
+ },
+ {
+  "id": 1316070,
+  "kind": "movie",
+  "title_uk": "Patsers",
+  "title_original": "Patsers",
+  "title_en": "Gangstas",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1316070",
+  "wikipedia": {
+   "title": "Gangstas (film)",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Gangstas_(film)"
+  }
+ },
+ {
+  "id": 1474878,
+  "kind": "movie",
+  "title_uk": "The Great Christmas Snow-In",
+  "title_original": "The Great Christmas Snow-In",
+  "title_en": "The Great Christmas Snow-In",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1474878"
+ },
+ {
+  "id": 1505914,
+  "kind": "movie",
+  "title_uk": "The Dance Club",
+  "title_original": "The Dance Club",
+  "title_en": "The Dance Club",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1505914"
+ },
+ {
+  "id": 1546218,
+  "kind": "movie",
+  "title_uk": "Fawlty Towers: The Play",
+  "title_original": "Fawlty Towers: The Play",
+  "title_en": "Fawlty Towers: The Play",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1546218"
+ },
+ {
+  "id": 1065661,
+  "kind": "movie",
+  "title_uk": "Chaperone",
+  "title_original": "Chaperone",
+  "title_en": "Chaperone",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1065661"
+ },
+ {
+  "id": 1256620,
+  "kind": "movie",
+  "title_uk": "Kasa Branca",
+  "title_original": "Kasa Branca",
+  "title_en": "White House",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1256620"
+ },
+ {
+  "id": 1146636,
+  "kind": "movie",
+  "title_uk": "愛着",
+  "title_original": "愛着",
+  "title_en": "Aichaku",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1146636",
+  "wikipedia": {
+   "title": "Aichaku",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Aichaku"
+  }
+ },
+ {
+  "id": 1308829,
+  "kind": "movie",
+  "title_uk": "My Husband's Mistress",
+  "title_original": "My Husband's Mistress",
+  "title_en": "My Husband's Mistress",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1308829"
+ },
+ {
+  "id": 1175267,
+  "kind": "movie",
+  "title_uk": "La Pie voleuse",
+  "title_original": "La Pie voleuse",
+  "title_en": "The Thieving Magpie",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1175267"
+ }
+]

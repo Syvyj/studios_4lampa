@@ -1,285 +1,162 @@
 [
  {
-  "id": 938150,
+  "id": 1666712,
   "kind": "movie",
-  "title_uk": "Wardriver",
-  "title_original": "Wardriver",
-  "title_en": "Wardriver",
+  "title_uk": "El Partido",
+  "title_original": "El Partido",
+  "title_en": "The Match",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/938150",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1666712"
  },
  {
-  "id": 1610418,
+  "id": 1546855,
   "kind": "movie",
-  "title_uk": "The House on Haunted Grounds",
-  "title_original": "The House on Haunted Grounds",
-  "title_en": "The House on Haunted Grounds",
+  "title_uk": "我，许可",
+  "title_original": "我，许可",
+  "title_en": "It's OK",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1610418",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1546855"
  },
  {
-  "id": 1461701,
+  "id": 1480025,
   "kind": "movie",
-  "title_uk": "Foufo",
-  "title_original": "Foufo",
-  "title_en": "Foufo",
+  "title_uk": "How to Lose a Popularity Contest",
+  "title_original": "How to Lose a Popularity Contest",
+  "title_en": "How to Lose a Popularity Contest",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1461701",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1480025"
  },
  {
-  "id": 1243460,
+  "id": 1684240,
   "kind": "movie",
-  "title_uk": "Джо відвідує універи",
-  "title_original": "Joe's College Road Trip",
-  "title_en": "Joe's College Road Trip",
+  "title_uk": "Jamie Vardy",
+  "title_original": "Jamie Vardy",
+  "title_en": "Jamie Vardy",
   "year": "2026",
-  "overview": "Щоб познайомити недосвідченого онука з реальним світом, нестриманий брат Медеї Джо везе майбутнього студента в шалену подорож країною.",
-  "tmdb": "https://www.themoviedb.org/movie/1243460",
-  "current": {
-   "summary": "Щоб познайомити недосвідченого онука з реальним світом, нестриманий брат Медеї Джо везе майбутнього студента в шалену подорож країною. Ця подорож стає для нього уроком про чорноأمERICанську історію та його коріння.",
-   "ending_explained": "Під час подорожі Джо показує Б.Дж. знакові місця чорноісторії: мотель на місці вбивства доктора Мартіна Лютера Кінга-молодшого та місце, де був убитий Еммет Тілл. Згодом вони потрапляють у пастку банди, але Б.Дж., усвідомлюючи важливість свого коріння, відмовляється йти з братом і замість цього веде Джо та Дестіні до Лас-Вегаса.",
-   "easter_eggs": [],
-   "source": {
-    "wiki": "Joe's College Road Trip",
-    "lang": "en"
-   }
-  },
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1684240"
+ },
+ {
+  "id": 1323909,
+  "kind": "movie",
+  "title_uk": "Red Riding",
+  "title_original": "Red Riding",
+  "title_en": "Red Riding",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1323909"
+ },
+ {
+  "id": 1567203,
+  "kind": "movie",
+  "title_uk": "夜勤事件",
+  "title_original": "夜勤事件",
+  "title_en": "The Convenience Store",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1567203"
+ },
+ {
+  "id": 1611398,
+  "kind": "movie",
+  "title_uk": "Un hombre por semana",
+  "title_original": "Un hombre por semana",
+  "title_en": "Un hombre por semana",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1611398"
+ },
+ {
+  "id": 1625455,
+  "kind": "movie",
+  "title_uk": "Polong",
+  "title_original": "Polong",
+  "title_en": "Polong",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1625455"
+ },
+ {
+  "id": 847742,
+  "kind": "movie",
+  "title_uk": "ദൃശ്യം 3",
+  "title_original": "ദൃശ്യം 3",
+  "title_en": "Drishyam 3",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/847742",
   "wikipedia": {
-   "title": "Joe's College Road Trip",
+   "title": "Drishyam 3",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Joe's_College_Road_Trip"
+   "url": "https://en.wikipedia.org/wiki/Drishyam_3"
   }
  },
  {
-  "id": 1623125,
+  "id": 1538718,
   "kind": "movie",
-  "title_uk": "Горили: Історія від Девіда Аттенборо",
-  "title_original": "A Gorilla Story: Told by David Attenborough",
-  "title_en": "A Gorilla Story: Told by David Attenborough",
-  "year": "2026",
-  "overview": "Легендарний натураліст сер Девід Аттенборо розповідає історію дивовижної групи горил, від своєї першої зустрічі з ними в 1970-х роках і до наших днів.",
-  "tmdb": "https://www.themoviedb.org/movie/1623125",
-  "current": {
-   "summary": "Легендарний натураліст Сер Девід Аттенборо розповідає історію дивовижної групи горил, від моменту його першої зустрічі з ними у 1970-х роках до сьогодення.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1400357,
-  "kind": "movie",
-  "title_uk": "Крістофери",
-  "title_original": "The Christophers",
-  "title_en": "The Christophers",
-  "year": "2026",
-  "overview": "Діти колись відомого художника наймають фальсифікатора, щоб завершити кілька незакінчених, давно покинутих полотен, аби отримати спадок після його смерті.",
-  "tmdb": "https://www.themoviedb.org/movie/1400357",
-  "current": {
-   "summary": "Діти відомого художника наймають фальсифікатора, щоб завершити незакінчені полотна та отримати спадок після смерті батька. Процес відкриває складні ігри між мистецтвом, обманом та справжніми стосунками.",
-   "ending_explained": "Після смерті художника Джуліана Склара Лорі викрадає справжні полотна «Крістофери» і продовжує роботу, додаючи до них блискітки та мереживо. Вона підробляє листа на ім'я Джуліана, що передає право власності справжньому Крістоферу — колишньому коханому художника. На виставці, присвяченій спадщині Джуліана, Крістофер демонструє всі картини у «непродажному» стилі Лорі. Паралельно з цим, Лорі створює сучасну роботу-колаж із десятків відео-камео Джуліана.",
-   "easter_eggs": [
-    "Фільм був знятий у лютому 2025 році.",
-    "Сценарій базується на серії полотен «The Christophers»."
-   ],
-   "source": {
-    "wiki": "The Christophers (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "The Christophers (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Christophers_(film)"
-  }
- },
- {
-  "id": 1020047,
-  "kind": "movie",
-  "title_uk": "Рукою Данте",
-  "title_original": "In the Hand of Dante",
-  "title_en": "In the Hand of Dante",
-  "year": "2026",
-  "overview": "Письменник допомагає босу мафії викрасти оригінальний рукопис «Божественної комедії» Данте, а паралельна історія розповідає про створення шедевра у XIV столітті.",
-  "tmdb": "https://www.themoviedb.org/movie/1020047",
-  "current": {
-   "summary": "Письменник допомагає босу мафії викрасти оригінальний рукопис «Божественної комедії» Данте, тоді як паралельна історія розкриває процес створення цього шедевра у XIV столітті. Фільм поєднує мистецтво та кримінальний трилер.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "У грудні 2008 року права були придбані компанією Johnny Depp Infinitum Nihil.",
-    "Ім'я книги, що стало основою: In the Hand of Dante by Nick Tosches.",
-    "Режисером фільму став Джуліан Шнабель (Julian Schnabel).",
-    "У вересні 2023 року в акторський склад приєднався Оскар Айзек."
-   ],
-   "source": {
-    "wiki": "In the Hand of Dante (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "In the Hand of Dante (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/In_the_Hand_of_Dante_(film)"
-  }
- },
- {
-  "id": 880067,
-  "kind": "movie",
-  "title_uk": "Натягнута струна",
-  "title_original": "Strung",
-  "title_en": "Strung",
-  "year": "2026",
-  "overview": "Талановита скрипалька отримує престижну посаду викладачки музики в загадковій заможній родині, але нова робота поступово перетворюється на психологічну боротьбу за її безпеку та здоровий глузд.",
-  "tmdb": "https://www.themoviedb.org/movie/880067",
-  "current": {
-   "summary": "Талановита скрипалька отримує престижну посаду викладачки музики у заможній родині, але її нове життя швидко перетворюється на психологічну боротьбу за власну безпеку та здоровий глузд.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1618945,
-  "kind": "movie",
-  "title_uk": "Йо! Найкращі друзі",
-  "title_original": "Yoh! Bestie",
-  "title_en": "Yoh! Bestie",
-  "year": "2026",
-  "overview": "Тандо постійно не щастить у коханні, а коли її найкращий друг повертається з подорожей уже з нареченою, вона відчуває щось нове — ревнощі.",
-  "tmdb": "https://www.themoviedb.org/movie/1618945",
-  "current": {
-   "summary": "Жінка Тандо постійно не щастить у коханні, а її емоції виходять на новий рівень, коли найкращий друг повертається з подорожі вже з нареченою. Це викликає в ній почуття ревнощів.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1239198,
-  "kind": "movie",
-  "title_uk": "Моя люба сеньйорита",
-  "title_original": "Mi querida señorita",
-  "title_en": "My Dearest Señorita",
-  "year": "2026",
-  "overview": "Дізнавшись про свою інтерсексуальність, дівчина з консервативної сім’ї стає на шлях самопізнання, розмірковує про гендерну ідентичність і знаходить неочікувану підтримку.",
-  "tmdb": "https://www.themoviedb.org/movie/1239198",
-  "current": {
-   "summary": "Дівчина з консервативної сім’ї починає шлях самопізнання після усвідомлення своєї інтерсексуальності. Фільм розкриває її роздуми про гендерну ідентичність та знайомство з неочікуваною підтримкою.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1658982,
-  "kind": "movie",
-  "title_uk": "Просмаження Кевіна Гарта",
-  "title_original": "The Roast of Kevin Hart",
-  "title_en": "The Roast of Kevin Hart",
-  "year": "2026",
-  "overview": "Кевін Гарт займає почесне місце й готується до вечора нещадних жартів від найкумедніших гостей у шоу, яке веде Шейн Ґілліс.",
-  "tmdb": "https://www.themoviedb.org/movie/1658982",
-  "current": {
-   "summary": "Кевін Гарт готується до вечора жартів у шоу, яке проводить Шейн Ґілліс.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1527004,
-  "kind": "movie",
-  "title_uk": "Всі відтінки спокуси",
-  "title_original": "Всі відтінки спокуси",
-  "title_en": "All Shades of Temptation",
-  "year": "2026",
-  "overview": "Події фільму розгортаються в Лемберзі (Львів) 1897 року. Головна героїня Амелія Крижевська-Зег після весільної подорожі повертається в родинний маєток, де вона виросла. Жінка сповнена надій на майбутнє та мріє відкрити власну аптеку. Але поступово дім дитинства перетворюється на підступну пастку, а плани Амелії — на нездійсненні бажання.",
-  "tmdb": "https://www.themoviedb.org/movie/1527004",
-  "current": {
-   "summary": "Дія фільму відбувається у Львові 1897 року. Амелія Крижевська-Зег повертається до родинного маєтку після весільної подорожі, сповнена мрій відкрити власну аптеку. Однак її дитинство та плани поступово перетворюються на небезпечну пастку.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1340076,
-  "kind": "movie",
-  "title_uk": "Untitled Home Invasion Romance",
-  "title_original": "Untitled Home Invasion Romance",
-  "title_en": "Untitled Home Invasion Romance",
+  "title_uk": "Disneyland Handcrafted",
+  "title_original": "Disneyland Handcrafted",
+  "title_en": "Disneyland Handcrafted",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1340076",
-  "current": {
-   "summary": "Пара, яка перебуває у кризі стосунків, організовує романтичний вікенд у заміському будинку, що викликає ностальгічні та травматичні спогади. Плани виявляються хибними, а події розгортаються між обманом, минулим і несподіваним насильством.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Сценарій спочатку мав назву Getaway.",
-    "Фільм знято в серпня 2024 році у Садбері, Онтаріо."
-   ],
-   "source": {
-    "wiki": "Untitled Home Invasion Romance",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1538718"
+ },
+ {
+  "id": 1620996,
+  "kind": "movie",
+  "title_uk": "La caja azul",
+  "title_original": "La caja azul",
+  "title_en": "The Blue Box",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1620996"
+ },
+ {
+  "id": 1248723,
+  "kind": "movie",
+  "title_uk": "Буратино",
+  "title_original": "Буратино",
+  "title_en": "The Golden Key: A New Pinocchio Story",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1248723"
+ },
+ {
+  "id": 1693201,
+  "kind": "movie",
+  "title_uk": "Польді",
+  "title_original": "Poldi",
+  "title_en": "Poldi",
+  "year": "2026",
+  "overview": "Футболіст, бізнесмен, улюбленець уболівальників і герой своєї громади. У відвертому документальному фільмі Лукас Подольскі розмірковує про свій життєвий шлях і майбутнє.",
+  "tmdb": "https://www.themoviedb.org/movie/1693201"
+ },
+ {
+  "id": 1629095,
+  "kind": "movie",
+  "title_uk": "Băieți de oraș: Golden Boyz",
+  "title_original": "Băieți de oraș: Golden Boyz",
+  "title_en": "City Boys: Golden Boyz",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1629095"
+ },
+ {
+  "id": 1561687,
+  "kind": "movie",
+  "title_uk": "Зроблено в Кореї",
+  "title_original": "மேட் இன் கொரியா",
+  "title_en": "Made in Korea",
+  "year": "2026",
+  "overview": "Жінка з маленького містечка в Тамілнаді переїжджає до Південної Кореї, про що завжди мріяла, але призвичаїтися до нової країни виявляється не так просто.",
+  "tmdb": "https://www.themoviedb.org/movie/1561687",
   "wikipedia": {
-   "title": "Untitled Home Invasion Romance",
+   "title": "Made in Korea (film)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Untitled_Home_Invasion_Romance"
-  }
- },
- {
-  "id": 1341422,
-  "kind": "movie",
-  "title_uk": "Gli occhi degli altri",
-  "title_original": "Gli occhi degli altri",
-  "title_en": "The Eyes of Others",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1341422",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1646950,
-  "kind": "movie",
-  "title_uk": "Capture",
-  "title_original": "Capture",
-  "title_en": "Capture",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1646950",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
+   "url": "https://en.wikipedia.org/wiki/Made_in_Korea_(film)"
   }
  }
 ]

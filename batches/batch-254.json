@@ -1,0 +1,242 @@
+[
+ {
+  "id": 1439278,
+  "kind": "movie",
+  "title_uk": "Promesse",
+  "title_original": "Promesse",
+  "title_en": "Promesse",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1439278"
+ },
+ {
+  "id": 1562920,
+  "kind": "movie",
+  "title_uk": "Faded Strings",
+  "title_original": "Faded Strings",
+  "title_en": "Faded Strings",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1562920"
+ },
+ {
+  "id": 1611675,
+  "kind": "movie",
+  "title_uk": "GULISTAN",
+  "title_original": "GULISTAN",
+  "title_en": "GULISTAN",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1611675"
+ },
+ {
+  "id": 1328767,
+  "kind": "movie",
+  "title_uk": "Argoat",
+  "title_original": "Argoat",
+  "title_en": "Argoat",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1328767"
+ },
+ {
+  "id": 1620118,
+  "kind": "movie",
+  "title_uk": "Arming the Arctic",
+  "title_original": "Arming the Arctic",
+  "title_en": "Arming the Arctic",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1620118"
+ },
+ {
+  "id": 1534749,
+  "kind": "movie",
+  "title_uk": "AAA Alianzas",
+  "title_original": "AAA Alianzas",
+  "title_en": "AAA Alianzas",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1534749"
+ },
+ {
+  "id": 299989,
+  "kind": "tv",
+  "title_uk": "제발 조용히 좀 해!",
+  "title_original": "제발 조용히 좀 해!",
+  "title_en": "Quiet Please!",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/299989"
+ },
+ {
+  "id": 250307,
+  "kind": "tv",
+  "title_uk": "Пітт",
+  "title_original": "The Pitt",
+  "title_en": "The Pitt",
+  "year": "2025",
+  "overview": "Співробітники травматологічного медичного центру Піттсбурга працюють цілодобово, рятуючи життя в переповненому і недофінансованому відділенні невідкладної допомоги.",
+  "tmdb": "https://www.themoviedb.org/tv/250307",
+  "current": {
+   "summary": "Співробітники травматологічного медичного центру Піттсбурга працюють цілодобово, рятуючи життя у переповненому та недофінансованому відділенні невідкладної допомоги. Серіал показує боротьбу лікарів з різноманітними складними медичними випадками.",
+   "ending_explained": "",
+   "easter_eggs": [
+    "Актор Ноа Вайлі та продюсери Р. Скотт Геммілл і Джон Веллс працювали разом над «Швидкою допомогою» з 1990-х років.",
+    "У березні 2024 року Max замовив серіал із п'ятнадцять епізодів.",
+    "Виробництво здійснювала John Wells Productions спільно з Warner Bros. Television.",
+    "Знімальний майданчик у Бербанку, Каліфорнія, відтворював відділення невідкладної допомоги на 25 ліжок."
+   ],
+   "source": {
+    "wiki": "Пітт (телесеріал)",
+    "lang": "uk"
+   }
+  },
+  "wikipedia": {
+   "title": "Пітт (телесеріал)",
+   "lang": "uk",
+   "url": "https://uk.wikipedia.org/wiki/Пітт_(телесеріал)"
+  }
+ },
+ {
+  "id": 241609,
+  "kind": "tv",
+  "title_uk": "Друзі та сусіди",
+  "title_original": "Your Friends & Neighbors",
+  "title_en": "Your Friends & Neighbors",
+  "year": "2025",
+  "overview": "Фінансовий титан раптово розлучається, втрачає роботу і, щоб уникнути банкрутства, починає грабувати багатих сусідів. Обкрадаючи людей зі свого соціального кола, він відчуває дивне піднесення — але поступово заплутується в смертоносному павутинні.",
+  "tmdb": "https://www.themoviedb.org/tv/241609",
+  "current": {
+   "summary": "Фінансовий титан втрачає роботу та починає грабувати своїх багатих сусідів, щоб уникнути банкрутства. Обкрадаючи людей зі свого соціального кола, він відчуває піднесення, але поступово потрапляє в небезпечну павутину.",
+   "ending_explained": "",
+   "easter_eggs": [],
+   "source": null
+  }
+ },
+ {
+  "id": 262259,
+  "kind": "tv",
+  "title_uk": "Танець Ванди",
+  "title_original": "ワンダンス",
+  "title_en": "Wandance",
+  "year": "2025",
+  "overview": "Кабоку Котані переходить до старшої школи і планує залишатися непоміченим, як завжди. Але зустріч із першокурсницею Хікарі Вандою, яка танцює без жодних вагань, змушує його задуматися: чи може він досягти такої ж свободи? Щоб наблизитися до Ванди, Кабоку приєднується до танцювального клубу, зробивши перший крок до нового життя та кохання.",
+  "tmdb": "https://www.themoviedb.org/tv/262259"
+ },
+ {
+  "id": 202555,
+  "kind": "tv",
+  "title_uk": "Шибайголова: Народжений заново",
+  "title_original": "Daredevil: Born Again",
+  "title_en": "Daredevil: Born Again",
+  "year": "2025",
+  "overview": "Сліпий адвокат Метт Мердок процвітає, але його альтер его не забуто. Вілсон Фіск обійняв посаду мера і лише Шибайголова знає, хто ховається за маскою добродушного та чесного політика. Давні вороги, здається, забули про минуле і намагаються не повертатися до супергеройської діяльності. Та чи довго триватиме їх мир чи вони повернуться до ворогів?",
+  "tmdb": "https://www.themoviedb.org/tv/202555",
+  "current": {
+   "summary": "Сліпий адвокат Метт Мердок продовжує боротьбу за справедливість, коли Вілсон Фіск стає мером Нью-Йорка. Серед давніх ворогів знову виникають конфлікти, і героям доведеться вирішувати, чи зможуть вони уникнути повернення до супергеройської діяльності.",
+   "ending_explained": "",
+   "easter_eggs": [
+    "Музикою для серіалу займаються брати Ньютон (Newton Brothers).",
+    "Перший сезон був призупинений страйком WGA 2023 року."
+   ],
+   "source": {
+    "wiki": "Daredevil: Born Again",
+    "lang": "en"
+   }
+  },
+  "wikipedia": {
+   "title": "Daredevil: Born Again",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Daredevil:_Born_Again"
+  }
+ },
+ {
+  "id": 225171,
+  "kind": "tv",
+  "title_uk": "Єдина",
+  "title_original": "Pluribus",
+  "title_en": "Pluribus",
+  "year": "2025",
+  "overview": "Найнещасніша людина на Землі мусить уберегти світ від щастя.",
+  "tmdb": "https://www.themoviedb.org/tv/225171",
+  "current": {
+   "summary": "Найнещасніша людина на Землі мусить уберегти світ від щастя. Серіал розповідає про Карол Стурку, одну з небагатьох людей, імунних до впливу «Злиття» — події, через яку екстратеррестриальний вірус перетворив людство на мирний колективний розум («Інших»). Карол бореться за спосіб скасувати це Злиття.",
+   "ending_explained": "",
+   "easter_eggs": [
+    "Серіал названо на честь латинської фрази E pluribus unum («з багатьох — до одного»).",
+    "Девід Портер, композитор серіалу, створював музику для «Breaking Bad» та «Better Call Saul»."
+   ],
+   "source": {
+    "wiki": "Pluribus (TV series)",
+    "lang": "en"
+   }
+  },
+  "wikipedia": {
+   "title": "Pluribus (TV series)",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Pluribus_(TV_series)"
+  }
+ },
+ {
+  "id": 247718,
+  "kind": "tv",
+  "title_uk": "Земля Гангстерів",
+  "title_original": "MobLand",
+  "title_en": "MobLand",
+  "year": "2025",
+  "overview": "Дві впливові злочинні династії – Гаррігани та Стівенсони , ведуть жорстоку війну за контроль над наркоринком та підпільним світом Лондона. Це кривава гра без правил, де кожен хід може стати фатальним. Головний герой, Гаррі да Соуза, опиняється в епіцентрі цього протистояння, намагаючись зберегти свою сім'ю та своє місце в ієрархії.",
+  "tmdb": "https://www.themoviedb.org/tv/247718",
+  "current": {
+   "summary": "Дві впливові злочинні династії Лондона – Гаррігани та Стівенсони – ведуть жорстоку війну за контроль над наркоринком та підпільним світом. Головний герой, Гаррі да Соуза, опиняється в епіцентрі цього протистояння, намагаючись зберегти свою сім'ю та місце в ієрархії.",
+   "ending_explained": "",
+   "easter_eggs": [
+    "Серіал спочатку анонсували як The Donovans у лютому 2024 року.",
+    "Пізніше робоча назва змінилася на The Associate, а фінальна назва – MobLand (лютий 2025).",
+    "Tom Hardy, Pierce Brosnan та Helen Mirren підписали контракти в листопаді 2024 року.",
+    "Музику створює Matt Bellamy з Muse, а саундтрек виконано Fontaines D.C."
+   ],
+   "source": {
+    "wiki": "MobLand",
+    "lang": "en"
+   }
+  },
+  "wikipedia": {
+   "title": "MobLand",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/MobLand"
+  }
+ },
+ {
+  "id": 240459,
+  "kind": "tv",
+  "title_uk": "Спартак: Дім Ашура",
+  "title_original": "Spartacus: House of Ashur",
+  "title_en": "Spartacus: House of Ashur",
+  "year": "2025",
+  "overview": "Дія серіалу відбувається в античній Італії у I столітті до н. е. За допомогу у придушенні повстання Ашур отримує гладіаторську школу, яка колись належала Лентулу Батіату.",
+  "tmdb": "https://www.themoviedb.org/tv/240459",
+  "current": {
+   "summary": "Дія серіалу розгортається в античній Італії у I столітті до н. е., де головні події пов'язані з гладіаторською школою, яка колись належала Лентулу Батіату.",
+   "ending_explained": "",
+   "easter_eggs": [],
+   "source": null
+  }
+ },
+ {
+  "id": 248226,
+  "kind": "tv",
+  "title_uk": "Теракт над Локербі",
+  "title_original": "The Bombing of Pan Am 103",
+  "title_en": "The Bombing of Pan Am 103",
+  "year": "2025",
+  "overview": "Трагічний вибух у трансатлантичному літаку над Шотландією в 1988 році змусив місцеву поліцію та ФБР об’єднати зусилля в пошуках злочинців.",
+  "tmdb": "https://www.themoviedb.org/tv/248226",
+  "current": {
+   "summary": "Серіал розповідає про трагічний вибух трансатлантичного літака над Шотландією у 1988 році, після якого місцева поліція та ФБР об'єднують зусилля в пошуках злочинців.",
+   "ending_explained": "",
+   "easter_eggs": [],
+   "source": null
+  }
+ }
+]

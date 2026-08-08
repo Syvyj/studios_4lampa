@@ -1,283 +1,167 @@
 [
  {
-  "id": 1426964,
+  "id": 1244517,
   "kind": "movie",
-  "title_uk": "Місто страху",
-  "title_original": "Salve Geral: Irmandade",
-  "title_en": "State of Fear",
-  "year": "2026",
-  "overview": "Сан-Паулу охоплює безпрецедентна хвиля насильства. Пов’язана з кримінальним світом адвокатка укладає угоду з поліцією, щоб урятувати викрадену племінницю.",
-  "tmdb": "https://www.themoviedb.org/movie/1426964",
-  "current": {
-   "summary": "У Сан-Паулу вирує хвиля насильства. Адвокатка змушена укласти угоду з поліцією, щоб врятувати свою викрадену племінницю.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1725116,
-  "kind": "movie",
-  "title_uk": "Simpsley",
-  "title_original": "Simpsley",
-  "title_en": "Simpsley",
+  "title_uk": "Tow",
+  "title_original": "Tow",
+  "title_en": "Tow",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1725116",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1244517"
  },
  {
-  "id": 1462229,
+  "id": 1217931,
   "kind": "movie",
-  "title_uk": "飞驰人生3",
-  "title_original": "飞驰人生3",
-  "title_en": "Pegasus 3",
+  "title_uk": "Vampires of the Velvet Lounge",
+  "title_original": "Vampires of the Velvet Lounge",
+  "title_en": "Vampires of the Velvet Lounge",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1462229",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1217931"
+ },
+ {
+  "id": 1634301,
+  "kind": "movie",
+  "title_uk": "Vanaveera",
+  "title_original": "Vanaveera",
+  "title_en": "Vanaveera",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1634301"
+ },
+ {
+  "id": 1315657,
+  "kind": "movie",
+  "title_uk": "Жовті листи",
+  "title_original": "Yellow Letters",
+  "title_en": "Yellow Letters",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1315657"
+ },
+ {
+  "id": 1295722,
+  "kind": "movie",
+  "title_uk": "Les K d'Or",
+  "title_original": "Les K d'Or",
+  "title_en": "Les K d'Or",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1295722"
+ },
+ {
+  "id": 1728566,
+  "kind": "movie",
+  "title_uk": "致命潮汐",
+  "title_original": "致命潮汐",
+  "title_en": "Murder Game",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1728566"
+ },
+ {
+  "id": 1595128,
+  "kind": "movie",
+  "title_uk": "Lure",
+  "title_original": "Lure",
+  "title_en": "Lure",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1595128"
+ },
+ {
+  "id": 1128377,
+  "kind": "movie",
+  "title_uk": "In Cold Light",
+  "title_original": "In Cold Light",
+  "title_en": "In Cold Light",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1128377"
+ },
+ {
+  "id": 1492288,
+  "kind": "movie",
+  "title_uk": "La chaleur",
+  "title_original": "La chaleur",
+  "title_en": "La chaleur",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1492288"
+ },
+ {
+  "id": 1582328,
+  "kind": "movie",
+  "title_uk": "Sonunda Sen",
+  "title_original": "Sonunda Sen",
+  "title_en": "Love At Last",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1582328"
+ },
+ {
+  "id": 1496491,
+  "kind": "movie",
+  "title_uk": "De la Comédie-Française",
+  "title_original": "De la Comédie-Française",
+  "title_en": "Comédie-Française",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1496491"
+ },
+ {
+  "id": 1418308,
+  "kind": "movie",
+  "title_uk": "กล่องผีสุ่มวิญญาณ",
+  "title_original": "กล่องผีสุ่มวิญญาณ",
+  "title_en": "Ghost Board",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1418308",
   "wikipedia": {
-   "title": "Pegasus 3 (film)",
+   "title": "Ghost Board",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Pegasus_3_(film)"
+   "url": "https://en.wikipedia.org/wiki/Ghost_Board"
   }
  },
  {
-  "id": 1291659,
+  "id": 1428857,
   "kind": "movie",
-  "title_uk": "Le Mage du Kremlin",
-  "title_original": "Le Mage du Kremlin",
-  "title_en": "The Wizard of the Kremlin",
+  "title_uk": "On the Hunt",
+  "title_original": "On the Hunt",
+  "title_en": "On the Hunt",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1291659",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1428857"
  },
  {
-  "id": 1285669,
+  "id": 1317448,
   "kind": "movie",
-  "title_uk": "LifeHack",
-  "title_original": "LifeHack",
-  "title_en": "LifeHack",
+  "title_uk": "Ця країна не для самотніх",
+  "title_original": "Non è un paese per single",
+  "title_en": "No Place to Be Single",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1285669",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1741109,
-  "kind": "movie",
-  "title_uk": "WWE SummerSlam 2026: Saturday",
-  "title_original": "WWE SummerSlam 2026: Saturday",
-  "title_en": "WWE SummerSlam 2026: Saturday",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1741109",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1662317,
-  "kind": "movie",
-  "title_uk": "Автокатастрофа: Справа Маккензі Ширілли",
-  "title_original": "The Crash",
-  "title_en": "The Crash",
-  "year": "2026",
-  "overview": "Дівчина врізається автомобілем у будинок. Гинуть її хлопець і його друг. Документальний фільм про нещасний випадок, який виливається в справу про вбивство.",
-  "tmdb": "https://www.themoviedb.org/movie/1662317",
-  "current": {
-   "summary": "Фільм розповідає історію дівчини, яка потрапляє в автокатастрофу, врізавшись у будинок. Ця трагедія призводить до смерті її хлопця та його друга, перетворюючи нещасний випадок на кримінальну справу про вбивство.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1446616,
-  "kind": "movie",
-  "title_uk": "तू या मैं",
-  "title_original": "तू या मैं",
-  "title_en": "Tu Yaa Main",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1446616",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "overview": "У мальовничому тосканському містечку Бельведере-ін-К'янті, де майже всі живуть парами або невтомно шукають свою другу половинку, вирізняється лише Еліза — незалежна мати-одиначка, яка керує сімейною садибою «Le Giuggiole». Вона давно звикла покладатися тільки на себе й не прагне відповідати очікуванням оточення.  Та спокійне життя Елізи змінюється, коли до містечка повертається її друг дитинства Мікеле, якого вона не бачила багато років. Його поява пробуджує почуття, які вона вважала давно забутими, і змушує переосмислити власне майбутнє. На тлі романтичної атмосфери Тоскани, кумедних ситуацій і втручання допитливих мешканців містечка Еліза має вирішити, чи залишитися в безпечному світі, який сама для себе створила, чи ризикнути й відкритися новому коханню. Фільм є екранізацією однойменного бестселера Фелічії Кінгслі та поєднує романтику, гумор і теплу історію про другий шанс.",
+  "tmdb": "https://www.themoviedb.org/movie/1317448",
   "wikipedia": {
-   "title": "Tu Yaa Main",
+   "title": "No Place to Be Single",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Tu_Yaa_Main"
+   "url": "https://en.wikipedia.org/wiki/No_Place_to_Be_Single"
   }
  },
  {
-  "id": 1083884,
+  "id": 1563543,
   "kind": "movie",
-  "title_uk": "Сигнал один",
-  "title_original": "Signal One",
-  "title_en": "Signal One",
-  "year": "2026",
-  "overview": "Комп'ютерного вченого запрошує технологічний мільярдер приєднатися до його приватного центру на карибському острові для дослідження позаземної матерії на Землі. Коли вони встановлюють контакт за межами нашого світу, починається хаос, і ми залишаємося лише задатися питанням: чи прийшли вони з миром?",
-  "tmdb": "https://www.themoviedb.org/movie/1083884",
-  "current": {
-   "summary": "Комп'ютерний вчений та технологічний мільярдер досліджують позаземну матерію на карибському острові, використовуючи пристрій LITTLEMOUTH. Коли встановлюється контакт із позаземним інтелектом, науковий прорив перетворюється на кризу, змушуючи поставити під сумнів доброзичливість знахідки.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Фільм спочатку називався Littlemouth.",
-    "До березня 2026 року фільм отримав назву Signal One.",
-    "Дистриб'юторські права придбали Radial Entertainment та Shout! Studios.",
-    "У складі акторського ансамблю є Isabelle Fuhrman, Dennis Quaid, David Thewlis, Josh Hutcherson, Kiera Allen та Raoul Bhaneja."
-   ],
-   "source": {
-    "wiki": "Signal One (2026 film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Signal One (2026 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Signal_One_(2026_film)"
-  }
- },
- {
-  "id": 855435,
-  "kind": "movie",
-  "title_uk": "Обличчя смерті",
-  "title_original": "Faces of Death",
-  "title_en": "Faces of Death",
-  "year": "2026",
-  "overview": "Жінка, яка працює модератором контенту на веб-сайті, натикається на серію жорстоких відеороликів, які відтворюють сцени смерті з фільму.",
-  "tmdb": "https://www.themoviedb.org/movie/855435",
-  "current": {
-   "summary": "Модератор контенту на відеоплатформі виявляє серію моторошних відео, що зображують сцени смерті. Її розслідування змушує її зіткнутися з реальністю та небезпекою, коли межа між віртуальним і справжнім стирається.",
-   "ending_explained": "Після низки подій, включаючи втечу з лікарні та спробу рятувати Саманту, Марго повертається до місця конфронтації. Артур пояснює свою манію через десенсибілізацію суспільства до насильства. У гаражі він демонструє відсічені голови жертв і наказує Марго зробити собі ін'єкцію фентанілу. Згодом між ними відбувається довга, кривава сутичка з використанням кухонного ножа. Марго виживає та записує весь бій на приховану камеру. Вона завантажує цей матеріал на платформу Kino, спочатку відчуваючи ейфорію від перемоги, але потім усвідомлюючи цинізм коментарів користувачів.",
-   "easter_eggs": [
-    "У жовтні 2006 року Rogue Pictures обговорювали ремейк фільму Faces of Death.",
-    "Права на фільм були придбані Legendary Entertainment у травні 2021 року.",
-    "Написанням займалася команда Daniel Goldhaber та Isa Mazzei.",
-    "Основна зйомка розпочалася в Новому Орлеані 10 квітня 2023 року під робочою назвою Home Movies."
-   ],
-   "source": {
-    "wiki": "Faces of Death (2026 film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Faces of Death (2026 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Faces_of_Death_(2026_film)"
-  }
- },
- {
-  "id": 1165366,
-  "kind": "movie",
-  "title_uk": "La Bataille de Gaulle : L’âge de fer",
-  "title_original": "La Bataille de Gaulle : L’âge de fer",
-  "title_en": "De Gaulle: Résistance",
+  "title_uk": "La buena hija",
+  "title_original": "La buena hija",
+  "title_en": "The Good Daughter",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1165366",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1510745,
-  "kind": "movie",
-  "title_uk": "Bodycam",
-  "title_original": "Bodycam",
-  "title_en": "Bodycam",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1510745",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1421552,
-  "kind": "movie",
-  "title_uk": "熊猫计划之部落奇遇记",
-  "title_original": "熊猫计划之部落奇遇记",
-  "title_en": "Panda Plan: The Magical Tribe",
-  "year": "2026",
-  "overview": "Панду Ху Ху мають перевезти до нового вольєра, але на неї несподівано нападає міжнародна банда викрадачів. Рятуючи тварину, Джекі Чан вступає в бій, падає зі скелі й опиняється в загадковому ізольованому племені, що живе за прадавніми звичаями. Місцеві вважають Ху Ху священною істотою, покликаною принести мир і допомогти подолати родові конфлікти. Водночас у племені діють суворі заборони: родичам не можна відкрито виявляти почуття, називати одне одного «мама» чи «тато», і навіть обійми караються. Разом із Ху Ху Джекі завойовує довіру племені та проходить низку небезпечних і кумедних випробувань. Прибуття чужинців змушує мешканців переосмислити багатовікові традиції, перетворюючи пригоду на теплу сімейну історію про дружбу, взаєморозуміння й силу людських почуттів, доповнену видовищними боями та фірмовим гумором Джекі Чана.",
-  "tmdb": "https://www.themoviedb.org/movie/1421552",
-  "current": {
-   "summary": "Коли панду Ху Ху нападають викрадачі, Джекі Чан потрапляє до ізольованого племені зі суворими традиціями. Тут він разом із Ху Ху завойовує довіру мешканців, переживаючи небезпечні випробування та допомагаючи їм переосмислити свої багатовікові звичаї.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1563543",
   "wikipedia": {
-   "title": "Panda Plan: The Magical Tribe",
+   "title": "The Good Daughter (American TV series)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Panda_Plan:_The_Magical_Tribe"
-  }
- },
- {
-  "id": 1268609,
-  "kind": "movie",
-  "title_uk": "Павана",
-  "title_original": "파반느",
-  "title_en": "Pavane",
-  "year": "2026",
-  "overview": "Три самотні незнайомці зустрічаються на роботі в магазині й знаходять одне в одному розраду, досліджуючи стосунки й природу кохання.",
-  "tmdb": "https://www.themoviedb.org/movie/1268609",
-  "current": {
-   "summary": "Три самотні незнайомці зустрічаються на роботі в магазині та знаходять одне в одному розраду, досліджуючи стосунки й природу кохання.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1290436,
-  "kind": "movie",
-  "title_uk": "Ma frère",
-  "title_original": "Ma frère",
-  "title_en": "Summer Beats",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1290436",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
+   "url": "https://en.wikipedia.org/wiki/The_Good_Daughter_(American_TV_series)"
   }
  }
 ]

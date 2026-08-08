@@ -1,263 +1,152 @@
 [
  {
-  "id": 1642859,
+  "id": 1439881,
   "kind": "movie",
-  "title_uk": "Iron Maiden: Палаючі амбіції",
-  "title_original": "Iron Maiden: Burning Ambition",
-  "title_en": "Iron Maiden: Burning Ambition",
-  "year": "2026",
-  "overview": "Маючи безпрецедентний доступ до офіційних архівів гурту, «Iron Maiden: Палаючі амбіції» занурює у п’ять десятиліть творчого шляху одного з найвеличніших і найвпливовіших митців музичної історії. До фільму увійшли інтерв’ю з учасниками гурту та відомими прихильниками, серед яких Хав’єр Бардем, Ларс Ульріх і Чак Ді. Ця стрічка відкриває унікальний погляд на їхнє безкомпромісне творче бачення та непохитний зв’язок із глобальною армією фанів.",
-  "tmdb": "https://www.themoviedb.org/movie/1642859",
-  "current": {
-   "summary": "Фільм занурює у п'ять десятиліть творчого шляху гурту Iron Maiden, використовуючи доступ до офіційних архівів. У стрічці представлені інтерв'ю з учасниками гурту та відомими прихильниками, що відкриває погляд на їхнє бачення та зв'язок із фанатами.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1261188,
-  "kind": "movie",
-  "title_uk": "Шведський звʼязок",
-  "title_original": "Den svenska länken",
-  "title_en": "The Swedish Connection",
-  "year": "2026",
-  "overview": "У цій маловідомій правдивій історії шведський бюрократ неочікувано стає героєм війни, коли починає рятувати життя євреїв у найтемніші дні Другої світової.",
-  "tmdb": "https://www.themoviedb.org/movie/1261188",
-  "current": {
-   "summary": "Маловідома правдива історія про шведського бюрократа, який неочікувано стає героєм під час Другої світової війни, рятуючи життя євреїв у надзвичайно темні часи.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "The Swedish Connection",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Swedish_Connection"
-  }
- },
- {
-  "id": 1381151,
-  "kind": "movie",
-  "title_uk": "Holy Days",
-  "title_original": "Holy Days",
-  "title_en": "Holy Days",
+  "title_uk": "Imposters",
+  "title_original": "Imposters",
+  "title_en": "Imposters",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1381151",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1439881"
  },
  {
-  "id": 1620034,
+  "id": 1352384,
   "kind": "movie",
-  "title_uk": "Марті, життя коротке",
-  "title_original": "Marty, Life Is Short",
-  "title_en": "Marty, Life Is Short",
-  "year": "2026",
-  "overview": "Документальний фільм, у якому Мартін Шорт згадує своє щасливе життя, містить класичні сцени, нові інтерв’ю і унікальні кадри з багатьма зірками.",
-  "tmdb": "https://www.themoviedb.org/movie/1620034",
-  "current": {
-   "summary": "Документальний фільм, у якому Мартін Шорт згадує своє щасливе життя, містить класичні сцени, нові інтерв'ю та унікальні кадри з багатьма зірками.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1242937,
-  "kind": "movie",
-  "title_uk": "Жах",
-  "title_original": "The Dreadful",
-  "title_en": "The Dreadful",
-  "year": "2026",
-  "overview": "Дія фільму відбувається у XV столітті під час Війни троянд. Енн та її свекруха Морвен живуть на задвірках суспільства, коли поява людини з їхнього минулого призведе до подій, які стануть поворотними у житті Енн.",
-  "tmdb": "https://www.themoviedb.org/movie/1242937",
-  "current": {
-   "summary": "Дія відбувається у XV столітті під час Війни троянд. Жінка Енн живе зі своєю свекрухою Морвен, коли повернення людини з минулого руйнує їхнє життя та розкриває темні таємниці.",
-   "ending_explained": "Після того, як Енн вирішує жити з Джеґо, вони виявляють обман у його розповіді про смерть Сеймуса. З'ясовується, що він убив товаришів у війні. У флешбеку Морвен знаходить шолом мертвого лицаря і усвідомлює, що вбила власного сина. Вона надіває його, але він обпікає її. Енн розсікає шолом хрестом, викриваючи Морвен з бородавками. Зрештою, Енн відмовляється від претензій обох героїв та знаходить шолом у лісі, який шепоче їй.",
-   "easter_eggs": [
-    "Фільм було анонсовано у лютому 2024 року.",
-    "До акторського складу додалася Марсія Гей Гарден у листопаді 2024 року."
-   ],
-   "source": {
-    "wiki": "The Dreadful",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "The Dreadful",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Dreadful"
-  }
- },
- {
-  "id": 1553969,
-  "kind": "movie",
-  "title_uk": "箱の中の羊",
-  "title_original": "箱の中の羊",
-  "title_en": "Sheep in the Box",
+  "title_uk": "Rio de Sangue",
+  "title_original": "Rio de Sangue",
+  "title_en": "Rio de Sangue",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1553969",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1352384"
  },
  {
-  "id": 1461254,
+  "id": 1287809,
   "kind": "movie",
-  "title_uk": "Сальмокджі",
-  "title_original": "살목지",
-  "title_en": "Salmokji: Whispering Water",
-  "year": "2026",
-  "overview": "Під час поїздки знімальної групи до водосховища для оновлення дорожнього огляду, де раніше зафіксували невідому фігуру, стається інцидент — вони стикаються з чимось у темних, глибоких водах.",
-  "tmdb": "https://www.themoviedb.org/movie/1461254",
-  "current": {
-   "summary": "Знімальна група під час поїздки до водосховища для оновлення дорожнього огляду стикається з невідомим явищем у темних, глибоких водах.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Salmokji: Whispering Water",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Salmokji:_Whispering_Water"
-  }
- },
- {
-  "id": 1278853,
-  "kind": "movie",
-  "title_uk": "Хранителі лісу 2",
-  "title_original": "Woodwalkers 2",
-  "title_en": "Woodwalkers 2",
-  "year": "2026",
-  "overview": "Цього разу глядачів знову чекає захоплива подорож до школи Clearwater High, де навчання магії стає справжнім випробуванням характеру. Головний герой, учень-перевертень, стикається з моральною дилемою: наставник пропонує йому возз’єднання з родиною пум у обмін на неправдиві свідчення. Але коли над школою нависає небезпека, юнака чекає вибір від якого залежить не тільки його майбутнє, а й доля його друзів.",
-  "tmdb": "https://www.themoviedb.org/movie/1278853",
-  "current": {
-   "summary": "У Clearwater High навчання магії стає випробуванням характеру для учня-перевертня. Йому доводиться обирати між бажанням возз'єднатися з родиною пум та правдою, коли над школою нависає небезпека, що ставить під загрозу його друзів.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1617852,
-  "kind": "movie",
-  "title_uk": "Speed Faster",
-  "title_original": "Speed Faster",
-  "title_en": "Speed Faster",
+  "title_uk": "The Sheriff",
+  "title_original": "The Sheriff",
+  "title_en": "The Sheriff",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1617852",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1287809"
  },
  {
-  "id": 1501018,
+  "id": 1538731,
   "kind": "movie",
-  "title_uk": "Une Famille De Bâtards",
-  "title_original": "Une Famille De Bâtards",
-  "title_en": "A Family of Bastards",
+  "title_uk": "Permis de détruire",
+  "title_original": "Permis de détruire",
+  "title_en": "Permis de détruire",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1501018",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1538731"
  },
  {
-  "id": 1220522,
+  "id": 1442669,
   "kind": "movie",
-  "title_uk": "డెకాయిట్",
-  "title_original": "డెకాయిట్",
-  "title_en": "Dacoit",
+  "title_uk": "La Vénus électrique",
+  "title_original": "La Vénus électrique",
+  "title_en": "La Vénus électrique",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1220522",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1442669"
  },
  {
-  "id": 1611380,
+  "id": 1266800,
   "kind": "movie",
-  "title_uk": "Mi mejor enemiga",
-  "title_original": "Mi mejor enemiga",
-  "title_en": "My Worst Enemy",
+  "title_uk": "Книга пустелі",
+  "title_original": "L’Enfant du Désert",
+  "title_en": "The Desert Child",
+  "year": "2026",
+  "overview": "Піщана буря розлучає маленького Хадару з сім'єю, і він залишається один у пустелі. Його несподіваним другом стає маленький але сміливий піщаний лис, а новою родиною – дикі страуси. Разом вони вчаться виживати серед пісків, знаходять їжу, рятуються від небезпек і стають нерозлучними. Але одного разу в цей світ приходять люди, і хлопчик має зробити вибір: повернутися додому або залишитися з тими, хто став його справжньою родиною.",
+  "tmdb": "https://www.themoviedb.org/movie/1266800"
+ },
+ {
+  "id": 1376043,
+  "kind": "movie",
+  "title_uk": "Mata",
+  "title_original": "Mata",
+  "title_en": "Mata",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1611380",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1376043"
  },
  {
-  "id": 1365378,
+  "id": 1554631,
   "kind": "movie",
-  "title_uk": "Агенти на мільйон",
-  "title_original": "Le rêve américain",
-  "title_en": "The American Dream",
-  "year": "2026",
-  "overview": "Ніхто б не поставив на цих хлопців, один з яких застряг за прилавком відеопрокату, а інший - мив підлоги в аеропорту Орлі. Ні зав’язків, ні грошей, далеко не досконала англійська… Ніщо не вказувало на те, що одного дня вони стануть найвпливовішими агентами НБА та мільйонерами, що запалюють зірки!",
-  "tmdb": "https://www.themoviedb.org/movie/1365378",
-  "current": {
-   "summary": "Двоє хлопців, які нікому не здаються – один працює у відеопрокаті, а інший миє підлоги в аеропорту Орлі. Вони починають зі звичайного життя без зв'язків чи грошей, але їхня доля виводить на шлях до того, щоб стати впливовими агентами НБА та мільйонерами.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1243741,
-  "kind": "movie",
-  "title_uk": "Балістика",
-  "title_original": "Ballistic",
-  "title_en": "Ballistic",
-  "year": "2026",
-  "overview": "Мати, яка працює на компанію з виробництва боєприпасів, дізнається, що саме вона виготовила кулю, яка вбила її сина.",
-  "tmdb": "https://www.themoviedb.org/movie/1243741",
-  "current": {
-   "summary": "Жінка, яка працює на підприємство з виробництва боєприпасів, стикається з жахливою правдою: вона виготовила кулю, яка призвела до смерті її сина.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1129104,
-  "kind": "movie",
-  "title_uk": "Флавія. Юна детективка",
-  "title_original": "Flavia",
-  "title_en": "Flavia",
+  "title_uk": "La Familia Del Barrio: La Maldición del Quinto Partido",
+  "title_original": "La Familia Del Barrio: La Maldición del Quinto Partido",
+  "title_en": "A Neighborhood Family",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1129104",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1554631"
+ },
+ {
+  "id": 1643294,
+  "kind": "movie",
+  "title_uk": "Refuge",
+  "title_original": "Refuge",
+  "title_en": "Refuge",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1643294"
+ },
+ {
+  "id": 1477170,
+  "kind": "movie",
+  "title_uk": "LOL 2.0",
+  "title_original": "LOL 2.0",
+  "title_en": "LOL 2.0: Anne’s Golden Hour",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1477170"
+ },
+ {
+  "id": 999140,
+  "kind": "movie",
+  "title_uk": "Planètes",
+  "title_original": "Planètes",
+  "title_en": "Dandelion's Odyssey",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/999140"
+ },
+ {
+  "id": 1418709,
+  "kind": "movie",
+  "title_uk": "Bagarre",
+  "title_original": "Bagarre",
+  "title_en": "Bagarre",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1418709"
+ },
+ {
+  "id": 1468688,
+  "kind": "movie",
+  "title_uk": "A una isla de ti",
+  "title_original": "A una isla de ti",
+  "title_en": "An Island Away From You",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1468688"
+ },
+ {
+  "id": 1280300,
+  "kind": "movie",
+  "title_uk": "The Whistler",
+  "title_original": "The Whistler",
+  "title_en": "The Whistler",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1280300"
+ },
+ {
+  "id": 1436061,
+  "kind": "movie",
+  "title_uk": "Fabian und die mörderische Hochzeit",
+  "title_original": "Fabian und die mörderische Hochzeit",
+  "title_en": "Fabian and the Deadly Wedding",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1436061"
  }
 ]

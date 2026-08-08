@@ -1,293 +1,152 @@
 [
  {
-  "id": 1088548,
+  "id": 1613650,
   "kind": "movie",
-  "title_uk": "Гірке Різдво",
-  "title_original": "Amarga Navidad",
-  "title_en": "Bitter Christmas",
-  "year": "2026",
-  "overview": "Після смерті матері директорка з реклами Ельза з головою йде в роботу, щоб упоратися з горем. Коли через панічні атаки їй доводиться зробити перерву, вона вирішує вирушити на Лансароті зі своєю подругою Патрісією, поки її партнер Боніфасіо залишається в Мадриді.",
-  "tmdb": "https://www.themoviedb.org/movie/1088548",
-  "current": {
-   "summary": "Після смерті матері директорка з реклами Ельза намагається впоратися з горем, віддавши себе роботі. Коли панічні атаки змушують її зробити перерву, вона вирушає на Лансароті зі своєю подругою Патрісією.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1639398,
-  "kind": "movie",
-  "title_uk": "Psicópata: El Asesino del Conejo Blanco",
-  "title_original": "Psicópata: El Asesino del Conejo Blanco",
-  "title_en": "Mexican Psycho",
+  "title_uk": "El fantasma de mi mujer",
+  "title_original": "El fantasma de mi mujer",
+  "title_en": "El fantasma de mi mujer",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1639398",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1613650"
  },
  {
-  "id": 1178620,
+  "id": 1437939,
   "kind": "movie",
-  "title_uk": "Montréal, ma belle",
-  "title_original": "Montréal, ma belle",
-  "title_en": "Montreal, My Beautiful",
+  "title_uk": "Тест на тещу 2",
+  "title_original": "Cocorico 2",
+  "title_en": "Cocorico 2",
+  "year": "2026",
+  "overview": "ДНК-тести, проведені перед весіллям Аліси та Франсуа, показали, що їхні батьки є зовсім не тими, ким себе вважали все життя! Аристократ і автодилер мають сюрпризи в минулому. Поки батьки звикали до нових ролей, лабораторія повідомила, що результати їхнього ДНК-тестування неточні! Тож знову треба з'ясовувати, хто є хто насправді!",
+  "tmdb": "https://www.themoviedb.org/movie/1437939"
+ },
+ {
+  "id": 1363620,
+  "kind": "movie",
+  "title_uk": "สัปเหร่อ 2 โลกหลังความตาย",
+  "title_original": "สัปเหร่อ 2 โลกหลังความตาย",
+  "title_en": "The Undertaker 2: Afterlife",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1178620",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Montreal, My Beautiful",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Montreal,_My_Beautiful"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1363620"
  },
  {
-  "id": 1710008,
+  "id": 910850,
   "kind": "movie",
-  "title_uk": "Нічого втрачати",
-  "title_original": "Jusqu'au bout",
-  "title_en": "Nothing to Lose",
-  "year": "2026",
-  "overview": "Джада віддала все, щоб стати матір’ю. Коли її маленький син починає хворіти, вона не зупиниться ні перед чим, щоб знайти для нього донора й урятувати свою дитину.",
-  "tmdb": "https://www.themoviedb.org/movie/1710008",
-  "current": {
-   "summary": "Жінка робить усе можливе, щоб відродити свого маленького сина, коли він починає хворіти. Її боротьба за життя дитини змушує її йти на крайні кроки пошуку донора.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1078581,
-  "kind": "movie",
-  "title_uk": "Гігант",
-  "title_original": "Giant",
-  "title_en": "Giant",
-  "year": "2026",
-  "overview": "Сюжет стрічки вибудуваний навколо історії становлення Принца Насіма Хамеда, юного хлопця з єменським корінням, який виріс у скромних умовах британського Лідса. Його шлях до слави починається з випадкової зустрічі з тренером Бренданом Інглом, котрий бачить у ньому не лише природний талант, а й могутній потенціал стати справжнім чемпіоном. Інгл бере його під своє крило, навчає дисципліни, формує техніку та водночас намагається виховати характер, адже харизматичний і зухвалий Насім часто схильний до ризику й надмірної самовпевненості.",
-  "tmdb": "https://www.themoviedb.org/movie/1078581",
-  "current": {
-   "summary": "Фільм розповідає історію становлення Принца Насіма Хамеда, молодого хлопця єменського коріння з британського Лідса. Його шлях до слави перетинається зі зустріччю з тренером Бренданом Інглом, який бачить у ньому потенціал чемпіона та навчає його дисципліні, водночас працюючи над вихованням його характеру.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1320660,
-  "kind": "movie",
-  "title_uk": "पति पत्नी और वो दो",
-  "title_original": "पति पत्नी और वो दो",
-  "title_en": "Pati Patni Aur Woh Do",
+  "title_uk": "機動戦士ガンダム  閃光のハサウェイ キルケーの魔女",
+  "title_original": "機動戦士ガンダム  閃光のハサウェイ キルケーの魔女",
+  "title_en": "MOBILE SUIT GUNDAM HATHAWAY The Sorcery of Nymph Circe",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1320660",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Pati Patni Aur Woh Do",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Pati_Patni_Aur_Woh_Do"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/910850"
  },
  {
-  "id": 1418657,
+  "id": 1409853,
   "kind": "movie",
-  "title_uk": "The Yeti",
-  "title_original": "The Yeti",
-  "title_en": "The Yeti",
+  "title_uk": "Neglected",
+  "title_original": "Neglected",
+  "title_en": "Neglected",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1418657",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1409853"
  },
  {
-  "id": 1364953,
+  "id": 1678844,
   "kind": "movie",
-  "title_uk": "Mārama",
-  "title_original": "Mārama",
-  "title_en": "Mārama",
+  "title_uk": "Автобус: Французький футбольний заколот",
+  "title_original": "Le Bus : Les Bleus en grève",
+  "title_en": "The Bus: A French Football Mutiny",
+  "year": "2026",
+  "overview": "Документальний фільм про події Чемпіонату світу 2010 року, коли збірна Франції на знак протесту замикається в автобусі. А далі — світовий розголос і заголовки в медіа.",
+  "tmdb": "https://www.themoviedb.org/movie/1678844"
+ },
+ {
+  "id": 1461294,
+  "kind": "movie",
+  "title_uk": "Red Bird",
+  "title_original": "Red Bird",
+  "title_en": "Red Bird",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1364953",
-  "current": {
-   "summary": "Сиротка Мері Стівенс (Марама) отримує листа від таємничого незнайомця, який стверджує мати інформацію про її батьків. Вона приїжджає у Йоркшир, Англія, щоб дізнатися більше про своє походження.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Режисер та сценарист: Taratoa Stappard",
-    "Продуценти включають Sharlene George, Ricky Russell-Waipuka та Rouzie Hassanova.",
-    "Фільм знято у кінці 2024 року в Окленді та регіоні Отаго.",
-    "Співавторами виробництва є Māori language and culture producer Paraone Gloyne."
-   ],
-   "source": {
-    "wiki": "Mārama (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Mārama (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Mārama_(film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1461294"
  },
  {
-  "id": 1404604,
+  "id": 1601082,
   "kind": "movie",
-  "title_uk": "Compostelle",
-  "title_original": "Compostelle",
-  "title_en": "Compostelle",
+  "title_uk": "Cheetahs Up Close with Bertie Gregory",
+  "title_original": "Cheetahs Up Close with Bertie Gregory",
+  "title_en": "Cheetahs Up Close with Bertie Gregory",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1404604",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1601082"
  },
  {
-  "id": 1431804,
+  "id": 1592019,
   "kind": "movie",
-  "title_uk": "40 побачень і 40 ночей",
-  "title_original": "40 Dates and 40 Nights",
-  "title_en": "40 Dates and 40 Nights",
+  "title_uk": "Missing the Boat",
+  "title_original": "Missing the Boat",
+  "title_en": "Missing the Boat",
   "year": "2026",
-  "overview": "Дівчина, якій не щастить у коханні, приймає парі своєї тітки: сходити на 40 побачень за 40 ночей, щоб знайти справжнєкохання. Якщо вона зазнає невдачі, тітка оплатить її оренду житла та студентський борг. Але ця подорож виявляється значно складнішою, ніж вона очікувала.",
-  "tmdb": "https://www.themoviedb.org/movie/1431804",
-  "current": {
-   "summary": "Дівчина, яка не щастить у коханні, приймає парі від своєї тітки: вона має пройти через 40 побачень протягом 40 ночей у пошуках справжнього кохання. Однак ця спроба виявляється набагато складнішою, ніж вона собі уявляла.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1592019"
  },
  {
-  "id": 1389149,
+  "id": 1616400,
   "kind": "movie",
-  "title_uk": "Звинувачена",
-  "title_original": "अक्यूज़्ड",
-  "title_en": "Accused",
+  "title_uk": "#SKYKING",
+  "title_original": "#SKYKING",
+  "title_en": "#SKYKING",
   "year": "2026",
-  "overview": "Життя відомої гінекологині руйнується, коли серйозні звинувачення ставлять під загрозу її кар’єру й шлюб, але її дружина намагається докопатися до правди.",
-  "tmdb": "https://www.themoviedb.org/movie/1389149",
-  "current": {
-   "summary": "Життя відомої гінеколога руйнується через серйозні звинувачення, що загрожують як її кар'єрі, так і шлюбу. У цій кризі дружина намагається розкрити правду.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Accused (2026 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Accused_(2026_film)"
-  }
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1616400"
  },
  {
-  "id": 1413097,
+  "id": 1450257,
   "kind": "movie",
-  "title_uk": "Меланія",
-  "title_original": "Melania",
-  "title_en": "Melania",
+  "title_uk": "Clika",
+  "title_original": "Clika",
+  "title_en": "Clika",
   "year": "2026",
-  "overview": "Відверта хроніка пропонує рідкісний погляд на життя Меланії Трамп, досліджуючи її роль першої леді та стосунки з президентом.",
-  "tmdb": "https://www.themoviedb.org/movie/1413097",
-  "current": {
-   "summary": "Фільм пропонує погляд на особистий досвід Меланії Трамп протягом 20 днів перед другим інавгурацією Дональда Трампа у січні 2025 року. Він охоплює її шлях від приватної особи до першої леді, включаючи події в Вашингтоні та Нью-Йорку.",
-   "ending_explained": "Фільм завершується з точки зору Меланії в день інавгурації. Після цього йде голосзапис від новоінавгурованої першої леді, а також довга послідовність до кредитів, яка перераховує її заявлені досягнення на цій посаді.",
-   "easter_eggs": [
-    "Ідея документа була запропонована Меланією Трамп або Джеффу Бізосу (під час вечері в Mar-a-Lago у 2024 році), або Марку Бекману після виборів 2024 року.",
-    "Меланія заявила, що її імпульсом стало теплий прийом до її мемуарів 2024 року.",
-    "Режисером є Бретт Ратнер; зйомки розпочалися у грудні 2024 року."
-   ],
-   "source": {
-    "wiki": "Melania (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Melania (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Melania_(film)"
-  }
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1450257"
  },
  {
-  "id": 1168719,
+  "id": 1480608,
   "kind": "movie",
-  "title_uk": "Безмовна подруга",
-  "title_original": "Silent Friend",
-  "title_en": "Silent Friend",
+  "title_uk": "Lapönia",
+  "title_original": "Lapönia",
+  "title_en": "Lapönia",
   "year": "2026",
-  "overview": "У ботанічному саду Марбурґа — середньовічного університетського містечка в Німеччині — за понад сто років три історії переплелись гілками зі старим деревом.",
-  "tmdb": "https://www.themoviedb.org/movie/1168719",
-  "current": {
-   "summary": "Три історії розгортаються навколо старого дерева в ботанічному саду Марбурґа протягом століття, переплетуючи життя різних поколінь студентів та науковців. Фільм досліджує теми науки, особистих зв'язків та впливу часу на людські емоції.",
-   "ending_explained": "У 2020 році невролог доктор Тоні Вонг проводить дослідження зв'язку між активністю мозку новонароджених і старим гінко. Він прикріплює сканер до дерева, підозрюючи глибокий зв'язок між видимим та невидимим. Після того, як Аліс Соваж надсилає пилок з чоловічого дерева для запліднення самої рослини, Антон, працівник саду, нарешті приймає цю науку, і вони разом спостерігають за процесом запліднення через сканер.",
-   "easter_eggs": [
-    "Тони Люн Чіу-вай був оголошений актором у серпні 2023 року.",
-    "Зйомки проходили в Марбурґу, зокрема у Alter Botanischer Garten Marburg."
-   ],
-   "source": {
-    "wiki": "Silent Friend",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Silent Friend",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Silent_Friend"
-  }
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1480608"
  },
  {
-  "id": 1628123,
+  "id": 1627624,
   "kind": "movie",
-  "title_uk": "BTS: Повернення наживо | ARIRANG",
-  "title_original": "BTS 컴백 라이브: ARIRANG",
-  "title_en": "BTS THE COMEBACK LIVE | ARIRANG",
+  "title_uk": "Τελευταία κλήση",
+  "title_original": "Τελευταία κλήση",
+  "title_en": "Last Call",
   "year": "2026",
-  "overview": "BTS відзначають грандіозне повернення й вихід нового альбому великим живим концертом на історичній площі Кванхвамун у Сеулі. Подія наживо корейською мовою.",
-  "tmdb": "https://www.themoviedb.org/movie/1628123",
-  "current": {
-   "summary": "BTS відзначають своє грандіозне повернення та вихід нового альбому під час великого живого концерту, який відбудеться на історичній площі Кванхвамун у Сеулі. Подія буде представлена живою корейською мовою.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1627624"
  },
  {
-  "id": 1631917,
+  "id": 1180417,
   "kind": "movie",
-  "title_uk": "Вісімнадцята троянда",
-  "title_original": "18th Rose",
-  "title_en": "18th Rose",
+  "title_uk": "The Dutchman",
+  "title_original": "The Dutchman",
+  "title_en": "The Dutchman",
   "year": "2026",
-  "overview": "Енергійна дівчина, яка мріє про ідеальний дебют, укладає угоду із самотнім новачком, але їхнім планам загрожують неочікувані почуття й зізнання.",
-  "tmdb": "https://www.themoviedb.org/movie/1631917",
-  "current": {
-   "summary": "Енергійна дівчина, яка прагне ідеального дебюту, укладає угоду із самотнім новачком. Однак їхні плани починають затьмарюватися неочікуваними почуттями та зізнаннями.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1180417"
+ },
+ {
+  "id": 1297311,
+  "kind": "movie",
+  "title_uk": "Quantum Supremacy",
+  "title_original": "Quantum Supremacy",
+  "title_en": "Quantum Supremacy",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1297311"
  }
 ]

@@ -1,317 +1,192 @@
 [
  {
-  "id": 1102883,
+  "id": 1373198,
   "kind": "movie",
-  "title_uk": "Мати Марія",
-  "title_original": "Mother Mary",
-  "title_en": "Mother Mary",
-  "year": "2026",
-  "overview": "Давні рани виходять на поверхню, коли культова попзірка Мати Марія возз’єднується зі своєю відчуженою найкращою подругою та колишнім дизайнером костюмів Сем Анселм напередодні свого повернення на сцену.",
-  "tmdb": "https://www.themoviedb.org/movie/1102883",
-  "current": {
-   "summary": "Культова попзірка Мати Марія готується до повернення на сцену після інциденту, коли її життя перетинається з шляхом колишнього дизайнера костюмів Сем Анселма. Вони розкривають давні родинні та творчі прірви, борючись із примарами минулого та незрозумілим ехом.",
-   "ending_explained": "Сем змушує Марію зіткнутися з кінцем їхньої творчої співпраці. Марія розкриває, що бачила того ж привида після сеансу із командою, де Імоджен поранчила їй руку. Та ніч червоний привид з'явився і намагався потрапити в її рану, але вона втекла. Під час концерту, коли вона була виснажена туром, її спіткав той самий привид, що спричинило серйозні травми. Хоча Марія оговталася від інциденту, її все ще мучить цей дух. Сем веде неохочу Марію у ритуал екзорцизму за допомогою швейних інструментів та спогадів про їхню спільну роботу. Марія розтинає собі груди, і Сем витягує привид, перетворюючи дух їхньої спільної травми на нешкідливу тканину. Марія вибачається перед Семом, і її команда поспішає до шоу, а Сем надихається створювати сукню з цієї червоної тканини.",
-   "easter_eggs": [
-    "Проєкт було оголошено у березні 2023 року.",
-    "Фільм був спільно фінансований A24, Topic Studios та IPR.VC."
-   ],
-   "source": {
-    "wiki": "Mother Mary (2026 film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Mother Mary (2026 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Mother_Mary_(2026_film)"
-  }
- },
- {
-  "id": 1380316,
-  "kind": "movie",
-  "title_uk": "Чи є Бог?",
-  "title_original": "Is God Is",
-  "title_en": "Is God Is",
-  "year": "2026",
-  "overview": "Дві сестри вирушають в епічну подорож заради помсти, зіткнувшись із непростою сімейною історією, яка змусить їх піти на надзвичайні кроки.",
-  "tmdb": "https://www.themoviedb.org/movie/1380316",
-  "current": {
-   "summary": "Дві сестри вирушають у епічну подорож заради помсти, розкриваючи складну сімейну історію, яка змушує їх робити надзвичайні кроки.",
-   "ending_explained": "Після того, як батько викриває сестер у їхніх травмах і намагається знову завдати болю, вони спіймають його в ванній кімнаті. Сестри заливають його алкоголем та запалюють вогонь. Коли він хапає Расін та тягне її до полум'я, вона гине. Наступного ранку Анаія оплакує сестру перед руїнами будинку, після чого повертається додому, обіцяючи розповісти про Расін своєму дитині.",
-   "easter_eggs": [
-    "У жовтні 2024 року було оголошено початок зйомок адаптації Is God Is.",
-    "В акторському складі були Kara Young, Mallori Johnson, Sterling K. Brown, Vivica A. Fox та Janelle Monáe.",
-    "Саундтрек написали Moses Sumney та Joseph Shirley."
-   ],
-   "source": {
-    "wiki": "Is God Is (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Is God Is (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Is_God_Is_(film)"
-  }
- },
- {
-  "id": 1723460,
-  "kind": "movie",
-  "title_uk": "A Toxic Love Story",
-  "title_original": "A Toxic Love Story",
-  "title_en": "A Toxic Love Story",
+  "title_uk": "Twisted",
+  "title_original": "Twisted",
+  "title_en": "Twisted",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1723460",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1373198"
  },
  {
-  "id": 1321179,
+  "id": 1065834,
   "kind": "movie",
-  "title_uk": "왕과 사는 남자",
-  "title_original": "왕과 사는 남자",
-  "title_en": "The King's Warden",
+  "title_uk": "കാട്ടാളൻ",
+  "title_original": "കാട്ടാളൻ",
+  "title_en": "Kattalan",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1321179",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1065834",
   "wikipedia": {
-   "title": "The King's Warden",
+   "title": "Kattalan",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_King's_Warden"
+   "url": "https://en.wikipedia.org/wiki/Kattalan"
   }
  },
  {
-  "id": 1542261,
+  "id": 1620313,
   "kind": "movie",
-  "title_uk": "映画ドラえもん 新・のび太の海底鬼岩城",
-  "title_original": "映画ドラえもん 新・のび太の海底鬼岩城",
-  "title_en": "Doraemon the Movie: New Nobita and the Castle of the Undersea Devil",
+  "title_uk": "Самурай і в'язень",
+  "title_original": "黒牢城",
+  "title_en": "The Samurai and the Prisoner",
+  "year": "2026",
+  "overview": "Коли володар замку Мурашіґе повстає проти тиранічного Оди, він опиняється в облозі у стінах власної фортеці. Відрізаний від зовнішнього світу, він стикається з низкою загадкових злочинів, які руйнують крихкий лад при його дворі, занурюючи замок в атмосферу страху й підозр. Поки військо Оди дедалі тісніше стискає облогу, а серед його людей переховується зрадник, Мурашіґе змушений укласти непростий союз із Канбеєм — блискучим і небезпечним стратегом, ув'язненим у підземеллі. Разом вони мають перехитрити ворогів і розкрити правду, перш ніж сплине час.",
+  "tmdb": "https://www.themoviedb.org/movie/1620313",
+  "wikipedia": {
+   "title": "The Samurai and the Prisoner",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/The_Samurai_and_the_Prisoner"
+  }
+ },
+ {
+  "id": 1381202,
+  "kind": "movie",
+  "title_uk": "The Outer Threat",
+  "title_original": "The Outer Threat",
+  "title_en": "The Outer Threat",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1542261",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
+  "tmdb": "https://www.themoviedb.org/movie/1381202"
+ },
+ {
+  "id": 1416391,
+  "kind": "movie",
+  "title_uk": "Тостер",
+  "title_original": "टोस्टर",
+  "title_en": "Toaster",
+  "year": "2026",
+  "overview": "Коли скасовується весілля, скупий чоловік намагається забрати тостер, який планував подарувати молодятам, але мимоволі стає свідком убивства.",
+  "tmdb": "https://www.themoviedb.org/movie/1416391",
+  "wikipedia": {
+   "title": "Toaster (film)",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Toaster_(film)"
   }
  },
  {
-  "id": 1217584,
+  "id": 1600672,
   "kind": "movie",
-  "title_uk": "Torrente Presidente",
-  "title_original": "Torrente Presidente",
-  "title_en": "Torrente for President",
+  "title_uk": "エヴァンゲリオン放送30周年記念特別興行",
+  "title_original": "エヴァンゲリオン放送30周年記念特別興行",
+  "title_en": "EVANGELION 30th Anniversary Special Screening",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1217584",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1600672"
  },
  {
-  "id": 1582770,
+  "id": 1300501,
   "kind": "movie",
-  "title_uk": "Дхурандхар: Помста",
-  "title_original": "धुरंधर: द रिवेंज",
-  "title_en": "Dhurandhar: The Revenge",
-  "year": "2026",
-  "overview": "Джаскірат Сінгх Ранґі дедалі глибше занурюється у свій альтер-его Гамза Алі Мазарі, піднімаючись кар’єрною ієрархією кримінального світу Карачі, щоб здобути страхітливий титул «Шер-е-Балоch», водночас балансуючи між лояльністю, зрадою та виживанням у безжальному підпіллі.",
-  "tmdb": "https://www.themoviedb.org/movie/1582770",
-  "current": {
-   "summary": "Джаскірат Сінгх Ранґі занурюється у світ кримінальної ієрархії Карачі, приймаючи альтер-его Гамза Алі Мазарі. Він прагне здобути титул «Шер-е-Балоч», постійно балансуючи між необхідністю виживання, лояльністю та ризиком зради у безжальному підпіллі.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Dhurandhar: The Revenge",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Dhurandhar:_The_Revenge"
-  }
- },
- {
-  "id": 1515615,
-  "kind": "movie",
-  "title_uk": "Kissing Is the Easy Part",
-  "title_original": "Kissing Is the Easy Part",
-  "title_en": "Kissing Is the Easy Part",
+  "title_uk": "പേട്രിയറ്റ്",
+  "title_original": "പേട്രിയറ്റ്",
+  "title_en": "Patriot",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1515615",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1616674,
-  "kind": "movie",
-  "title_uk": "Я до мене",
-  "title_original": "Aku Sebelum Aku",
-  "title_en": "Me Before Me",
-  "year": "2026",
-  "overview": "Учень-відмінник і вимогливий батько. Панічні атаки починають заважати життю Джатіма, а тріщини в сімейних стосунках стає неможливо приховувати.",
-  "tmdb": "https://www.themoviedb.org/movie/1616674",
-  "current": {
-   "summary": "Фільм розповідає про Джатіма, учня-відмінника, чиє життя починає порушувати панічні атаки. Зі зростанням цих проблем стає все очевиднішим, що в його сімейних стосунках виникли глибокі тріщини.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1034716,
-  "kind": "movie",
-  "title_uk": "Люди, яких ми зустрічаємо у відпустці",
-  "title_original": "People We Meet on Vacation",
-  "title_en": "People We Meet on Vacation",
-  "year": "2026",
-  "overview": "Поппі любить свободу, Алекс — плани. Через багато років спільних відпусток ці докорінно різні друзі починають замислюватися, яка з них вийде пара.",
-  "tmdb": "https://www.themoviedb.org/movie/1034716",
-  "current": {
-   "summary": "Двоє давніх друзів, Поппі та Алекс, які завжди були на різних емоційних хвилях – вона любить свободу, він планує своє життя. Через багато років спільних відпусток вони змушені усвідомити, яка з них може стати парою.",
-   "ending_explained": "У фіналі Поппі визнає свій страх бути «занадто багато» для Алекса і підтверджує бажання бути з ним. До наступного літа вони вже живуть разом у Нью-Йорку та насолоджуються спільними відпустками як пара.",
-   "easter_eggs": [
-    "Фільм був вироблений замовниками Marty Bowen, Wyck Godfrey та Isaac Klausner для Temple Hill.",
-    "Проект також вироблявся у рамках угоди Sony Pictures first look з Netflix.",
-    "Режисером є Brett Haley, а сценарій адаптували Yulin Kuang та Amos Vernon & Nunzio Randazzo.",
-    "У липні 2024 року до головного складу приєдналися Emily Bader та Tom Blyth."
-   ],
-   "source": {
-    "wiki": "People We Meet on Vacation (film)",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1300501",
   "wikipedia": {
-   "title": "People We Meet on Vacation (film)",
+   "title": "Patriot (film)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/People_We_Meet_on_Vacation_(film)"
+   "url": "https://en.wikipedia.org/wiki/Patriot_(film)"
   }
  },
  {
-  "id": 1239134,
+  "id": 1722713,
   "kind": "movie",
-  "title_uk": "Будинок з привидами",
-  "title_original": "भूत बंगला",
-  "title_en": "Bhooth Bangla",
+  "title_uk": "Мігель Анхель Бланко: 48 годин, що змінили Іспанію",
+  "title_original": "Miguel Ángel Blanco: Las 48 horas que lo cambiaron todo",
+  "title_en": "Miguel Ángel Blanco: The 48 Hours That Changed Spain",
   "year": "2026",
-  "overview": "Чоловік успадковує палац у сільському Мангалпурі та планує провести там весілля своєї сестри. Але дивні надприродні події й налякані місцеві змушують його розслідувати таємниче минуле цього маєтку.",
-  "tmdb": "https://www.themoviedb.org/movie/1239134",
-  "current": {
-   "summary": "Чоловік успадковує палац у сільському Мангалпурі для весілля сестри, але дивні надприродні події та налякані місцеві змушують його розслідувати таємниче минуле маєтку.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Bhooth Bangla",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Bhooth_Bangla"
-  }
+  "overview": "Цей документальний фільм досліджує, як викрадення Мігеля Анхеля Бланко 1997 р. перетворило страх на суспільний спротив і допомогло Іспанії в боротьбі з терористами ЕТА.",
+  "tmdb": "https://www.themoviedb.org/movie/1722713"
  },
  {
-  "id": 1428990,
+  "id": 1335666,
   "kind": "movie",
-  "title_uk": "This Is Not a Test",
-  "title_original": "This Is Not a Test",
-  "title_en": "This Is Not a Test",
+  "title_uk": "Glenrothan",
+  "title_original": "Glenrothan",
+  "title_en": "Glenrothan",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1428990",
-  "current": {
-   "summary": "У грудні 1998 року життя Слоун Прайс руйнується після того, як її аб'юзивний батько викликає її на сніданок, а навколишнє середовище переповнюють зомбі. Вона тікає з дому та потрапляє у групу однокласників, які шукають безпечного місця серед хаосу.",
-   "ending_explained": "Слоун, Різ та Кері залишають школу. Після повернення додому вони знаходять інфіковану Лілі в підвалі, яку Слоун убиває. Вони сідають у сімейний автомобіль, і перед від'їздом Слоун читає лист від Лілі з жовтого конверта. Вона викидає свою записку про самогубство, і вони вирушають до безпечного місця.",
-   "easter_eggs": [
-    "Фільм створено Anova Pictures у співпраці з North Avenue Pictures та WorldOne Entertainment.",
-    "Адаптований за мотивами молодого дорослого роману 2012 року авторства Кортні Саммерс.",
-    "Основна зйомка відбулася у лютому 2025 році в Гамільтоні, Онтаріо, Канада."
-   ],
-   "source": {
-    "wiki": "This Is Not a Test (2025 film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "This Is Not a Test (2025 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/This_Is_Not_a_Test_(2025_film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1335666"
  },
  {
-  "id": 1284041,
+  "id": 1392469,
   "kind": "movie",
-  "title_uk": "Останній дім",
-  "title_original": "The Last House",
-  "title_en": "The Last House",
-  "year": "2026",
-  "overview": "Сім’я загадково опиняється в пастці у власному домі. Щоб вижити, треба триматися разом, хоча їхні запаси тануть на очах, а таємнича сила не відступає.",
-  "tmdb": "https://www.themoviedb.org/movie/1284041",
-  "current": {
-   "summary": "Сім'я опиняється у загадковій пастці власного будинку. Щоб вижити, їм доводиться триматися разом, стикаючись із поступовим виснаженням ресурсів та невідступаючою таємничою силою.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1410937,
-  "kind": "movie",
-  "title_uk": "ബാലൻ  - The Boy",
-  "title_original": "ബാലൻ  - The Boy",
-  "title_en": "Balan - The Boy",
+  "title_uk": "कॉकटेल २",
+  "title_original": "कॉकटेल २",
+  "title_en": "Cocktail 2",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1410937",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
+  "tmdb": "https://www.themoviedb.org/movie/1392469",
+  "wikipedia": {
+   "title": "Cocktail 2",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Cocktail_2"
   }
  },
  {
-  "id": 1107166,
+  "id": 1542995,
   "kind": "movie",
-  "title_uk": "Вбивця-психопат",
-  "title_original": "Psycho Killer",
-  "title_en": "Psycho Killer",
+  "title_uk": "বনলতা এক্সপ্রেস",
+  "title_original": "বনলতা এক্সপ্রেস",
+  "title_en": "Bonolota Express",
   "year": "2026",
-  "overview": "Поліцейська вистежує вбивцю після того, як її чоловік — патрульний дорожньої служби — стає однією з його жертв.",
-  "tmdb": "https://www.themoviedb.org/movie/1107166",
-  "current": {
-   "summary": "Поліцейська вистежує серійного вбивцю після того, як її чоловік-патрульний стає жертвою. Вона вирушає за ним у погоні по різних регіонах, розкриваючи таємниці злочинів і намагаючись запобігти наступній катастрофі.",
-   "ending_explained": "Жан вистежує злодія, який вбивства здійснював під прізвиськом «Сатанічний Сляшер». Злодій планує знищити АЕС у Гарбісбурзі, щоб «відкрити ворота Пекла». Жан зупирає його, стріляючи. Згодом виявляється, що Сляшер — це Річард Джошуа Рівіз, і він потрапляє до в'язниці у Дейт-Веллі.",
-   "easter_eggs": [
-    "Ранній драфт сценарію написав Andrew Kevin Walker (2007).",
-    "У червні 2009 року Fred Durst заявив, що «Psycho Killer» буде його наступним фільмом.",
-    "В лютому 2023 року було повідомлено, що New Regency зелене світло дала на фільм."
-   ],
-   "source": {
-    "wiki": "Psycho Killer (film)",
-    "lang": "en"
-   }
-  },
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1542995"
+ },
+ {
+  "id": 1673393,
+  "kind": "movie",
+  "title_uk": "कृष्णावतरम भाग 1: हृदय (हृदयम्)",
+  "title_original": "कृष्णावतरम भाग 1: हृदय (हृदयम्)",
+  "title_en": "Krishnavataram Part 1: The Heart (Hridayam)",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1673393",
   "wikipedia": {
-   "title": "Psycho Killer (film)",
+   "title": "Krishnavataram Part 1: The Heart (Hridayam)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Psycho_Killer_(film)"
+   "url": "https://en.wikipedia.org/wiki/Krishnavataram_Part_1:_The_Heart_(Hridayam)"
   }
+ },
+ {
+  "id": 1022453,
+  "kind": "movie",
+  "title_uk": "ది రాజాసాబ్",
+  "title_original": "ది రాజాసాబ్",
+  "title_en": "The Rajasaab",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1022453",
+  "wikipedia": {
+   "title": "The RajaSaab",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/The_RajaSaab"
+  }
+ },
+ {
+  "id": 1359005,
+  "kind": "movie",
+  "title_uk": "星河入梦",
+  "title_original": "星河入梦",
+  "title_en": "Per Aspera Ad Astra",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1359005",
+  "wikipedia": {
+   "title": "Per Aspera Ad Astra (2026 film)",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Per_Aspera_Ad_Astra_(2026_film)"
+  }
+ },
+ {
+  "id": 1285959,
+  "kind": "movie",
+  "title_uk": "The Passenger",
+  "title_original": "The Passenger",
+  "title_en": "The Passenger",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1285959"
  }
 ]

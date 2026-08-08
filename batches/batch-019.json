@@ -1,345 +1,172 @@
 [
  {
-  "id": 1422562,
+  "id": 1543151,
   "kind": "movie",
-  "title_uk": "Момент",
-  "title_original": "The Moment",
-  "title_en": "The Moment",
-  "year": "2026",
-  "overview": "Молода поп-зіркаготується до свого першого масштабного турне. Намагаючись не загубити себе та зберегти контроль над власним мистецтвом, артистка шукає баланс між публічним образом і внутрішніми прагненнями.",
-  "tmdb": "https://www.themoviedb.org/movie/1422562",
-  "current": {
-   "summary": "Фільм досліджує життя молодої поп-зірки, яка готується до першого масштабного турне. Вона намагається знайти баланс між своїм публічним образом та справжніми внутрішніми прагненнями в умовах шаленої музичної індустрії.",
-   "ending_explained": "Після серії подій, що призводять до скасування угоди з банком Говарда Стірлінґа та викриття неправдивої реклами, Чарлі XCX зникає. Через шість днів її колеги знаходять її життєздатною. Повернувшись до репетицій, вона зізнається Селесті, що втомилася від надмірної популярності Brat. Вона вирішує виступати лише для того, щоб штучно завершити цикл альбому, навіть якщо тур повністю спотворений порівняно з оригінальним задумом.",
-   "easter_eggs": [
-    "Сюжет базується на повідомленні Charli XCX до Айдана Замірі, яке він назвав «словесним потоком».",
-    "У січні 2025 року було оголошено про участь Charli XCX в акторському складі.",
-    "A. G. Cook написав музику для фільму та випустив перший сингл «Dread» 12 грудня 2025 року.",
-    "Повний саундтрек має вийти 30 січня 2026 року на лейблі A24 Music."
-   ],
-   "source": {
-    "wiki": "Момент (фільм, 2026)",
-    "lang": "uk"
-   }
-  },
-  "wikipedia": {
-   "title": "Момент (фільм, 2026)",
-   "lang": "uk",
-   "url": "https://uk.wikipedia.org/wiki/Момент_(фільм,_2026)"
-  }
- },
- {
-  "id": 1548113,
-  "kind": "movie",
-  "title_uk": "The Muppet Show",
-  "title_original": "The Muppet Show",
-  "title_en": "The Muppet Show",
+  "title_uk": "กิ่งแก้ว",
+  "title_original": "กิ่งแก้ว",
+  "title_en": "King Kaew",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1548113",
-  "current": {
-   "summary": "У цьому спеціальному виставі Муппетів повертаються до Театру Муппетів, щоб створити варіаційний шоу. Головні герої намагаються впоратися з хаосом підготовки, несподіваними зірковими гостями та постійним тиском створення ідеального виступу.",
-   "ending_explained": "Під час нагнітання тиску з боку персонажів щодо фінального номера, Керміт вирішує відмовитися від запланованого фіналу. Натомість він організовує імпротований ансамблевий виступ для всієї групи під пісню «Don't Stop Me Now». У кінці Керміт дякує Сабріні, яка жартує, що вони пасують одна до одної через однаковий зріст. Сет в кулуарах бурчить про те, що його виключили, а Гонзо продовжує кататися на роликах, кричачи імена лауреатів премії «Оскар».",
-   "easter_eggs": [
-    "Фільм був анонсований Disney у вересні 2025 року."
-   ],
-   "source": {
-    "wiki": "The Muppet Show (2026 TV special)",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1543151"
+ },
+ {
+  "id": 1215638,
+  "kind": "movie",
+  "title_uk": "Ternet Ninja 3",
+  "title_original": "Ternet Ninja 3",
+  "title_en": "Checkered Ninja 3",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1215638",
   "wikipedia": {
-   "title": "The Muppet Show (2026 TV special)",
+   "title": "Checkered Ninja 3",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Muppet_Show_(2026_TV_special)"
+   "url": "https://en.wikipedia.org/wiki/Checkered_Ninja_3"
   }
  },
  {
-  "id": 1662414,
+  "id": 1659806,
   "kind": "movie",
-  "title_uk": "Пропелер у нічному небі",
-  "title_original": "Propeller One-Way Night Coach",
-  "title_en": "Propeller One-Way Night Coach",
+  "title_uk": "Rabisu: Curse of the Demon",
+  "title_original": "Rabisu: Curse of the Demon",
+  "title_en": "Rabisu: Curse of the Demon",
   "year": "2026",
-  "overview": "У золоту добу авіації юний любитель літаків і його мати вирушають у подорож через усю країну до Голлівуду. Цей звичайний переліт стає пригодою всього життя.",
-  "tmdb": "https://www.themoviedb.org/movie/1662414",
-  "current": {
-   "summary": "У золоту добу авіації юний ентузіаст літаків та його мати вирушають у подорож через усю країну до Голлівуду, і звичайний переліт перетворюється на пригоду всього життя.",
-   "ending_explained": "У теперішньому часі 39-річний Джефф розповідає, що жест відставкого пілота надихнув його стати пілотом. Він одружується з Доріс, і вони щасливо живуть як авіаційна пара; Доріс замінила матір у ефірі в Ідлвайлді, а Джефф керує маршрутом з Нью-Йорка до Лос-Анджелеса. Гелен та Генрі були разом, але розійшлися, хоча Гелен тепер щасливо працює викладачем акторської майстерності.",
-   "easter_eggs": [
-    "У жовтні 1997 року Джон Траволта видав дитячою повість Propeller One-Way Night Coach.",
-    "У листопаді 2025 року стало відомо, що він адаптував свою повість у режисерський дебют.",
-    "Прем'єра фільму запланована на квітень 2026 року."
-   ],
-   "source": {
-    "wiki": "Propeller One-Way Night Coach",
-    "lang": "en"
-   }
-  },
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1659806"
+ },
+ {
+  "id": 1275574,
+  "kind": "movie",
+  "title_uk": "ओ रोमियो",
+  "title_original": "ओ रोमियो",
+  "title_en": "O'Romeo",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1275574",
   "wikipedia": {
-   "title": "Propeller One-Way Night Coach",
+   "title": "O'Romeo",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Propeller_One-Way_Night_Coach"
+   "url": "https://en.wikipedia.org/wiki/O'Romeo"
   }
  },
  {
-  "id": 1572073,
+  "id": 1570282,
   "kind": "movie",
-  "title_uk": "The Deadly Little Mermaid",
-  "title_original": "The Deadly Little Mermaid",
-  "title_en": "The Deadly Little Mermaid",
+  "title_uk": "Це є я",
+  "title_original": "This is I",
+  "title_en": "This Is I",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1572073",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Кенджі зазнає цькування через мрію стати ідолом, але знаходить себе в кабаре, отримує допомогу прогресивного лікаря й своє справжнє «я», а на сцену виходить Ай Харуна.",
+  "tmdb": "https://www.themoviedb.org/movie/1570282"
  },
  {
-  "id": 1591834,
+  "id": 1259983,
   "kind": "movie",
-  "title_uk": "Familia a la deriva",
-  "title_original": "Familia a la deriva",
-  "title_en": "Familia a la deriva",
+  "title_uk": "Гуру",
+  "title_original": "Gourou",
+  "title_en": "Guru",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1591834",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Популярний коуч із особистісного розвитку Мет невтомно працює за власною методикою, аби допомогти людям стати кращими версіями себе. Він рухається до верхівки популярності завдяки своєму харизматичному впливу та майстерно приховуючи свою руйнівну маніпулятивну особистість.",
+  "tmdb": "https://www.themoviedb.org/movie/1259983"
  },
  {
-  "id": 1371023,
+  "id": 1602783,
   "kind": "movie",
-  "title_uk": "चाँद मेरा दिल",
-  "title_original": "चाँद मेरा दिल",
-  "title_en": "Chand Mera Dil",
+  "title_uk": "தாய் கிழவி",
+  "title_original": "தாய் கிழவி",
+  "title_en": "Thaai Kizhavi",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1371023",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1602783",
   "wikipedia": {
-   "title": "Chand Mera Dil",
+   "title": "Thaai Kizhavi",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Chand_Mera_Dil"
+   "url": "https://en.wikipedia.org/wiki/Thaai_Kizhavi"
   }
  },
  {
-  "id": 1305715,
+  "id": 1596291,
   "kind": "movie",
-  "title_uk": "过家家",
-  "title_original": "过家家",
-  "title_en": "Unexpected Family",
+  "title_uk": "Королева шахів",
+  "title_original": "Queen of Chess",
+  "title_en": "Queen of Chess",
+  "year": "2026",
+  "overview": "У цьому документальному фільмі феноменальна Юдіт Полгар долає сумніви, сексизм і чемпіона Гаррі Каспарова, щоб посісти місце серед найкращих шахістів в історії.",
+  "tmdb": "https://www.themoviedb.org/movie/1596291"
+ },
+ {
+  "id": 1454680,
+  "kind": "movie",
+  "title_uk": "Victor comme tout le monde",
+  "title_original": "Victor comme tout le monde",
+  "title_en": "Hugo",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1305715",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1454680"
+ },
+ {
+  "id": 1508564,
+  "kind": "movie",
+  "title_uk": "வித் லவ்",
+  "title_original": "வித் லவ்",
+  "title_en": "With Love",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1508564",
   "wikipedia": {
-   "title": "Unexpected Family",
+   "title": "With Love (2026 film)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Unexpected_Family"
+   "url": "https://en.wikipedia.org/wiki/With_Love_(2026_film)"
   }
  },
  {
-  "id": 1307373,
+  "id": 1391074,
   "kind": "movie",
-  "title_uk": "Wasteman",
-  "title_original": "Wasteman",
-  "title_en": "Wasteman",
+  "title_uk": "Помічники офіціантів",
+  "title_original": "Busboys",
+  "title_en": "Busboys",
+  "year": "2026",
+  "overview": "Двоє недолугих друзів вірять, що якщо стануть помічниками офіціантів, усі їхні проблеми зникнуть. Вони не зовсім помиляються, але й не зовсім мають рацію.",
+  "tmdb": "https://www.themoviedb.org/movie/1391074"
+ },
+ {
+  "id": 1600421,
+  "kind": "movie",
+  "title_uk": "Stray Kids: Відчуй dominATE",
+  "title_original": "스트레이 키즈: 더 도미네이트 익스피리언스",
+  "title_en": "Stray Kids: The dominATE Experience",
+  "year": "2026",
+  "overview": "Стрічка фіксує аншлагові виступи K-pop-гурту Stray Kids на стадіоні SoFi в Лос-Анджелесі, поєднуючи концертні кадри зі світового туру dominATE із закулісними матеріалами.",
+  "tmdb": "https://www.themoviedb.org/movie/1600421"
+ },
+ {
+  "id": 677561,
+  "kind": "movie",
+  "title_uk": "Les Légendaires",
+  "title_original": "Les Légendaires",
+  "title_en": "The Legendaries",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1307373",
-  "current": {
-   "summary": "У фільмі зображено життя Тайлера, кухаря у в'язниці, який чекає на звільнення після 13 років ув'язнення. Його життя переплітається з наркоторгівлею серед в'язнів та складними стосунками з сином. Новий комірматис створює нову динаміку, яка виводить головних героїв на ескалацію конфліктів.",
-   "ending_explained": "Напередодні звільнення, після того як Дід змушує Тайлера вбити Газа та Пола, Тайлер відмовляється від цього. Він повертається до камери і знаходить Діда, який передозувався наркотиками, які Тайлер підмішив у їжу. Після короткої сутички, Дід втрачає свідомість. Тайлер ділить з ним наркотик перед його смертю. Наступного ранку Тайлер виставляє тіло так, ніби Дід передозувався сам. Пізніше того ж дня Тайлера звільняють.",
-   "easter_eggs": [
-    "Режисер: Cal McMau",
-    "Сценаристи: Hunter Andrews та Eoin Doran",
-    "Знімання відбулося улітку 2024 року",
-    "Місце зйомок включало Shepton Mallet Prison",
-    "Оригінальний саундтрек написав Matthew Barnes (Forest Swords)"
-   ],
-   "source": {
-    "wiki": "Wasteman",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Wasteman",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Wasteman"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/677561"
  },
  {
-  "id": 787844,
+  "id": 1649758,
   "kind": "movie",
-  "title_uk": "Newborn",
-  "title_original": "Newborn",
-  "title_en": "Newborn",
+  "title_uk": "Meal Ticket",
+  "title_original": "Meal Ticket",
+  "title_en": "Meal Ticket",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/787844",
-  "current": {
-   "summary": "Кріс Ньюборн звільняється після семи років у самотності та мусить налагодити стосунки зі дружиною та донькою, стикаючись із психологічними наслідками ізоляції. Його боротьба з травмою змушує його плутати спогади з галюцинаціями.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "У травні 2020 року було оголошено, що Девід Ойелово приєднався до акторського складу фільму Solitary.",
-    "Фільм фінансує та виробляє Bron Studios.",
-    "У вересні 2020 року до акторів приєдналися Олівія Вашингтон, Баррі Пеппер та Джіммі Фейлс."
-   ],
-   "source": {
-    "wiki": "Newborn (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Newborn (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Newborn_(film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1649758"
  },
  {
-  "id": 1440049,
+  "id": 1260643,
   "kind": "movie",
-  "title_uk": "Preschool",
-  "title_original": "Preschool",
-  "title_en": "Preschool",
+  "title_uk": "Man on the Run",
+  "title_original": "Man on the Run",
+  "title_en": "Man on the Run",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1440049",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1530510,
-  "kind": "movie",
-  "title_uk": "Чемпіонат світу 1986",
-  "title_original": "México 86",
-  "title_en": "Mexico 86",
-  "year": "2026",
-  "overview": "Зухвалість, божевілля й суто мексиканська винахідливість. Наперекір усім труднощам Мексика прийняла чемпіонат світу з футболу 1986 року. Як їй це вдалося?",
-  "tmdb": "https://www.themoviedb.org/movie/1530510",
-  "current": {
-   "summary": "Фільм розповідає про те, як Мексика, незважаючи на всі труднощі, прийняла чемпіонат світу з футболу 1986 року, підкреслюючи теми зухвасті, божевілля та мексиканської винахідливості.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 912378,
-  "kind": "movie",
-  "title_uk": "ദൃഢം",
-  "title_original": "ദൃഢം",
-  "title_en": "Dridam",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/912378",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Dridam",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Dridam"
-  }
- },
- {
-  "id": 1154538,
-  "kind": "movie",
-  "title_uk": "Nirvanna the Band the Show the Movie",
-  "title_original": "Nirvanna the Band the Show the Movie",
-  "title_en": "Nirvanna the Band the Show the Movie",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1154538",
-  "current": {
-   "summary": "У 2008 році музиканти Мат Джонсон та Джей МакКерроу створюють гурт Nirvanna the Band, мріючи про виступ у Rivoli. Через роки їхні плани зазнають невдач, що змушує їх до екстремальних ідей, які вплітаються у химерну історію подорожей у часі.",
-   "ending_explained": "Після низки подій у часі — від спроб змусити зіграти в Rivoli до трагічного самопожертвування Мата, який блокує електричне коло своїм тілом, щоб живити машину часу — Джей повертається у 2008 рік. Він змінює повідомлення на дошці Матта, заохочуючи їхніх молодших версій грати в Rivoli. У теперішньому часі Мат згадує лише частину подій і знову пропонує стрибок з вежі.",
-   "easter_eggs": [
-    "Створення фільму базувалося на веб-серіалі Nirvana the Band the Show, який виходив з 2017 по 2018 роки.",
-    "Фільм використовує аудіовізуальний матеріал із Back to the Future без дозволу правовласників, спираючись на статус пародії.",
-    "Сцени з CN Tower були зняті без дозволів та включали роботу GoPro на шоломі туриста.",
-    "Музика для фільму була сильно під впливом саундтреку до Back to the Future та Вертіго (1958).",
-    "У світі створювалися сцени, використовуючи реальні події, як-от пострілянина на резиденції Дрейка у травні 2024 року."
-   ],
-   "source": {
-    "wiki": "Nirvanna the Band the Show the Movie",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Nirvanna the Band the Show the Movie",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Nirvanna_the_Band_the_Show_the_Movie"
-  }
- },
- {
-  "id": 1130948,
-  "kind": "movie",
-  "title_uk": "Обрізка троянд",
-  "title_original": "Rosebush Pruning",
-  "title_en": "Rosebush Pruning",
-  "year": "2026",
-  "overview": "На іспанській віллі американські брати і сестра Джек, Ед, Анна та Роберт занурюються в ізоляцію та живуть на успадковані статки. Коли Джек хоче переїхати до своєї дівчини, а Ед дізнається правду про смерть їхньої матері, сімейні зв’язки починають руйнуватися.",
-  "tmdb": "https://www.themoviedb.org/movie/1130948",
-  "current": {
-   "summary": "На каталонській віллі американська родина – брати Ед, Джек та Роберт, їхня сестра Анна та незрячий батько – опиняється в ізоляції. Коли старший брат оголошує про переїзд нової дівчини, а Ед дізнається правду про смерть матері, сімейні зв'язки починають руйнуватися.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Робота над сценарієм почалася під час пандемії COVID-19.",
-    "Режисер Карім Айнуз вирішив створити ансамблевий фільм, дія якого відбувається переважно в одному будинку.",
-    "Серед джерел натхнення: «Теорема» П'єра Паоло Пазоліні та «Кілер Джо» Вільяма Фрідкіна.",
-    "Знімальний процес проходив з вересня по листопад 2025 року у Каталонії."
-   ],
-   "source": {
-    "wiki": "Обрізка троянд",
-    "lang": "uk"
-   }
-  },
-  "wikipedia": {
-   "title": "Обрізка троянд",
-   "lang": "uk",
-   "url": "https://uk.wikipedia.org/wiki/Обрізка_троянд"
-  }
- },
- {
-  "id": 1165369,
-  "kind": "movie",
-  "title_uk": "La Bataille de Gaulle : J’écris ton nom",
-  "title_original": "La Bataille de Gaulle : J’écris ton nom",
-  "title_en": "De Gaulle: Liberté",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1165369",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1260643"
  }
 ]

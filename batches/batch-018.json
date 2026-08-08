@@ -1,336 +1,167 @@
 [
  {
-  "id": 1199193,
+  "id": 1645368,
   "kind": "movie",
-  "title_uk": "Pose",
-  "title_original": "Pose",
-  "title_en": "Pose",
+  "title_uk": "L'abandon",
+  "title_original": "L'abandon",
+  "title_en": "Forsaken",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1199193",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1169516,
-  "kind": "movie",
-  "title_uk": "Welcome to the Jungle",
-  "title_original": "Welcome to the Jungle",
-  "title_en": "Welcome to the Jungle",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1169516",
-  "current": {
-   "summary": "Група гангстерів, родичів та акторів вирушає у джунглі для зйомки вигаданого фільму про міжнародний злочинний картель. Однак імітація місії стає реальною, коли їх атакують терористи. Недосвідчена команда мусить стати несподіваними героями, щоб врятувати себе та село.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Зйомки розпочалися у грудні 2023 року.",
-    "Назва саундтреку «Welcome to the Jungle» вийшла 18 травня 2026 року.",
-    "Третя пісня «Ucha Lamba Kad Forever» є рекреацією пісні з першого фільму."
-   ],
-   "source": {
-    "wiki": "Welcome to the Jungle (2026 film)",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1645368",
   "wikipedia": {
-   "title": "Welcome to the Jungle (2026 film)",
+   "title": "Forsaken (2026 film)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Welcome_to_the_Jungle_(2026_film)"
+   "url": "https://en.wikipedia.org/wiki/Forsaken_(2026_film)"
   }
  },
  {
-  "id": 1155818,
+  "id": 1628448,
   "kind": "movie",
-  "title_uk": "ਸਤਲੁਜ",
-  "title_original": "ਸਤਲੁਜ",
-  "title_en": "Satluj",
+  "title_uk": "Ой, мамо!",
+  "title_original": "माँ बहन",
+  "title_en": "Maa Behen",
+  "year": "2026",
+  "overview": "Коли біда стукає у двері, мати і її відсторонені доньки намагаються приховати злочин у кварталі з допитливими мешканцями, де жодна таємниця не залишається прихованою.",
+  "tmdb": "https://www.themoviedb.org/movie/1628448",
+  "wikipedia": {
+   "title": "Maa Behen",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Maa_Behen"
+  }
+ },
+ {
+  "id": 1712828,
+  "kind": "movie",
+  "title_uk": "Water Park Shark",
+  "title_original": "Water Park Shark",
+  "title_en": "Water Park Shark",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1155818",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Satluj (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Satluj_(film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1712828"
  },
  {
-  "id": 1471224,
+  "id": 1449400,
   "kind": "movie",
-  "title_uk": "Вбивство на 3-му поверсі",
-  "title_original": "Le Crime du 3e étage",
-  "title_en": "Bazaar (Murder in the Building)",
-  "year": "2026",
-  "overview": "Колетт, захоплена фанатка фільмів Гічкока, підозрює, що новий сусід вбив свою дружину. Франсуа, її чоловік і відомий автор трилерів, не в захваті від її ідей. Пара починає захопливе і ризиковане розслідування, щоб з'ясувати, чи справді в їхньому будинку сталося вбивство!",
-  "tmdb": "https://www.themoviedb.org/movie/1471224",
-  "current": {
-   "summary": "Фільм розповідає про Колетт, фанатку фільмів Гічкока, яка підозрює нового сусіда у вбивстві своєї дружини. Її чоловік, відомий автор трилерів Франсуа, скептично ставиться до її ідей, але пара разом починає ризиковане розслідування, щоб з'ясувати правду про подію у їхньому будинку.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1476928,
-  "kind": "movie",
-  "title_uk": "Na Willa",
-  "title_original": "Na Willa",
-  "title_en": "Na Willa",
+  "title_uk": "Reckless",
+  "title_original": "Reckless",
+  "title_en": "Reckless",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1476928",
-  "current": {
-   "summary": "Фільм розповідає про життя шестирічної На Вілли у кварталі на околицях Сурабая у 1960-х роках. Вона спостерігає за повсякденністю, переживаючи моменти дитинства, що відображають теми зростання, культурного розмаїття та соціальних змін у багатокультурній родині.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Фільм є адаптацією першої книги трилогії «Na Willa» від Reda Gaudiamo.",
-    "Виробництво оголошено Visinema Studios у листопаді 2025 року."
-   ],
-   "source": {
-    "wiki": "Na Willa",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Na Willa",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Na_Willa"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1449400"
  },
  {
-  "id": 1316427,
+  "id": 1534530,
   "kind": "movie",
-  "title_uk": "7 كلاب",
-  "title_original": "7 كلاب",
-  "title_en": "7 Dogs",
+  "title_uk": "El Susurro",
+  "title_original": "El Susurro",
+  "title_en": "The Whisper",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1316427",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "7 Dogs",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/7_Dogs"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1534530"
  },
  {
-  "id": 1433117,
+  "id": 1146344,
   "kind": "movie",
-  "title_uk": "கர",
-  "title_original": "கர",
-  "title_en": "Kara",
+  "title_uk": "Misdirection",
+  "title_original": "Misdirection",
+  "title_en": "Misdirection",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1433117",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Kara (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Kara_(film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1146344"
  },
  {
-  "id": 1227877,
+  "id": 1443774,
   "kind": "movie",
-  "title_uk": "Я люблю бустерів",
-  "title_original": "I Love Boosters",
-  "title_en": "I Love Boosters",
-  "year": "2026",
-  "overview": "Команда професійних магазинних злодюжок, відома як «Оксамитова банда», націлилася на безжальну модну магнатку.",
-  "tmdb": "https://www.themoviedb.org/movie/1227877",
-  "current": {
-   "summary": "Команда злодюжок «Оксамитова банда» націлюється на безжальну модну магнатку, викриваючи лицемірство світу високої моди. Їхні плани перетинаються з боротьбою за справедливі умови праці та розкриття приголомшливих таємниць індустрії.",
-   "ending_explained": "У фіналі «Оксамитова банда» та Джианху успішно інфільтруються на покази мод. Вони використовують пристрої, щоб деконструювати одяг, виявляючи, що зірки носять не просто костюми, а шкіряні костюми для пропаганди. Згодом вони використовуються для посилення протестів як на показі, так і на фабриці, перетворюючи їх у страйки. У результаті, хвороба матері Джианху повертається до нормального стану.",
-   "easter_eggs": [
-    "Створено на основі пісні «I Love Boosters!» гурту The Coup",
-    "У складі акторського ансамблю були Keke Palmer, Demi Moore, LaKeith Stanfield та Naomi Ackie.",
-    "Музикальна подія: саундтрек EP вийшов 8 травня 2026 року."
-   ],
-   "source": {
-    "wiki": "I Love Boosters",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "I Love Boosters",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/I_Love_Boosters"
-  }
- },
- {
-  "id": 1659087,
-  "kind": "movie",
-  "title_uk": "180",
-  "title_original": "180",
-  "title_en": "180",
-  "year": "2026",
-  "overview": "Після того, як його син опиняється в тяжкому стані внаслідок інциденту з агресією на дорозі, розлючений батько під впливом емоцій обирає похмурий шлях до помсти.",
-  "tmdb": "https://www.themoviedb.org/movie/1659087",
-  "current": {
-   "summary": "Фільм розповідає історію Аджaya Кумара, який переїжджає до Індії та живе спокійним життям, допомагаючи іншим. Його доля змінюється, коли він зустрічає фотожурналістку Vidya, яка закохується в нього. Однак його минуле та особисті рішення змушують його залишити місто.",
-   "ending_explained": "У флешбеках згадується, що Аджay виявив, що має рак і йому залишилося близько шести місяців життя. Він також дізнався про свої почуття до Renuka та вирішив, що його життя щасливіше без нього. Щоб запобігти стражданням Renuka від постійних роздумів про нього, Аджay вигадав свою смерть. Згодом він вирушає до Бразилії, де живе під ім'ям José і чекає на свою смерть.",
-   "easter_eggs": [
-    "Фільм є дебютним повнометражним фільмом Jayendra Panchapakesan.",
-    "Студія AVM Studios у Вадапалані була місцем прем'єри 15 червня 2010 року.",
-    "Музику створив композитор Sharreth."
-   ],
-   "source": {
-    "wiki": "180 (2011 Indian film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "180 (2011 Indian film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/180_(2011_Indian_film)"
-  }
- },
- {
-  "id": 1429605,
-  "kind": "movie",
-  "title_uk": "F Valentine's Day",
-  "title_original": "F Valentine's Day",
-  "title_en": "F Valentine's Day",
+  "title_uk": "Deviens génial",
+  "title_original": "Deviens génial",
+  "title_en": "Deviens génial",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1429605",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1443774"
  },
  {
-  "id": 1450527,
+  "id": 1731494,
   "kind": "movie",
-  "title_uk": "Заборонені плоди",
-  "title_original": "Forbidden Fruits",
-  "title_en": "Forbidden Fruits",
+  "title_uk": "The Odyssey: The Making of an Epic",
+  "title_original": "The Odyssey: The Making of an Epic",
+  "title_en": "The Odyssey: The Making of an Epic",
   "year": "2026",
-  "overview": "Працівниця одного з магазинів у торговельному центрі очолює таємне товариство відьом, до якого входять її колеги. Коли поява нової співробітниці ставить під сумнів їхнє показне товариство, дівчатам доводиться зіткнутися з власними демонами або загинути.",
-  "tmdb": "https://www.themoviedb.org/movie/1450527",
-  "current": {
-   "summary": "Працівниця магазину очолює таємне товариство відьом серед колег. Коли поява нової співробітниці ставить під сумнів їхнє показне життя, дівчатам доводиться зіткнутися з власними демонами або загинути.",
-   "ending_explained": "У фіналі виявляється, що головна героїня, Пампукін, є напівсестрою Апл і шукає справедливості за вбивство їхнього батька. Після конфлікту щодо бачення батька, Апл задушує Пампукін та залишає її у фонтані. Згодом Апл тікає до іншого торгового центру, де зустрічає трьох стильних дівчат. У післякредитній сцені виявляється, що Шэрон — це поліцейський детектив, який збирає знайдену ляльку як доказ.",
-   "easter_eggs": [
-    "Режисер фільму — Meredith Alloway, її дебют у жанрі повнометражного кіно.",
-    "Сценарій написала Лілі Хоутон та адаптовано з п'єси 2019 року.",
-    "Фільм продюсують Mason Novick, Diablo Cody, Trent Hubbard та Mary Anne Waterhouse через MXN Entertainment.",
-    "У складі акторського ансамблю є Lili Reinhart, Lola Tung, Victoria Pedretti, Alexandra Shipp та Emma Chamberlain."
-   ],
-   "source": {
-    "wiki": "Forbidden Fruits",
-    "lang": "en"
-   }
-  },
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1731494"
+ },
+ {
+  "id": 1510767,
+  "kind": "movie",
+  "title_uk": "അതിരടി",
+  "title_original": "അതിരടി",
+  "title_en": "Athiradi",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1510767",
   "wikipedia": {
-   "title": "Forbidden Fruits",
+   "title": "Athiradi (2026 film)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Forbidden_Fruits"
+   "url": "https://en.wikipedia.org/wiki/Athiradi_(2026_film)"
   }
  },
  {
-  "id": 1248251,
+  "id": 1531626,
   "kind": "movie",
-  "title_uk": "മോളിവുഡ് ടൈംസ്",
-  "title_original": "മോളിവുഡ് ടൈംസ്",
-  "title_en": "Mollywood Times",
+  "title_uk": "Descendants/ZOMBIES Worlds Collide - Concert Special",
+  "title_original": "Descendants/ZOMBIES Worlds Collide - Concert Special",
+  "title_en": "Descendants/ZOMBIES Worlds Collide - Concert Special",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1248251",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Mollywood Times",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Mollywood_Times"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1531626"
  },
  {
-  "id": 1437696,
+  "id": 1558796,
   "kind": "movie",
-  "title_uk": "Батьківщина",
-  "title_original": "Fatherland",
-  "title_en": "Fatherland",
+  "title_uk": "Ніколи не змінюйся!",
+  "title_original": "Never Change!",
+  "title_en": "Never Change!",
   "year": "2026",
-  "overview": "У 1949 році німецький письменник Томас Манн і його донька Еріка вирушають у подорож зруйнованою Німеччиною — від Франкфурта, що перебуває під контролем США, до Веймара, контрольованого СРСР.",
-  "tmdb": "https://www.themoviedb.org/movie/1437696",
-  "current": {
-   "summary": "У 1949 році письменник Томас Манн та його донька Еріка подорожують зруйнованою Німеччиною, від Франкфурта до Веймара. Під час цієї мандрівки розгортаються сімейні драми: наркотична залежність сина Клауса та емоційні травми Еріки.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Продюсерка Жанна Тремзаль і режисер Едвард Бергер планували зйомки в Німеччині, яка у 1949 році не існувала.",
-    "Польща була використана як візуальна альтернатива первісно задуманій локації.",
-    "Режисером став Павло Павліковський, який вперше працював над фільмом за 8 років.",
-    "Оператор-постановник Лукаш Жал та режисер обрали чорно-білу палітру фільму.",
-    "Знімальний процес проходив у Легниці, Бельсько-Бялі, Цешині, Варшаві, Веймарі, Вроцлаві та Валбжихі."
-   ],
-   "source": {
-    "wiki": "Батьківщина (фільм, 2026)",
-    "lang": "uk"
-   }
-  },
-  "wikipedia": {
-   "title": "Батьківщина (фільм, 2026)",
-   "lang": "uk",
-   "url": "https://uk.wikipedia.org/wiki/Батьківщина_(фільм,_2026)"
-  }
+  "overview": "У 2008 році випускний рік учнів старших класів школи Норт-Медоуз був перерваний руйнівним торнадо. Тепер, коли їм уже за тридцять, вони змушені повернутися додому й нарешті закінчити школу.",
+  "tmdb": "https://www.themoviedb.org/movie/1558796"
  },
  {
-  "id": 1630433,
+  "id": 1370424,
   "kind": "movie",
-  "title_uk": "เส้นตาย สายลวง",
-  "title_original": "เส้นตาย สายลวง",
-  "title_en": "The Red Line",
+  "title_uk": "He's Watching You",
+  "title_original": "He's Watching You",
+  "title_en": "He's Watching You",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1630433",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1370424"
  },
  {
-  "id": 1318335,
+  "id": 1563588,
   "kind": "movie",
-  "title_uk": "Les Rayons et les Ombres",
-  "title_original": "Les Rayons et les Ombres",
-  "title_en": "The Rays and Shadows",
+  "title_uk": "Hangar Rojo",
+  "title_original": "Hangar Rojo",
+  "title_en": "The Red Hangar",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1318335",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1563588"
+ },
+ {
+  "id": 1609125,
+  "kind": "movie",
+  "title_uk": "手遮天",
+  "title_original": "手遮天",
+  "title_en": "The Butcher's Blade",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1609125"
+ },
+ {
+  "id": 1366906,
+  "kind": "movie",
+  "title_uk": "The Gates",
+  "title_original": "The Gates",
+  "title_en": "The Gates",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1366906"
  }
 ]

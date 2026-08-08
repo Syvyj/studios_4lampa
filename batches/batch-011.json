@@ -1,308 +1,167 @@
 [
  {
-  "id": 1317672,
+  "id": 1341422,
   "kind": "movie",
-  "title_uk": "Love Me Love Me",
-  "title_original": "Love Me Love Me",
-  "title_en": "Love Me Love Me",
+  "title_uk": "Gli occhi degli altri",
+  "title_original": "Gli occhi degli altri",
+  "title_en": "The Eyes of Others",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1317672",
-  "current": {
-   "summary": "Після смерті брата Джун переїжджає до Мілана заради нового початку та знаходить комфорт у Віллі, учні-відміннику. Однак поява проблемного друга Вілла, Джеймса, який приховує небезпечне життя в підпільних боях ММА, розпалює суперництво, що перетворюється на сильний потяг. Джун мусить обирати між безпекою та коханням, яке руйнує її спокій.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": {
-    "wiki": "Love Me Love Me (film)",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1341422"
+ },
+ {
+  "id": 1646950,
+  "kind": "movie",
+  "title_uk": "Capture",
+  "title_original": "Capture",
+  "title_en": "Capture",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1646950"
+ },
+ {
+  "id": 1088548,
+  "kind": "movie",
+  "title_uk": "Гірке Різдво",
+  "title_original": "Amarga Navidad",
+  "title_en": "Bitter Christmas",
+  "year": "2026",
+  "overview": "Після смерті матері директорка з реклами Ельза з головою йде в роботу, щоб упоратися з горем. Коли через панічні атаки їй доводиться зробити перерву, вона вирішує вирушити на Лансароті зі своєю подругою Патрісією, поки її партнер Боніфасіо залишається в Мадриді.",
+  "tmdb": "https://www.themoviedb.org/movie/1088548"
+ },
+ {
+  "id": 1639398,
+  "kind": "movie",
+  "title_uk": "Psicópata: El Asesino del Conejo Blanco",
+  "title_original": "Psicópata: El Asesino del Conejo Blanco",
+  "title_en": "Mexican Psycho",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1639398"
+ },
+ {
+  "id": 1178620,
+  "kind": "movie",
+  "title_uk": "Montréal, ma belle",
+  "title_original": "Montréal, ma belle",
+  "title_en": "Montreal, My Beautiful",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1178620",
   "wikipedia": {
-   "title": "Love Me Love Me (film)",
+   "title": "Montreal, My Beautiful",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Love_Me_Love_Me_(film)"
+   "url": "https://en.wikipedia.org/wiki/Montreal,_My_Beautiful"
   }
  },
  {
-  "id": 1620682,
+  "id": 1710008,
   "kind": "movie",
-  "title_uk": "Любов у вповільненій зйомці",
-  "title_original": "أحبك من زمان",
-  "title_en": "Love in Slow Motion",
+  "title_uk": "Нічого втрачати",
+  "title_original": "Jusqu'au bout",
+  "title_en": "Nothing to Lose",
   "year": "2026",
-  "overview": "Коли найкращий друг Хаї, Джавад, заручається, її самотній світ перевертається з ніг на голову. Хто б міг подумати, що справжнє кохання весь час було зовсім поруч?",
-  "tmdb": "https://www.themoviedb.org/movie/1620682",
-  "current": {
-   "summary": "Світ самотності головної героїні кардинально змінюється після заручин її найкращого друга Хаї, Джавада. Фільм досліджує питання справжнього кохання та відкриває для неї істину про те, що кохання могло бути поруч увесь час.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Джада віддала все, щоб стати матір’ю. Коли її маленький син починає хворіти, вона не зупиниться ні перед чим, щоб знайти для нього донора й урятувати свою дитину.",
+  "tmdb": "https://www.themoviedb.org/movie/1710008"
  },
  {
-  "id": 1584215,
+  "id": 1078581,
   "kind": "movie",
-  "title_uk": "The Internship",
-  "title_original": "The Internship",
-  "title_en": "The Internship",
+  "title_uk": "Гігант",
+  "title_original": "Giant",
+  "title_en": "Giant",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1584215",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Сюжет стрічки вибудуваний навколо історії становлення Принца Насіма Хамеда, юного хлопця з єменським корінням, який виріс у скромних умовах британського Лідса. Його шлях до слави починається з випадкової зустрічі з тренером Бренданом Інглом, котрий бачить у ньому не лише природний талант, а й могутній потенціал стати справжнім чемпіоном. Інгл бере його під своє крило, навчає дисципліни, формує техніку та водночас намагається виховати характер, адже харизматичний і зухвалий Насім часто схильний до ризику й надмірної самовпевненості.",
+  "tmdb": "https://www.themoviedb.org/movie/1078581"
  },
  {
-  "id": 1556616,
+  "id": 1320660,
   "kind": "movie",
-  "title_uk": "Yaz Evi",
-  "title_original": "Yaz Evi",
-  "title_en": "Summer House",
+  "title_uk": "पति पत्नी और वो दो",
+  "title_original": "पति पत्नी और वो दो",
+  "title_en": "Pati Patni Aur Woh Do",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1556616",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1398655,
-  "kind": "movie",
-  "title_uk": "Фільм для дорослих",
-  "title_original": "Blue Film",
-  "title_en": "Blue Film",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1398655",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1327688,
-  "kind": "movie",
-  "title_uk": "Одна миля: Глава перша",
-  "title_original": "One Mile: Chapter One",
-  "title_en": "One Mile: Chapter One",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1327688",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1268127,
-  "kind": "movie",
-  "title_uk": "Humint",
-  "title_original": "휴민트",
-  "title_en": "Humint",
-  "year": "2026",
-  "overview": "Південнокорейський агент, який стежить за наркоторгівлею в Росії, протистоїть північнокорейському шпигуну й разом із ним потрапляє в павутиння небезпечних таємниць.",
-  "tmdb": "https://www.themoviedb.org/movie/1268127",
-  "current": {
-   "summary": "Південнокорейський агент, який розслідує наркоторгівлю у Росії, опиняється в пастці між північнокорейським шпигуном та небезпечними таємницями. Його розслідування перетинається з діяльністю офіційних осіб обох сторін, а також із жінкою, яку обидві сторони хочуть використати як джерело інформації.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Фільм є останньою частиною неофіційної трилогії режисера Рю, яка включає The Berlin File (2013) та Escape from Mogadishu (2021).",
-    "У кастингу брали участь Zo In-sung, Park Jeong-min, Park Hae-joon та Nana (яка пізніше була замінена на Shin Se-kyung)."
-   ],
-   "source": {
-    "wiki": "Humint (film)",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1320660",
   "wikipedia": {
-   "title": "Humint (film)",
+   "title": "Pati Patni Aur Woh Do",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Humint_(film)"
+   "url": "https://en.wikipedia.org/wiki/Pati_Patni_Aur_Woh_Do"
   }
  },
  {
-  "id": 1207162,
+  "id": 1418657,
   "kind": "movie",
-  "title_uk": "Rise of the Conqueror",
-  "title_original": "Rise of the Conqueror",
-  "title_en": "Rise of the Conqueror",
+  "title_uk": "The Yeti",
+  "title_original": "The Yeti",
+  "title_en": "The Yeti",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1207162",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1418657"
  },
  {
-  "id": 1245859,
+  "id": 1404604,
   "kind": "movie",
-  "title_uk": "Дім Севіджів",
-  "title_original": "Savage House",
-  "title_en": "Savage House",
+  "title_uk": "Compostelle",
+  "title_original": "Compostelle",
+  "title_en": "Compostelle",
   "year": "2026",
-  "overview": "Дія відбувається в Англії XVIII століття під час епідемії віспи та якобітського повстання. Сер Чонсі та леді Севідж сліпо прагнуть кращого життя. Їхні пошуки сповнені іронічної розкоші та кривавих подій.",
-  "tmdb": "https://www.themoviedb.org/movie/1245859",
-  "current": {
-   "summary": "У Англії XVIII століття, під час епідемії віспи та якобітського повстання, родичі Севідж намагаються зберегти гідність і краще життя. Їхні пошуки сповнені іронії, розкоші та кривавих подій, коли сім'я стикається з фінансовими труднощами та інтригами навколишніх людей.",
-   "ending_explained": "Напередодні вечірки Чонсі прокидається і виявляє, що його дружина з Реджиналом мають статевий акт. Він кидає виклик Реджиналу на дуель. Під час цієї події він змушений запросити родичів Беннеттів. Пізніше, коли Чонсі оговтується, він дізнається, що його рука гнойова. На день вечірки, після того як гості прокинулися, їм повідомляють, що герцог і герцоги вирішили залишитися з лордом Верноном. Чонсі заарештовують, а Севіджі падають у розпач.",
-   "easter_eggs": [
-    "Гланц заявив, що фільм натхненний атакою на Капітолій США 6 січня 2021 року.",
-    "Історичний період дії — 1715 рік, перший рік Георгіанської епохи за правління Георгія І.",
-    "Зйомки проходили у Великій Британії протягом 6 тижнів восени/взимку 2023 року."
-   ],
-   "source": {
-    "wiki": "Savage House (film)",
-    "lang": "en"
-   }
-  },
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1404604"
+ },
+ {
+  "id": 1431804,
+  "kind": "movie",
+  "title_uk": "40 побачень і 40 ночей",
+  "title_original": "40 Dates and 40 Nights",
+  "title_en": "40 Dates and 40 Nights",
+  "year": "2026",
+  "overview": "Дівчина, якій не щастить у коханні, приймає парі своєї тітки: сходити на 40 побачень за 40 ночей, щоб знайти справжнєкохання. Якщо вона зазнає невдачі, тітка оплатить її оренду житла та студентський борг. Але ця подорож виявляється значно складнішою, ніж вона очікувала.",
+  "tmdb": "https://www.themoviedb.org/movie/1431804"
+ },
+ {
+  "id": 1389149,
+  "kind": "movie",
+  "title_uk": "Звинувачена",
+  "title_original": "अक्यूज़्ड",
+  "title_en": "Accused",
+  "year": "2026",
+  "overview": "Життя відомої гінекологині руйнується, коли серйозні звинувачення ставлять під загрозу її кар’єру й шлюб, але її дружина намагається докопатися до правди.",
+  "tmdb": "https://www.themoviedb.org/movie/1389149",
   "wikipedia": {
-   "title": "Savage House (film)",
+   "title": "Accused (2026 film)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Savage_House_(film)"
+   "url": "https://en.wikipedia.org/wiki/Accused_(2026_film)"
   }
  },
  {
-  "id": 1632812,
+  "id": 1628123,
   "kind": "movie",
-  "title_uk": "Nada entre los dos",
-  "title_original": "Nada entre los dos",
-  "title_en": "Nothing Between Us",
+  "title_uk": "BTS: Повернення наживо | ARIRANG",
+  "title_original": "BTS 컴백 라이브: ARIRANG",
+  "title_en": "BTS THE COMEBACK LIVE | ARIRANG",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1632812",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "BTS відзначають грандіозне повернення й вихід нового альбому великим живим концертом на історичній площі Кванхвамун у Сеулі. Подія наживо корейською мовою.",
+  "tmdb": "https://www.themoviedb.org/movie/1628123"
  },
  {
-  "id": 1601243,
+  "id": 1631917,
   "kind": "movie",
-  "title_uk": "Oscar Shaw",
-  "title_original": "Oscar Shaw",
-  "title_en": "Oscar Shaw",
+  "title_uk": "Вісімнадцята троянда",
+  "title_original": "18th Rose",
+  "title_en": "18th Rose",
   "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1601243",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Енергійна дівчина, яка мріє про ідеальний дебют, укладає угоду із самотнім новачком, але їхнім планам загрожують неочікувані почуття й зізнання.",
+  "tmdb": "https://www.themoviedb.org/movie/1631917"
  },
  {
-  "id": 1358005,
+  "id": 1642859,
   "kind": "movie",
-  "title_uk": "Офісний роман",
-  "title_original": "Office Romance",
-  "title_en": "Office Romance",
+  "title_uk": "Iron Maiden: Палаючі амбіції",
+  "title_original": "Iron Maiden: Burning Ambition",
+  "title_en": "Iron Maiden: Burning Ambition",
   "year": "2026",
-  "overview": "Дженніфер Лопес і Бретт Ґолдштейн грають у пікантній романтичній комедії про таємний службовий роман і проблеми двох трудоголіків, які йдуть за покликом серця.",
-  "tmdb": "https://www.themoviedb.org/movie/1358005",
-  "current": {
-   "summary": "У пікантній романтичній комедії розкривається історія таємного службового роману між двома трудоголіками, які змушені балансувати між професійними обов'язками та покликом серця. Їм доведеться боротися за свої стосунки у жорстких корпоративних рамках.",
-   "ending_explained": "Пара змушена обрати між жорсткими очікуваннями корпоративного життя та справжнім, чутливим коханням. Зрештою, вони долають кризу в раді директорів, переглядають застарілі кадрові правила компанії та відкрито визнають свої стосунки.",
-   "easter_eggs": [
-    "Бретт Ґолдштейн і Дженніфер Лопес у фільмі знялися вперше.",
-    "Сценарій написав Бретт Ґолдштейн співавторстві з Джо Келлі для Netflix.",
-    "У лютому 2025 року до акторського складу приєдналася Бетті Ґілпін.",
-    "Основні знімання розпочалися в Нью-Джерсі у березні 2025 року."
-   ],
-   "source": {
-    "wiki": "Офісний роман (фільм, 2026)",
-    "lang": "uk"
-   }
-  },
-  "wikipedia": {
-   "title": "Офісний роман (фільм, 2026)",
-   "lang": "uk",
-   "url": "https://uk.wikipedia.org/wiki/Офісний_роман_(фільм,_2026)"
-  }
- },
- {
-  "id": 1291335,
-  "kind": "movie",
-  "title_uk": "Холостяк в Італії",
-  "title_original": "Solo Mio",
-  "title_en": "Solo Mio",
-  "year": "2026",
-  "overview": "Після втечі його нареченої з розкішного весілля в Римі, медовий місяць новоспеченого холостяка перетворюється на незабутні італійські канікули. Він вирішує використати шанс на повну, адже все вже оплачено!",
-  "tmdb": "https://www.themoviedb.org/movie/1291335",
-  "current": {
-   "summary": "Після того, як наречена залишає головного героя на весіллі в Римі, медовий місяць перетворюється на самостійні італійські канікули. Він відкриває для себе нове життя та знайомиться з місцевою жителькою, що спонукає його до роздумів про кохання та своє майбутнє.",
-   "ending_explained": "Після того, як Матті зізнається Гії про свою наречену і вона відходить, він випадково зустрічає свою наречену. Вона вибачається, пояснюючи, що до весілля зустрілася з Гією, яка порадила їй та допомогла написати записку. Хоча вони помиряються, обидва вирішують рухатися далі. Матті продає обручку, купує мотоцикл і повертається до кав'ярні Гії. Зрозумівши, чому Гія допомогла його нареченій, він запрошує її на концерт Еда Шерарана. У сценах після фільму Матті та Гія одружуються в Італії з двома парами, які йому допомагали.",
-   "easter_eggs": [
-    "Музикою саундтреку «Solo Mio» керувала Джой Нгяу."
-   ],
-   "source": {
-    "wiki": "Solo Mio",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Solo Mio",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Solo_Mio"
-  }
- },
- {
-  "id": 1290417,
-  "kind": "movie",
-  "title_uk": "Лютий напад",
-  "title_original": "Thrash",
-  "title_en": "Thrash",
-  "year": "2026",
-  "overview": "Катастрофічний ураган спустошує прибережне місто. Тепер жителям затоплених вулиць треба пережити підвищення рівня моря, що кишить кровожерливими акулами.",
-  "tmdb": "https://www.themoviedb.org/movie/1290417",
-  "current": {
-   "summary": "У прибережне місто накриває катастрофічний ураган. Мешканцям доводиться боротися не лише з підвищенням рівня моря, але й із кровожерливими акулами у затоплених вулицях.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "У травні 2024 року Sony Pictures анонсувала розробку фільму Beneath the Storm.",
-    "Фільм був перейменований на Shiver у березні 2025 року.",
-    "Права на фільм були передані Netflix у січні 2026 року."
-   ],
-   "source": {
-    "wiki": "Thrash (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Thrash (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Thrash_(film)"
-  }
- },
- {
-  "id": 949536,
-  "kind": "movie",
-  "title_uk": "Kill Code",
-  "title_original": "Kill Code",
-  "title_en": "Kill Code",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/949536",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Маючи безпрецедентний доступ до офіційних архівів гурту, «Iron Maiden: Палаючі амбіції» занурює у п’ять десятиліть творчого шляху одного з найвеличніших і найвпливовіших митців музичної історії. До фільму увійшли інтерв’ю з учасниками гурту та відомими прихильниками, серед яких Хав’єр Бардем, Ларс Ульріх і Чак Ді. Ця стрічка відкриває унікальний погляд на їхнє безкомпромісне творче бачення та непохитний зв’язок із глобальною армією фанів.",
+  "tmdb": "https://www.themoviedb.org/movie/1642859"
  }
 ]

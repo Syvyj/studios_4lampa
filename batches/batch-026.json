@@ -1,266 +1,157 @@
 [
  {
-  "id": 1608982,
+  "id": 1389727,
   "kind": "movie",
-  "title_uk": "Із попелу: Яма",
-  "title_original": "جرس إنذار: الحفرة",
-  "title_en": "From the Ashes: The Pit",
-  "year": "2026",
-  "overview": "Три учениці школи для дівчат застрягають в ямі під землею під час бурі. Тепер їм доводиться долати особисті конфлікти й боротися за виживання.",
-  "tmdb": "https://www.themoviedb.org/movie/1608982",
-  "current": {
-   "summary": "Три учениці школи для дівчат потрапляють у яму під землею під час бурі та мусять боротися не лише за виживання, але й долати власні особисті конфлікти.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1433842,
-  "kind": "movie",
-  "title_uk": "Relationship Goals",
-  "title_original": "Relationship Goals",
-  "title_en": "Relationship Goals",
+  "title_uk": "Solos",
+  "title_original": "Solos",
+  "title_en": "Solos",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1433842",
-  "current": {
-   "summary": "Телевізійна продюсерка у Нью-Йорку конкурує за керівну посаду програми, коли її колишній партнер стає її прямим суперником на роботі. Змагання загострюють невирішені особисті та професійні конфлікти, змушуючи героїню переосмислити пріоритети між кар'єрою та стосунками.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Фільм базується на книзі Relationship Goals: How to Win at Dating, Marriage, and Sex Майкла Тодда.",
-    "У фільмі співали оригінальну пісню \"Complicated\" Келлі Роланд та Метод Мен."
-   ],
-   "source": {
-    "wiki": "Relationship Goals (film)",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1389727"
+ },
+ {
+  "id": 1693534,
+  "kind": "movie",
+  "title_uk": "Confessions II – The Film",
+  "title_original": "Confessions II – The Film",
+  "title_en": "Confessions II – The Film",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1693534"
+ },
+ {
+  "id": 1687834,
+  "kind": "movie",
+  "title_uk": "TRENTE",
+  "title_original": "TRENTE",
+  "title_en": "TRENTE",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1687834"
+ },
+ {
+  "id": 1282440,
+  "kind": "movie",
+  "title_uk": "हैप्पी पटेल: ख़तरनाक जासूस",
+  "title_original": "हैप्पी पटेल: ख़तरनाक जासूस",
+  "title_en": "Happy Patel: Khatarnak Jasoos",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1282440",
   "wikipedia": {
-   "title": "Relationship Goals (film)",
+   "title": "Happy Patel: Khatarnak Jasoos",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Relationship_Goals_(film)"
+   "url": "https://en.wikipedia.org/wiki/Happy_Patel:_Khatarnak_Jasoos"
   }
  },
  {
-  "id": 1628116,
+  "id": 1620991,
   "kind": "movie",
-  "title_uk": "BTS: Повернення",
-  "title_original": "BTS: 더 리턴",
-  "title_en": "BTS: THE RETURN",
+  "title_uk": "Розслідування Люсі Летбі",
+  "title_original": "The Investigation of Lucy Letby",
+  "title_en": "The Investigation of Lucy Letby",
   "year": "2026",
-  "overview": "Вони повертаються! BTS збираються в Лос-Анджелесі, щоб записати альбом ARIRANG. Цей документальний фільм показує унікальні кадри з життя гурту на початку нового етапу.",
-  "tmdb": "https://www.themoviedb.org/movie/1628116",
-  "current": {
-   "summary": "BTS повертаються до Лос-Анджелеса для запису альбому ARIRANG. Документальний фільм пропонує унікальні кадри з життя гурту на початку нового етапу.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "BTS: The Return",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/BTS:_The_Return"
-  }
+  "overview": "Шокуючі кадри та відеоматеріали, які проливають світло на по-справжньому моторошну історію стосовно суперечливої справи Люсі Летбі. Звичайна медсестра-акушерка, яку було засуджено за фатальні травми новонароджених. Небачені раніше матеріали дозволяють більше дізнатися про цю темну справу, щоб нарешті відшукати відповіді на низку турбуючих питань.",
+  "tmdb": "https://www.themoviedb.org/movie/1620991"
  },
  {
-  "id": 1403903,
+  "id": 1618941,
   "kind": "movie",
-  "title_uk": "Ato Noturno",
-  "title_original": "Ato Noturno",
-  "title_en": "Night Stage",
+  "title_uk": "Mandioca Frita",
+  "title_original": "Mandioca Frita",
+  "title_en": "Mandioca Frita",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1403903",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1618941"
  },
  {
-  "id": 1559575,
+  "id": 1157869,
   "kind": "movie",
-  "title_uk": "Kafir: Gerbang Sukma",
-  "title_original": "Kafir: Gerbang Sukma",
-  "title_en": "Kafir: The Spirit Gate",
+  "title_uk": "Histoires parallèles",
+  "title_original": "Histoires parallèles",
+  "title_en": "Parallel Tales",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1559575",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1157869"
  },
  {
-  "id": 1362786,
+  "id": 1472636,
   "kind": "movie",
-  "title_uk": "Velhos Bandidos",
-  "title_original": "Velhos Bandidos",
-  "title_en": "Old Bandits",
+  "title_uk": "Un bel giorno",
+  "title_original": "Un bel giorno",
+  "title_en": "A Beautiful Day",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1362786",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1472636"
  },
  {
-  "id": 1435734,
+  "id": 1617191,
   "kind": "movie",
-  "title_uk": "Altas capacidades",
-  "title_original": "Altas capacidades",
-  "title_en": "Better Class",
+  "title_uk": "Summer's Last Resort",
+  "title_original": "Summer's Last Resort",
+  "title_en": "Summer's Last Resort",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1435734",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1617191"
  },
  {
-  "id": 1445363,
+  "id": 1073973,
   "kind": "movie",
-  "title_uk": "EPiC: Елвіс Преслі і концерт",
-  "title_original": "EPiC: Elvis Presley in Concert",
-  "title_en": "EPiC: Elvis Presley in Concert",
-  "year": "2026",
-  "overview": "Елвіс співає та розповідає свою історію так, як ви ніколи не чули раніше, — у новому кінематографічному досвіді від режисера-візіонера База Лурманна.",
-  "tmdb": "https://www.themoviedb.org/movie/1445363",
-  "current": {
-   "summary": "Елвіс співає та розповідає свою історію у новому кінематографічному досвіді від режисера База Лурманна.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1741545,
-  "kind": "movie",
-  "title_uk": "WWE SummerSlam 2026: Sunday",
-  "title_original": "WWE SummerSlam 2026: Sunday",
-  "title_en": "WWE SummerSlam 2026: Sunday",
+  "title_uk": "Dead Lover",
+  "title_original": "Dead Lover",
+  "title_en": "Dead Lover",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1741545",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1073973"
  },
  {
-  "id": 1618784,
+  "id": 1254800,
   "kind": "movie",
-  "title_uk": "东北警察故事3",
-  "title_original": "东北警察故事3",
-  "title_en": "Fight Against Evil 3",
+  "title_uk": "Le Cri des gardes",
+  "title_original": "Le Cri des gardes",
+  "title_en": "The Fence",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1618784",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1254800"
  },
  {
-  "id": 1463681,
+  "id": 1641961,
   "kind": "movie",
-  "title_uk": "Southern Scares",
-  "title_original": "Southern Scares",
-  "title_en": "Southern Scares",
+  "title_uk": "Untold: The Death & Life of Lamar Odom",
+  "title_original": "Untold: The Death & Life of Lamar Odom",
+  "title_en": "Untold: The Death & Life of Lamar Odom",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1463681",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1641961"
  },
  {
-  "id": 1432547,
+  "id": 1428893,
   "kind": "movie",
-  "title_uk": "ALL YOU NEED IS KILL",
-  "title_original": "ALL YOU NEED IS KILL",
-  "title_en": "ALL YOU NEED IS KILL",
+  "title_uk": "One Last Deal",
+  "title_original": "One Last Deal",
+  "title_en": "One Last Deal",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1432547",
-  "current": {
-   "summary": "Молода солдатка Ріта Вратаскі потрапляє у часову петлю після того, як величезна позаземна рослина Дарол атакує військову базу. Змушена боротися з циклічністю часу та невірою оточуючих, вона шукає спосіб розірвати пастку, виявляючи іншого солдата, який переживає те саме.",
-   "ending_explained": "Ріта та Кенджі виявляють, що Дарол прагне знищити людство через часову петлю. Вони намагаються зупинити його, але перші спроби провальні. Звернення до вченого Шасти допомагає дізнатися правду. Під час фінальної битви Кенджі розуміє, що його потрібно пожертвувати собою для перемоги, але Ріта відмовляється. Вона знищує Дарол, розриваючи петлю і повертаючись до ранку, коли всі, крім неї, забувають про подію. Згодом виявляється, що Кенджі вижив, хоча й не пам'ятає жодних подій з Рітою.",
-   "easter_eggs": [],
-   "source": {
-    "wiki": "All You Need Is Kill (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "All You Need Is Kill (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/All_You_Need_Is_Kill_(film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1428893"
  },
  {
-  "id": 1336770,
+  "id": 1404684,
   "kind": "movie",
-  "title_uk": "വാഴ II",
-  "title_original": "വാഴ II",
-  "title_en": "Vaazha II",
+  "title_uk": "Juste une illusion",
+  "title_original": "Juste une illusion",
+  "title_en": "Just an Illusion",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1336770",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1404684"
  },
  {
-  "id": 1511549,
+  "id": 1492501,
   "kind": "movie",
-  "title_uk": "Ancora più sexy",
-  "title_original": "Ancora più sexy",
-  "title_en": "Still Sexy",
+  "title_uk": "10间敢死队",
+  "title_original": "10间敢死队",
+  "title_en": "Being Towards Death",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1511549",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1635276,
-  "kind": "movie",
-  "title_uk": "Їсти, молитися, гавкати",
-  "title_original": "Eat Pray Bark",
-  "title_en": "Eat Pray Bark",
-  "year": "2026",
-  "overview": "П’ять власників собак звертаються по допомогу з неслухняними цуциками до легендарного кінолога, який живе в горах. Але схоже, що дресирувати треба зовсім не пухнастиків.",
-  "tmdb": "https://www.themoviedb.org/movie/1635276",
-  "current": {
-   "summary": "П'ять власників собак звертаються по допомогу до легендарного кінолога, що живе в горах, бо їхні цуценята неслухняні. Однак виявляється, що дресирувати потрібно зовсім не пухнастиків.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1492501"
  }
 ]

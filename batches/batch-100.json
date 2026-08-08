@@ -1,0 +1,177 @@
+[
+ {
+  "id": 1571485,
+  "kind": "movie",
+  "title_uk": "Bowie: The Final Act",
+  "title_original": "Bowie: The Final Act",
+  "title_en": "Bowie: The Final Act",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1571485"
+ },
+ {
+  "id": 1118770,
+  "kind": "movie",
+  "title_uk": "Diciannove",
+  "title_original": "Diciannove",
+  "title_en": "Nineteen",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1118770"
+ },
+ {
+  "id": 1583798,
+  "kind": "movie",
+  "title_uk": "Merge",
+  "title_original": "Merge",
+  "title_en": "Merge",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1583798"
+ },
+ {
+  "id": 1549292,
+  "kind": "movie",
+  "title_uk": "LEGO Frozen: Operation Puffins",
+  "title_original": "LEGO Frozen: Operation Puffins",
+  "title_en": "LEGO Frozen: Operation Puffins",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1549292"
+ },
+ {
+  "id": 1452176,
+  "kind": "movie",
+  "title_uk": "Сини Авраама: Історія Дракули",
+  "title_original": "Abraham's Boys: A Dracula Story",
+  "title_en": "Abraham's Boys: A Dracula Story",
+  "year": "2025",
+  "overview": "Абрагам ван Гелсінґ переїжджає зі своїми двома синами до Сполучених Штатів, намагаючись утекти від минулого.",
+  "tmdb": "https://www.themoviedb.org/movie/1452176"
+ },
+ {
+  "id": 1291626,
+  "kind": "movie",
+  "title_uk": "Dragonfly",
+  "title_original": "Dragonfly",
+  "title_en": "Dragonfly",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1291626"
+ },
+ {
+  "id": 1386004,
+  "kind": "movie",
+  "title_uk": "Tak Ingin Usai di Sini",
+  "title_original": "Tak Ingin Usai di Sini",
+  "title_en": "October Rhapsody",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1386004"
+ },
+ {
+  "id": 1324241,
+  "kind": "movie",
+  "title_uk": "Regnmannen",
+  "title_original": "Regnmannen",
+  "title_en": "Let It Rain",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1324241"
+ },
+ {
+  "id": 1372588,
+  "kind": "movie",
+  "title_uk": "అఖండ 2: తాండవం",
+  "title_original": "అఖండ 2: తాండవం",
+  "title_en": "Akhanda 2: Thaandavam",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1372588",
+  "wikipedia": {
+   "title": "Akhanda 2: Thaandavam",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Akhanda_2:_Thaandavam"
+  }
+ },
+ {
+  "id": 1325866,
+  "kind": "movie",
+  "title_uk": "用武之地",
+  "title_original": "用武之地",
+  "title_en": "Escape from the Outland",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1325866",
+  "wikipedia": {
+   "title": "Escape from the Outland",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Escape_from_the_Outland"
+  }
+ },
+ {
+  "id": 1196348,
+  "kind": "movie",
+  "title_uk": "ది గర్ల్‌ఫ్రెండ్‌",
+  "title_original": "ది గర్ల్‌ఫ్రెండ్‌",
+  "title_en": "The Girlfriend",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1196348",
+  "wikipedia": {
+   "title": "The Girlfriend (2025 film)",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/The_Girlfriend_(2025_film)"
+  }
+ },
+ {
+  "id": 1526680,
+  "kind": "movie",
+  "title_uk": "Zwijgrecht",
+  "title_original": "Zwijgrecht",
+  "title_en": "Zwijgrecht",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1526680"
+ },
+ {
+  "id": 1456852,
+  "kind": "movie",
+  "title_uk": "شباب البومب 2",
+  "title_original": "شباب البومب 2",
+  "title_en": "Shabab Albomb 2",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1456852"
+ },
+ {
+  "id": 1073112,
+  "kind": "movie",
+  "title_uk": "Літня книга",
+  "title_original": "The Summer Book",
+  "title_en": "The Summer Book",
+  "year": "2025",
+  "overview": "Надихаюча історія про дівчинку та її бабусю, які проводять літо на маленькому безлюдному острові в Фінській затоці.",
+  "tmdb": "https://www.themoviedb.org/movie/1073112",
+  "wikipedia": {
+   "title": "The Summer Book",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/The_Summer_Book"
+  }
+ },
+ {
+  "id": 1416893,
+  "kind": "movie",
+  "title_uk": "Що знає Маріель",
+  "title_original": "Was Marielle weiß",
+  "title_en": "What Marielle Knows",
+  "year": "2025",
+  "overview": "У шкільній сварці Маріель отримує ляпаса, який приносить їй неймовірні здібності. Тепер вона бачить і чує все, що роблять її батьки – вдень і вночі. Але через це шлюб її мами й тата починає тріщати по швах, адже подружжя лише здавалося ідеальним, приховуючи цілу купу таємниць. Тепер, коли найсоромніші з них стають явними, сімейна пара втягується в абсурдну гру маніпуляцій. Чи зможуть вони зберегти фасад, коли дочка знає про них усе?",
+  "tmdb": "https://www.themoviedb.org/movie/1416893",
+  "wikipedia": {
+   "title": "What Marielle Knows",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/What_Marielle_Knows"
+  }
+ }
+]

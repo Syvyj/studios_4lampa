@@ -1,335 +1,162 @@
 [
  {
-  "id": 1399525,
+  "id": 1445363,
   "kind": "movie",
-  "title_uk": "Троянда Невади",
-  "title_original": "Rose of Nevada",
-  "title_en": "Rose of Nevada",
+  "title_uk": "EPiC: Елвіс Преслі і концерт",
+  "title_original": "EPiC: Elvis Presley in Concert",
+  "title_en": "EPiC: Elvis Presley in Concert",
   "year": "2026",
-  "overview": "У водах біля занедбаного селища з’являється судно «Троянда Невади», яке тридцять років тому безслідно зникло разом із командою. Для небагатьох місцевих, які пам’ятають ті часи, повернення корабля стає знаменням: він знову має вийти в море. Працювати на борту влаштовується Нік, аби прогодувати молоду сім'ю. До нього долучається Ліан, який відчайдушно тікає від свого минулого. Але згодом стає зрозуміло, що нова подорож «Троянди Невади» також буде повна таємниць.",
-  "tmdb": "https://www.themoviedb.org/movie/1399525",
-  "current": {
-   "summary": "У занедбаному рибальському селищі «Троянда Невади» повертає собі життя, що викликає хвилювання серед місцевих жителів. Коли чоловік Нік працює на борту, до нього приєднується Ліан, який тікає від свого минулого. Однак нова подорож сповнена таємниць, які змушують героїв зіткнутися з незвіданим.",
-   "ending_explained": "Нік усвідомлює, що він вирваний із часового потоку. Після спроб повернутися у свій час чи зв'язатися з дружиною, він потрапляє до будинку, який йому нібито належить у майбутньому. Зрештою, після того, як його спроби комунікації з родиною зазнають невдач, він тікає на скелю, де колись вчинив самогубство Лук. Однак відповідальність перед громадою та родичами зупиняє його від самогубства. Він повертається до дому Річардс і приймає роль їхнього сина. Під час роботи на «Троянді Невади» він бачить галюцинаторне прощання з дружиною та донькою, після чого Майк різко допомагає йому повернутися на борт.",
-   "easter_eggs": [
-    "Фільм вироблений студією Bosena.",
-    "Фінансування отримано від Film4 Productions та British Film Institute (BFI).",
-    "BFI виділив £1.3 мільйона, що стало найбільшою одноразовою премією з моменту перезапуску BFI Filmmaking Fund у 2023 році."
-   ],
-   "source": {
-    "wiki": "Rose of Nevada",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Rose of Nevada",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Rose_of_Nevada"
-  }
+  "overview": "Елвіс співає та розповідає свою історію так, як ви ніколи не чули раніше, — у новому кінематографічному досвіді від режисера-візіонера База Лурманна.",
+  "tmdb": "https://www.themoviedb.org/movie/1445363"
  },
  {
-  "id": 1688652,
+  "id": 1741545,
   "kind": "movie",
-  "title_uk": "Gary",
-  "title_original": "Gary",
-  "title_en": "Gary",
+  "title_uk": "WWE SummerSlam 2026: Sunday",
+  "title_original": "WWE SummerSlam 2026: Sunday",
+  "title_en": "WWE SummerSlam 2026: Sunday",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1688652",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1741545"
  },
  {
-  "id": 1140521,
+  "id": 1618784,
   "kind": "movie",
-  "title_uk": "Таємні світи магічного дерева",
-  "title_original": "The Magic Faraway Tree",
-  "title_en": "The Magic Faraway Tree",
-  "year": "2026",
-  "overview": "Родина переїжджає до сільської місцевості, де діти знаходять чарівне дерево з дивакуватими мешканцями. Воно переносить їх у фантастичні світи, допомагаючи через пригоди знову зміцнити сімейний зв’язок.",
-  "tmdb": "https://www.themoviedb.org/movie/1140521",
-  "current": {
-   "summary": "Родина переїжджає до сільської місцевості, де діти знаходять чарівне дерево. Це дерево переносить їх у фантастичні світи, які допомагають родині знову зміцнити свої зв'язки через низку захопливих пригод.",
-   "ending_explained": "Після того, як діти змушені повернутися до Чарівного Дивакуватих Дерева через те, що бажання Бет зіпсували томатну ферму, вони вирушають у Країну Чарив. Там вони отримують закляття, яке дозволяє їм повернути томати до стану кращого та здоровішого, встигаючи на велике відкриття. У цей час прибуває бабуся, але її плани руйнуються через успіх бізнесу.",
-   "easter_eggs": [
-    "Simon Farnaby був залучений до адаптації книжок Енід Блайтон у 2017 році.",
-    "Фільм знімається на базі StudioCanal, де розвивався проєкт The Faraway Tree.",
-    "Оригінальний саундтрек має бути написаний Ізабеллою Саммерс з гурту Florence and the Machine."
-   ],
-   "source": {
-    "wiki": "The Magic Faraway Tree (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "The Magic Faraway Tree (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Magic_Faraway_Tree_(film)"
-  }
- },
- {
-  "id": 1145899,
-  "kind": "movie",
-  "title_uk": "Марсупіламі. Хвостата халепа",
-  "title_original": "Marsupilami",
-  "title_en": "Marsupilami",
-  "year": "2026",
-  "overview": "Давид, щоб врятувати роботу, погоджується на авантюру: перевезти таємничий пакунок із Південної Америки. Але круїз із колишньою, сином і незграбним колегою перетворюється на хаос, коли з пакунка з’являється… малюк Марсупіламі!",
-  "tmdb": "https://www.themoviedb.org/movie/1145899",
-  "current": {
-   "summary": "Давид Малюк погоджується на авантюру, щоб врятувати роботу: перевезти таємничий пакунок із Південної Америки. Круїзний лайнер стає ареною хаосу, коли з цього пакунка з'являється малюк Марсупіламі, і за ними починають стежити несподівані персонажі.",
-   "ending_explained": "У процесі подорожі команда змушена приховувати вміст посилки від несподіваних гостей. Коли колега Стефан випадково відкриває коробку, звідти виходить малюк Марсупіламі, що перетворює спокійну подорож на повний хаос, який Давид бореться, щоб приховати.",
-   "easter_eggs": [
-    "Ідея фільму з'явилася завдяки компанії Pathé.",
-    "Pathé виступала продюсером і дистриб'ютором першої кіноадаптації коміксу — «Джунглі кличуть! У пошуках Марсупіламі» (2012).",
-    "Філіп Лашо оголосив про роботу над проектом у соціальних мережах після виходу комедії «СуперАлібі 2».",
-    "Це перша режисерська робота Філіппа Лашо, продюсування якої займалася Pathé."
-   ],
-   "source": {
-    "wiki": "Марсупіламі. Хвостата халепа",
-    "lang": "uk"
-   }
-  },
-  "wikipedia": {
-   "title": "Марсупіламі. Хвостата халепа",
-   "lang": "uk",
-   "url": "https://uk.wikipedia.org/wiki/Марсупіламі._Хвостата_халепа"
-  }
- },
- {
-  "id": 1327690,
-  "kind": "movie",
-  "title_uk": "One Mile: Chapter Two",
-  "title_original": "One Mile: Chapter Two",
-  "title_en": "One Mile: Chapter Two",
+  "title_uk": "东北警察故事3",
+  "title_original": "东北警察故事3",
+  "title_en": "Fight Against Evil 3",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1327690",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1618784"
  },
  {
-  "id": 1049471,
+  "id": 1463681,
   "kind": "movie",
-  "title_uk": "Наслідки",
-  "title_original": "Outcome",
-  "title_en": "Outcome",
-  "year": "2026",
-  "overview": "Ріф Гоук, який підкорив Голлівуд ще шестирічним хлопчиком, переживає глибоку кризу. Коли його шантажують таємничим відео, Ріф вирішує взяти справу у свої руки. Тепер він мусить побороти власних демонів і піти на все, аби врятувати свою кар'єру.",
-  "tmdb": "https://www.themoviedb.org/movie/1049471",
-  "current": {
-   "summary": "Успішний актор Ріф Гоук переживає кризу після шантажу таємничим відео. Йому доводиться боротися з власними демонами, щоб врятувати кар'єру, усвідомлюючи, що його життя у світі кіно є складним і неідеальним.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Фільм придбала Apple TV+ у квітні 2023 року.",
-    "Зйомки мали розпочатися 20 березня 2024 року в Лос-Анджелесі."
-   ],
-   "source": {
-    "wiki": "Outcome (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Outcome (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Outcome_(film)"
-  }
- },
- {
-  "id": 1560681,
-  "kind": "movie",
-  "title_uk": "Кольори зла: Чорний",
-  "title_original": "Kolory zła: Czerń",
-  "title_en": "Colors of Evil: Black",
-  "year": "2026",
-  "overview": "Коли в маленькому тихому містечку зникає хлопчик, щойно переведений прокурор виявляє несподівані зв’язки зі старою справою про зникнення.",
-  "tmdb": "https://www.themoviedb.org/movie/1560681",
-  "current": {
-   "summary": "У маленькому тихому містечку відбувається зникнення хлопчика, що дозволяє молодому прокурору виявити несподівані зв'язки зі старою, забутою справою.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1455079,
-  "kind": "movie",
-  "title_uk": "Ти, я і Тоскана",
-  "title_original": "You, Me & Tuscany",
-  "title_en": "You, Me & Tuscany",
-  "year": "2026",
-  "overview": "Анна — дівчина, яка відмовилася від мрії стати шеф-кухаркою та заплуталась у низці невдалих рішень. Втративши підробіток і житло, вона випадково знайомиться з привабливим італійцем Маттео, у якого вільна вілла в Тоскані. Усупереч порадам подруги, Анна вирішує до Італії. Та її план переночувати на віллі «тихцем» руйнується, коли зненацька приїжджає мати Маттео. У паніці вони вдають закохану пару, але по-справжньому гаряче стає, коли з’являється кузен Маттео і між ним та Анною спалахує хімія.",
-  "tmdb": "https://www.themoviedb.org/movie/1455079",
-  "current": {
-   "summary": "Дівчина, яка втратила мрію стати кухаркою та розгубилася у житті, випадково потрапляє до Тоскани. Там вона заплутується у складних стосунках з привабливим італійцем Маттео та його родиною, відкриваючи для себе нові почуття.",
-   "ending_explained": "Після низки подій, включаючи інцидент з травмою у ресторані, Анна нарешті знаходить свою справжню дорогу. Після того, як родина пробачає їй помилки, вона зустрічається з Майклом у винограднику та їхній поцілунок під розбризкувачами символізує початок її нового життя. Через місяць Анна залишається в Тоскані, щоб бути поруч із Майклом і допомагати родині Коста.",
-   "easter_eggs": [
-    "Ім'я режисера: Kat Coiro",
-    "Імена акторів у складі касту: Halle Bailey та Regé-Jean Page",
-    "Дата оголошення про фільм: березень 2025 року",
-    "Початок зйомок: червень 2025 року"
-   ],
-   "source": {
-    "wiki": "You, Me & Tuscany",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "You, Me & Tuscany",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/You,_Me_&_Tuscany"
-  }
- },
- {
-  "id": 1213898,
-  "kind": "movie",
-  "title_uk": "Кордон 2",
-  "title_original": "बॉर्डर २",
-  "title_en": "Border 2",
+  "title_uk": "Southern Scares",
+  "title_original": "Southern Scares",
+  "title_en": "Southern Scares",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1213898",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Border 2",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Border_2"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1463681"
  },
  {
-  "id": 1341137,
+  "id": 1336770,
   "kind": "movie",
-  "title_uk": "Велике пробудження",
-  "title_original": "A Great Awakening",
-  "title_en": "A Great Awakening",
-  "year": "2026",
-  "overview": "Одна з найвизначніших подій в історії Америки розповідає про історію несподіваної дружби між преподобним Джорджем Вайтфілдом і Бенджаміном Франкліном.",
-  "tmdb": "https://www.themoviedb.org/movie/1341137",
-  "current": {
-   "summary": "Фільм розповідає про несподівану дружбу між преподобним Джорджем Вайтфілдом та Бенджаміном Франкліном, що є однією з найвизначніших подій в історії Америки.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1659389,
-  "kind": "movie",
-  "title_uk": "ONE PIECE HEROINES",
-  "title_original": "ONE PIECE HEROINES",
-  "title_en": "One Piece Heroines",
+  "title_uk": "വാഴ II",
+  "title_original": "വാഴ II",
+  "title_en": "Vaazha II",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1659389",
-  "current": {
-   "summary": "Фільм «One Piece: Heroines» — це збірка коротких історій у всесвіті One Piece, які зосереджуються на різних жіночих персонажах поза основним наративом. У них зображено різні міні-пригоди та взаємодії героїнь.",
-   "ending_explained": "У фільмі зображено кілька окремих міні-пригод. Наприклад, Намі бере участь у показі мод, що впливає на її погляд на стиль; Робін допомагає Коалі та Сабо розшифрувати стародавній планшет; Принцеса Віві потрапляє в інцидент навколо небажаного листа з коханням; а Перона, Зоро та Міхаок змагаються за пляшку вина.",
-   "easter_eggs": [],
-   "source": {
-    "wiki": "One Piece: Heroines",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "One Piece: Heroines",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/One_Piece:_Heroines"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1336770"
  },
  {
-  "id": 1484913,
+  "id": 1511549,
   "kind": "movie",
-  "title_uk": "Ikka",
-  "title_original": "Ikka",
-  "title_en": "Ikka",
+  "title_uk": "Ancora più sexy",
+  "title_original": "Ancora più sexy",
+  "title_en": "Still Sexy",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1484913",
-  "current": {
-   "summary": "Фільм розповідає історію адвоката Арджуна Мехри, який мусить захищати сина впливового бізнесмена від звинувачень у спробі вбивства. Паралельно розгортається особиста драма навколо хвороби їхньої доньки та таємниць минулого.",
-   "ending_explained": "Після того, як Арджун виправляє бізнесмена, він розкриває правду: той насправді вбив жінку, намагаючись зґвалтувати її. Арджун доводить, що бізнесмен використав мобільний телефон бідняка для створення цифрового альбі. Крім того, виявляється, що свідчення про домашнє насильство було підробкою, а голос у записі екстреної допомоги насправді належав співучаснику, який сам себе звинуватив. З цими доказами Арджун передає справу правоохоронним органам, забезпечуючи справедливе покарання.",
-   "easter_eggs": [
-    "Фільм був анонсований Netflix 3 лютого 2026 року.",
-    "Режисером є Siddharth P. Malhotra.",
-    "Сценарій написали Althea Kaushal та Mayank Tewari.",
-    "У ролях зіграли Sunny Deol та Akshaye Khanna, які не знімалися разом майже три десятиліття після 'Border' (1997).",
-    "Зйомки розпочалися у листопаді 2025 року."
-   ],
-   "source": {
-    "wiki": "Ikka (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Ikka (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Ikka_(film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1511549"
  },
  {
-  "id": 1451344,
+  "id": 1635276,
   "kind": "movie",
-  "title_uk": "Чоловіки в дії",
-  "title_original": "남편들",
-  "title_en": "Husbands in Action",
+  "title_uk": "Їсти, молитися, гавкати",
+  "title_original": "Eat Pray Bark",
+  "title_en": "Eat Pray Bark",
   "year": "2026",
-  "overview": "Детектив об’єднується з новим чоловіком колишньої дружини, щоб вистежити її викрадачів. Чи зможуть несподівані партнери відкинути розбіжності заради шаленого порятунку?",
-  "tmdb": "https://www.themoviedb.org/movie/1451344",
-  "current": {
-   "summary": "Детектив має об'єднатися з новим чоловіком колишньої дружини у спільній місії, щоб розслідувати викрадення. Фільм ставить питання, чи зможуть ці несподівані партнери подолати свої розбіжності заради спільного порятунку.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Husbands in Action",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Husbands_in_Action"
-  }
+  "overview": "П’ять власників собак звертаються по допомогу з неслухняними цуциками до легендарного кінолога, який живе в горах. Але схоже, що дресирувати треба зовсім не пухнастиків.",
+  "tmdb": "https://www.themoviedb.org/movie/1635276"
  },
  {
-  "id": 1637319,
+  "id": 1451867,
   "kind": "movie",
-  "title_uk": "Hannah Montana 20th Anniversary Special",
-  "title_original": "Hannah Montana 20th Anniversary Special",
-  "title_en": "Hannah Montana 20th Anniversary Special",
+  "title_uk": "Ghost Elephants",
+  "title_original": "Ghost Elephants",
+  "title_en": "Ghost Elephants",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1637319",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
+  "tmdb": "https://www.themoviedb.org/movie/1451867"
+ },
+ {
+  "id": 1610413,
+  "kind": "movie",
+  "title_uk": "Остання пригода. Дивні дива 5: За кадром",
+  "title_original": "One Last Adventure: The Making of Stranger Things 5",
+  "title_en": "One Last Adventure: The Making of Stranger Things 5",
+  "year": "2026",
+  "overview": "Погляд ізсередини на роки зусиль і праці, які лягли в основу серіалу братів Даффер, що став культовим для цілого покоління.",
+  "tmdb": "https://www.themoviedb.org/movie/1610413"
+ },
+ {
+  "id": 1684226,
+  "kind": "movie",
+  "title_uk": "Наречена року",
+  "title_original": "Bruid van die Jaar",
+  "title_en": "Bride of the Year",
+  "year": "2026",
+  "overview": "Коли мрія Лінкі створити свою сім’ю руйнується, дівчина розробляє підступний план: виграти конкурс «Наречена року» й помститися колишньому.",
+  "tmdb": "https://www.themoviedb.org/movie/1684226"
+ },
+ {
+  "id": 1620551,
+  "kind": "movie",
+  "title_uk": "Відчуй мій голос",
+  "title_original": "Non abbiam bisogno di parole",
+  "title_en": "Feel My Voice",
+  "year": "2026",
+  "overview": "Сором’язлива підлітка, яка єдина чує в сім’ї глухих, відкриває в собі талант до співу й мусить обирати між обов’язком і власним шляхом.",
+  "tmdb": "https://www.themoviedb.org/movie/1620551"
+ },
+ {
+  "id": 1629382,
+  "kind": "movie",
+  "title_uk": "Брати з передмістя 3",
+  "title_original": "Banlieusards 3",
+  "title_en": "Street Flow 3",
+  "year": "2026",
+  "overview": "Невтішні брати Траоре стикаються з наслідками своїх злочинів, але отримують останній шанс змінити свою долю в останній частині трилогії.",
+  "tmdb": "https://www.themoviedb.org/movie/1629382"
+ },
+ {
+  "id": 1469458,
+  "kind": "movie",
+  "title_uk": "സംഭവം അദ്ധ്യായം ഒന്ന്",
+  "title_original": "സംഭവം അദ്ധ്യായം ഒന്ന്",
+  "title_en": "Sambhavam Adhyayam Onnu",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1469458",
+  "wikipedia": {
+   "title": "Sambhavam Adhyayam Onnu",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Sambhavam_Adhyayam_Onnu"
   }
  },
  {
-  "id": 1489931,
+  "id": 1602727,
   "kind": "movie",
-  "title_uk": "Suzzanna: Santet Dosa di Atas Dosa",
-  "title_original": "Suzzanna: Santet Dosa di Atas Dosa",
-  "title_en": "Suzzanna: Witchcraft",
+  "title_uk": "夜王",
+  "title_original": "夜王",
+  "title_en": "Night King",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1489931",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
+  "tmdb": "https://www.themoviedb.org/movie/1602727",
+  "wikipedia": {
+   "title": "Night King (film)",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Night_King_(film)"
   }
+ },
+ {
+  "id": 1629369,
+  "kind": "movie",
+  "title_uk": "Правда й трагедія Мораї Вілсон",
+  "title_original": "The Truth and Tragedy of Moriah Wilson",
+  "title_en": "The Truth and Tragedy of Moriah Wilson",
+  "year": "2026",
+  "overview": "Документальний фільм про насичене життя й страшну смерть професійної велосипедистки Мораї Вілсон. І про те, як далеко зайшла її вбивця, щоб уникнути покарання.",
+  "tmdb": "https://www.themoviedb.org/movie/1629369"
  }
 ]

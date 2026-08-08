@@ -1,303 +1,162 @@
 [
  {
-  "id": 1636891,
+  "id": 1406543,
   "kind": "movie",
-  "title_uk": "Mexicali",
-  "title_original": "Mexicali",
-  "title_en": "Mexicali",
+  "title_uk": "കറക്കം",
+  "title_original": "കറക്കം",
+  "title_en": "Karakkam",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1636891",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1406543"
  },
  {
-  "id": 1631485,
+  "id": 1184941,
   "kind": "movie",
-  "title_uk": "Незнайомці в парку",
-  "title_original": "Parque Lezama",
-  "title_en": "Strangers in the Park",
+  "title_uk": "Блакитна чапля",
+  "title_original": "Blue Heron",
+  "title_en": "Blue Heron",
   "year": "2026",
-  "overview": "Колишній комуністичний активіст і чоловік, що живе за принципом «сам живи й іншим не заважай», діляться щирими й кумедними історіями на лавці в парку й стають друзями.",
-  "tmdb": "https://www.themoviedb.org/movie/1631485",
-  "current": {
-   "summary": "Колишній комуністичний активіст та чоловік, який живе за принципом «сам живи й іншим не заважай», зустрічаються в парку і діляться своїми історіями, що допомагає їм стати друзями.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "overview": "Надворі пізні 90-ті. Сім’я з шести осіб переїздить у новий будинок на острові Ванкувер. Поступово, крізь сприйняття наймолодшої дитини — Саші — розкриваються складні взаємини між ріднею. Їхня спроба почати все спочатку зазнає невдачі через щораз небезпечнішу поведінку старшого сина — Джеремі.",
+  "tmdb": "https://www.themoviedb.org/movie/1184941"
  },
  {
-  "id": 1373198,
+  "id": 868668,
   "kind": "movie",
-  "title_uk": "Twisted",
-  "title_original": "Twisted",
-  "title_en": "Twisted",
+  "title_uk": "ఉస్తాద్ భగత్ సింగ్",
+  "title_original": "ఉస్తాద్ భగత్ సింగ్",
+  "title_en": "Ustaad Bhagat Singh",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1373198",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1065834,
-  "kind": "movie",
-  "title_uk": "കാട്ടാളൻ",
-  "title_original": "കാട്ടാളൻ",
-  "title_en": "Kattalan",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1065834",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
+  "tmdb": "https://www.themoviedb.org/movie/868668",
   "wikipedia": {
-   "title": "Kattalan",
+   "title": "Ustaad Bhagat Singh",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Kattalan"
+   "url": "https://en.wikipedia.org/wiki/Ustaad_Bhagat_Singh"
   }
  },
  {
-  "id": 1405769,
+  "id": 1125701,
   "kind": "movie",
-  "title_uk": "Можна тільки уявити 2",
-  "title_original": "I Can Only Imagine 2",
-  "title_en": "I Can Only Imagine 2",
+  "title_uk": "Midwinter Break",
+  "title_original": "Midwinter Break",
+  "title_en": "Midwinter Break",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1405769",
-  "current": {
-   "summary": "Фільм розповідає історію музичної групи MercyMe та їхнього менеджера під час туру, де герої стикаються з особистими кризами, хворобами та творчими пошуками. Це історія про відновлення стосунків, боротьбу зі стражданнями та силу мистецтва.",
-   "ending_explained": "Під час останньої зупинки туру MercyMe виступає на концерті у Red Rocks. Перед завершенням виступу Барт помічає Тіма та його дружину в аудиторії і виконує пісню «Even If» в їхній честь. Це глибоко зворушує Тіма. Згодом з'ясовується, що пісня стає найуспішнішою для MercyMe після «I Can Only Imagine». Тім виграє боротьбу з раком і стає батьком чотирьох дітей, а Сем продовжує свою музичну кар'єру під псевдонімом «Sam Wesley».",
-   "easter_eggs": [],
-   "source": {
-    "wiki": "I Can Only Imagine 2",
-    "lang": "en"
-   }
-  },
+  "tmdb": "https://www.themoviedb.org/movie/1125701"
+ },
+ {
+  "id": 1477836,
+  "kind": "movie",
+  "title_uk": "Bone Keeper",
+  "title_original": "Bone Keeper",
+  "title_en": "Bone Keeper",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1477836"
+ },
+ {
+  "id": 1636918,
+  "kind": "movie",
+  "title_uk": "Пластиковий детокс",
+  "title_original": "The Plastic Detox",
+  "title_en": "The Plastic Detox",
+  "year": "2026",
+  "overview": "Повчальний документальний фільм розповідає історію шести пар із проблемою безпліддя без пояснення. Вони знижують вплив пластику в надії, що це допоможе зачати дитину.",
+  "tmdb": "https://www.themoviedb.org/movie/1636918"
+ },
+ {
+  "id": 1536559,
+  "kind": "movie",
+  "title_uk": "雙囍",
+  "title_original": "雙囍",
+  "title_en": "Double Happiness",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1536559"
+ },
+ {
+  "id": 1610840,
+  "kind": "movie",
+  "title_uk": "Godari Gattupaina",
+  "title_original": "Godari Gattupaina",
+  "title_en": "Godari Gattupaina",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1610840"
+ },
+ {
+  "id": 1288246,
+  "kind": "movie",
+  "title_uk": "The Huntsman",
+  "title_original": "The Huntsman",
+  "title_en": "The Huntsman",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1288246"
+ },
+ {
+  "id": 1223747,
+  "kind": "movie",
+  "title_uk": "Ein fast perfekter Antrag",
+  "title_original": "Ein fast perfekter Antrag",
+  "title_en": "Ein fast perfekter Antrag",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1223747"
+ },
+ {
+  "id": 1255779,
+  "kind": "movie",
+  "title_uk": "Une fille en or",
+  "title_original": "Une fille en or",
+  "title_en": "Une fille en or",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1255779"
+ },
+ {
+  "id": 1401542,
+  "kind": "movie",
+  "title_uk": "프로젝트 Y",
+  "title_original": "프로젝트 Y",
+  "title_en": "Project Y",
+  "year": "2026",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/movie/1401542",
   "wikipedia": {
-   "title": "I Can Only Imagine 2",
+   "title": "Project Y (film)",
    "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/I_Can_Only_Imagine_2"
+   "url": "https://en.wikipedia.org/wiki/Project_Y_(film)"
   }
  },
  {
-  "id": 1323625,
+  "id": 1422117,
   "kind": "movie",
-  "title_uk": "Night Patrol",
-  "title_original": "Night Patrol",
-  "title_en": "Night Patrol",
+  "title_uk": "For Worse",
+  "title_original": "For Worse",
+  "title_en": "For Worse",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1323625",
-  "current": {
-   "summary": "У фільмі розкривається темний бік поліції у районі «Colonial Courts». Молодий офіцер, який виховувався в цих кварталах, стикається з таємною елітною групою — «Night Patrol». Істина стає жахливою, коли він дізнається, що ця група несе лиха і використовує свою владу для харчування на мешканцях.",
-   "ending_explained": "У кульмінації оповідач змушений обрати між вірністю поліцейському ордену та своєю біологічною родиною. Він об'єднується зі своєю матір'ю, яка використовує стародавню магію Зулу для захисту громади. Зрештою, вони протистоять вампіричним офіцерам «Night Patrol», використовуючи зброю та африканську містику. Фінал залишає відкритий кінець, натякаючи, що змова всередині LAPD є глибшою, ніж просто одна група.",
-   "easter_eggs": [
-    "Продакшн компанія: Phantom Four Films.",
-    "Прем'єра відбулася у жовтні 2024 року."
-   ],
-   "source": {
-    "wiki": "Night Patrol (2025 film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Night Patrol (2025 film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Night_Patrol_(2025_film)"
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1422117"
  },
  {
-  "id": 1620313,
+  "id": 1119547,
   "kind": "movie",
-  "title_uk": "Самурай і в'язень",
-  "title_original": "黒牢城",
-  "title_en": "The Samurai and the Prisoner",
-  "year": "2026",
-  "overview": "Коли володар замку Мурашіґе повстає проти тиранічного Оди, він опиняється в облозі у стінах власної фортеці. Відрізаний від зовнішнього світу, він стикається з низкою загадкових злочинів, які руйнують крихкий лад при його дворі, занурюючи замок в атмосферу страху й підозр. Поки військо Оди дедалі тісніше стискає облогу, а серед його людей переховується зрадник, Мурашіґе змушений укласти непростий союз із Канбеєм — блискучим і небезпечним стратегом, ув'язненим у підземеллі. Разом вони мають перехитрити ворогів і розкрити правду, перш ніж сплине час.",
-  "tmdb": "https://www.themoviedb.org/movie/1620313",
-  "current": {
-   "summary": "Коли володар замку Мурашіґе опиняється в облозі ворога Оди, він стикається із загадковими злочинами у власній фортеці. Змушений укласти союз зі стратегом-в'язнем Канбеєм, Мурашіґе та Канбей мають розкрити правду й перехитрити ворогів, поки не спізнилися.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "The Samurai and the Prisoner",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/The_Samurai_and_the_Prisoner"
-  }
- },
- {
-  "id": 1381202,
-  "kind": "movie",
-  "title_uk": "The Outer Threat",
-  "title_original": "The Outer Threat",
-  "title_en": "The Outer Threat",
+  "title_uk": "Пошепки",
+  "title_original": "À voix basse",
+  "title_en": "In a Whisper",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1381202",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1119547"
  },
  {
-  "id": 1416391,
+  "id": 1002109,
   "kind": "movie",
-  "title_uk": "Тостер",
-  "title_original": "टोस्टर",
-  "title_en": "Toaster",
-  "year": "2026",
-  "overview": "Коли скасовується весілля, скупий чоловік намагається забрати тостер, який планував подарувати молодятам, але мимоволі стає свідком убивства.",
-  "tmdb": "https://www.themoviedb.org/movie/1416391",
-  "current": {
-   "summary": "Після скасування весілля скупий чоловік намагається забрати тостер, який мав подарувати молодятам, але цим випадковим зіткненням він стає свідком злочину.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Toaster (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Toaster_(film)"
-  }
- },
- {
-  "id": 1600672,
-  "kind": "movie",
-  "title_uk": "エヴァンゲリオン放送30周年記念特別興行",
-  "title_original": "エヴァンゲリオン放送30周年記念特別興行",
-  "title_en": "EVANGELION 30th Anniversary Special Screening",
+  "title_uk": "Police Flash 80",
+  "title_original": "Police Flash 80",
+  "title_en": "Police Flash 80",
   "year": "2026",
   "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1600672",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1300501,
-  "kind": "movie",
-  "title_uk": "പേട്രിയറ്റ്",
-  "title_original": "പേട്രിയറ്റ്",
-  "title_en": "Patriot",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1300501",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  },
-  "wikipedia": {
-   "title": "Patriot (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Patriot_(film)"
-  }
- },
- {
-  "id": 1297446,
-  "kind": "movie",
-  "title_uk": "Slanted",
-  "title_original": "Slanted",
-  "title_en": "Slanted",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1297446",
-  "current": {
-   "summary": "Китайсько-американська школярка Джоан Хуанґ бореться з відчуттям невідповідності своїй зовнішність серед білих однокласниць. Вона потрапляє у пастку навколо фільтра, що обіцяє змінити етнічну приналежність, і роздумує над питаннями ідентичності та тиску суспільства.",
-   "ending_explained": "Після того, як Джоан стає прокіньою, її обличчя починає розпадатися на сцені. Згодом вона повертається додому та знову відвідує клініку Ethnos, де бачить черги небілих людей. Коли батьки намагаються скасувати процедуру, доктор Сінгер стверджує, що це неможливо. Удома Джоан жорстоко зриває своє нове обличчя, відкриваючи оригінальні східноазіатські очі, і вперше починає їх цінувати.",
-   "easter_eggs": [
-    "Fox Entertainment зелене світло для виробництва у травні 2024 року.",
-    "Підвиробнича компанія: Tideline Entertainment та Mountain Top Pictures.",
-    "Основна зйомка проходила з 24 червня по 22 липня 2024 року в Атланті."
-   ],
-   "source": {
-    "wiki": "Slanted",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Slanted",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Slanted"
-  }
- },
- {
-  "id": 1722713,
-  "kind": "movie",
-  "title_uk": "Мігель Анхель Бланко: 48 годин, що змінили Іспанію",
-  "title_original": "Miguel Ángel Blanco: Las 48 horas que lo cambiaron todo",
-  "title_en": "Miguel Ángel Blanco: The 48 Hours That Changed Spain",
-  "year": "2026",
-  "overview": "Цей документальний фільм досліджує, як викрадення Мігеля Анхеля Бланко 1997 р. перетворило страх на суспільний спротив і допомогло Іспанії в боротьбі з терористами ЕТА.",
-  "tmdb": "https://www.themoviedb.org/movie/1722713",
-  "current": {
-   "summary": "Документальний фільм розкриває події викрадення Мігеля Анхеля Бланко у 1997 році, досліджуючи, як ця подія перетворила суспільний страх на потужний спротив та вплинула на боротьбу Іспанії з терористами ЕТА.",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
- },
- {
-  "id": 1634949,
-  "kind": "movie",
-  "title_uk": "Lorne",
-  "title_original": "Lorne",
-  "title_en": "Lorne",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1634949",
-  "current": {
-   "summary": "Фільм розповідає про канадського продюсера фільмів та телебачення Лорна Мікелса, охоплюючи етапи його ранньої роботи на канадському телебаченні, перші дні Saturday Night Live, його від'їзд, невдачу The New Show та повернення до SNL. Також акцент робиться на його нинішній ролі з інтерв'ю.",
-   "ending_explained": "",
-   "easter_eggs": [
-    "Зредагував фільм Алан Лоу, робота тривала з 2024 по 2025 рік."
-   ],
-   "source": {
-    "wiki": "Lorne (film)",
-    "lang": "en"
-   }
-  },
-  "wikipedia": {
-   "title": "Lorne (film)",
-   "lang": "en",
-   "url": "https://en.wikipedia.org/wiki/Lorne_(film)"
-  }
- },
- {
-  "id": 1335666,
-  "kind": "movie",
-  "title_uk": "Glenrothan",
-  "title_original": "Glenrothan",
-  "title_en": "Glenrothan",
-  "year": "2026",
-  "overview": "",
-  "tmdb": "https://www.themoviedb.org/movie/1335666",
-  "current": {
-   "summary": "",
-   "ending_explained": "",
-   "easter_eggs": [],
-   "source": null
-  }
+  "tmdb": "https://www.themoviedb.org/movie/1002109"
  }
 ]

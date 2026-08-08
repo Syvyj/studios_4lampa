@@ -1,0 +1,194 @@
+[
+ {
+  "id": 220377,
+  "kind": "tv",
+  "title_uk": "El Turco",
+  "title_original": "El Turco",
+  "title_en": "El-Turk",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/220377",
+  "current": {
+   "summary": "",
+   "ending_explained": "",
+   "easter_eggs": [],
+   "source": null
+  }
+ },
+ {
+  "id": 289745,
+  "kind": "tv",
+  "title_uk": "ウルトラマンオメガ",
+  "title_original": "ウルトラマンオメガ",
+  "title_en": "Ultraman Omega",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/289745",
+  "wikipedia": {
+   "title": "Ultraman Omega",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Ultraman_Omega"
+  }
+ },
+ {
+  "id": 225399,
+  "kind": "tv",
+  "title_uk": "Гепард",
+  "title_original": "Il Gattopardo",
+  "title_en": "The Leopard",
+  "year": "2025",
+  "overview": "Італія, 1860-ті роки. На тлі об’єднання держави сицилійський князь намагається знайти баланс між давно здобутими привілеями своєї сім’ї та революційними змінами.",
+  "tmdb": "https://www.themoviedb.org/tv/225399",
+  "wikipedia": {
+   "title": "The Leopard",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/The_Leopard"
+  }
+ },
+ {
+  "id": 133154,
+  "kind": "tv",
+  "title_uk": "Меч мисливця на демонів",
+  "title_original": "鬼人幻燈抄",
+  "title_en": "Sword of the Demon Hunter",
+  "year": "2025",
+  "overview": "В епоху Едо юний Джінта тікає з сестрою до гірського села, де стає майстерним фехтувальником і захисником жриці. Виконуючи завдання вбити демона, він дізнається, що їхня зустріч повториться через 170 років. Так починається його подорож крізь епохи, де він полює на демона й бореться зі своєю темною природою.",
+  "tmdb": "https://www.themoviedb.org/tv/133154",
+  "current": {
+   "summary": "У епоху Едо юний Джінта тікає до гірського села, де стає фехтувальником і захисником жриці. Його доля переплітається з місією вбити демона, що виявляється циклічною: зустріч повториться через 170 років. Джінта вирушає у подорож крізь епохи, полюючи на демона та борючись зі своєю темною природою.",
+   "ending_explained": "",
+   "easter_eggs": [],
+   "source": null
+  }
+ },
+ {
+  "id": 283245,
+  "kind": "tv",
+  "title_uk": "Dona de Mim",
+  "title_original": "Dona de Mim",
+  "title_en": "Queen of Myself",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/283245"
+ },
+ {
+  "id": 249551,
+  "kind": "tv",
+  "title_uk": "Неро",
+  "title_original": "Néro",
+  "title_en": "Néro the Assassin",
+  "year": "2025",
+  "overview": "Франція, 1504 рік. Безжальний убивця втікає разом із донькою, щоб захистити її від смертельно небезпечних ворогів і темних сил.",
+  "tmdb": "https://www.themoviedb.org/tv/249551",
+  "wikipedia": {
+   "title": "Néro the Assassin",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Néro_the_Assassin"
+  }
+ },
+ {
+  "id": 273117,
+  "kind": "tv",
+  "title_uk": "我的后半生",
+  "title_original": "我的后半生",
+  "title_en": "Love Again",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/273117"
+ },
+ {
+  "id": 254013,
+  "kind": "tv",
+  "title_uk": "Повернення",
+  "title_original": "Revival",
+  "title_en": "Revival",
+  "year": "2025",
+  "overview": "Одного чудесного дня в глухій Вісконсині мертві піднімаються з могил — не змінені ні зовні, ні поведінкою. Тепер офіцерка поліції та мати-одиначка Дейна Сайпрес має розслідувати вбивство, в якому підозрюваними стають усі — і живі, і мертві.",
+  "tmdb": "https://www.themoviedb.org/tv/254013",
+  "wikipedia": {
+   "title": "Повернення (фільм, 2024)",
+   "lang": "uk",
+   "url": "https://uk.wikipedia.org/wiki/Повернення_(фільм,_2024)"
+  }
+ },
+ {
+  "id": 233961,
+  "kind": "tv",
+  "title_uk": "北上",
+  "title_original": "北上",
+  "title_en": "Northward",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/233961"
+ },
+ {
+  "id": 279731,
+  "kind": "tv",
+  "title_uk": "Твоя форма",
+  "title_original": "ユア・フォルマ",
+  "title_en": "Your Forma",
+  "year": "2025",
+  "overview": "У альтернативному 2023 році, Твоя Форма, дивовижна техногія «розумної нитки», спочатку розроблена для лікування масового спалаху вірусного енцефаліту, стала невід’ємною частиною повсякденного життя. Але ці зручні пристрої мають серйозний недолік — вони записують кожне зображення, звук і навіть емоцію користувачів.",
+  "tmdb": "https://www.themoviedb.org/tv/279731"
+ },
+ {
+  "id": 300894,
+  "kind": "tv",
+  "title_uk": "Kurukshetra: The Great War of Mahabharata",
+  "title_original": "Kurukshetra: The Great War of Mahabharata",
+  "title_en": "Kurukshetra: The Great War of Mahabharata",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/300894"
+ },
+ {
+  "id": 200794,
+  "kind": "tv",
+  "title_uk": "마녀",
+  "title_original": "마녀",
+  "title_en": "The Witch",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/200794"
+ },
+ {
+  "id": 248330,
+  "kind": "tv",
+  "title_uk": "Дев'ять тіл в мексиканському морзі",
+  "title_original": "Nine Bodies in a Mexican Morgue",
+  "title_en": "Nine Bodies in a Mexican Morgue",
+  "year": "2025",
+  "overview": "Слідкуйте за історією дев'яти незнайомців, які опинилися у віддалених мексиканських джунглях після того, як їхній невеликий літак, що летів з Гватемали до США, зазнав аварії. Одного за одним вбивають тих, хто вижив, і пасажирам, що залишилися, доводиться розгадувати жахливу таємницю, перш ніж вони теж стануть жертвами вбивці.",
+  "tmdb": "https://www.themoviedb.org/tv/248330",
+  "wikipedia": {
+   "title": "Nine Bodies in a Mexican Morgue",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Nine_Bodies_in_a_Mexican_Morgue"
+  }
+ },
+ {
+  "id": 247043,
+  "kind": "tv",
+  "title_uk": "Підкорити Боллівуд",
+  "title_original": "The Ba***ds of Bollywood",
+  "title_en": "The Ba***ds of Bollywood",
+  "year": "2025",
+  "overview": "У цій напруженій драмі амбітний невдаха і його друзі прокладають свій шлях у хаотичному, неймовірному й непевному світі Боллівуду.",
+  "tmdb": "https://www.themoviedb.org/tv/247043"
+ },
+ {
+  "id": 286691,
+  "kind": "tv",
+  "title_uk": "キャッツ♥アイ",
+  "title_original": "キャッツ♥アイ",
+  "title_en": "Cat's Eye",
+  "year": "2025",
+  "overview": "",
+  "tmdb": "https://www.themoviedb.org/tv/286691",
+  "wikipedia": {
+   "title": "Cat's Eye (manga)",
+   "lang": "en",
+   "url": "https://en.wikipedia.org/wiki/Cat's_Eye_(manga)"
+  }
+ }
+]
