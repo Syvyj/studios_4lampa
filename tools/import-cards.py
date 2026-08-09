@@ -149,6 +149,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--overwrite", action="store_true",
                         help="перезаписувати картки, які вже мають джерело")
+    parser.add_argument("--only-new", action="store_true",
+                        help="брати лише назви, яких у базі ще немає")
     args = parser.parse_args()
 
     added = replaced = skipped = rejected = 0
@@ -196,6 +198,13 @@ def main():
 
             name = f"{'tv' if card['kind'] == 'tv' else ''}{card['id']}.json"
             dest = os.path.join(CARDS_DIR, name)
+
+            # Для року, який уже наповнений, перезапис небезпечніший за
+            # користь: свіжа картка може виявитись біднішою за наявну, а
+            # програти можна 900 добрих карток заради кількох нових.
+            if args.only_new and os.path.exists(dest):
+                skipped += 1
+                continue
 
             if os.path.exists(dest) and not args.overwrite:
                 with open(dest, encoding="utf-8") as f:
