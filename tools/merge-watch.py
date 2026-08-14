@@ -53,12 +53,39 @@ def clamp(value, low, high, default):
 
 
 def panel_from(raw):
-    """Дістає з відповіді лише панель. Повертає (поля, зауваження) або (None, чому)."""
+    """Дістає з відповіді лише дозволені поля. Повертає (поля, зауваження) або (None, чому).
+
+    Дві задачі, той самий білий список: переписування панелі («Чи варто
+    дивитись?») і добір джерела з фактами. Що з цього прийшло — те й
+    беремо; чого немає у відповіді, того й не чіпаємо на диску.
+    """
     if not isinstance(raw, dict) or not isinstance(raw.get("id"), int):
         return None, ["немає числового id"]
 
     notes = []
     out = {}
+
+    # --- добір джерела й фактів ---
+    if "easter_eggs" in raw or "source" in raw:
+        src = raw.get("source")
+        has_src = isinstance(src, dict) and src.get("wiki")
+        eggs = [e.strip() for e in (raw.get("easter_eggs") or [])
+                if isinstance(e, str) and len(e.strip()) > 20]
+
+        if has_src:
+            out["source"] = {"wiki": str(src["wiki"])[:200], "lang": str(src.get("lang") or "")[:5]}
+            out["easter_eggs"] = eggs[:6]
+        else:
+            # Факти без названого джерела — саме так виглядає вигадка
+            if eggs:
+                notes.append(f"джерела не названо: {len(eggs)} фактів прибрано")
+            out["easter_eggs"] = []
+
+        if "watch" not in raw:                    # добір джерела, панель не чіпаємо
+            fixed, hits = fx.walk(out)
+            if hits:
+                notes.append(f"мовних правок: {hits}")
+            return fixed, notes
 
     watch = raw.get("watch") or {}
     parts = {k: (watch.get(k) or "").strip() if isinstance(watch.get(k), str) else ""
