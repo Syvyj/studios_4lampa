@@ -5064,6 +5064,11 @@
                     body.append(hubEntry('Чи варто дивитись?', MODULE_ICONS.recommend, fromHub(function () { openWatchOpinion(movie, activeCardData); })));
                 }
 
+                // Бічну картку зайняла панель — метрики шукати тут
+                if (activeCardData) {
+                    body.append(hubEntry('Деталі', MODULE_ICONS.dots, fromHub(function () { openDetails(movie); })));
+                }
+
                 // Перший блок — без заголовка, одразу найужиткові пункти
                 body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, fromHub(function () { openWiki(movie, activeCardData); })));
                 body.append(hubEntry('Актори та автори', MODULE_ICONS.cast, fromHub(function () { openCast(movie); })));
@@ -5314,21 +5319,56 @@
             });
         }
 
+        /**
+         * Перший екран замість бічної картки метрик: вік і тривалість зверху,
+         * далі «Для тебе, якщо…», «Не для тебе, бо…» і скорборд. Рейтинг TMDB,
+         * жанр, бюджет і дати переїхали в хаб, у «Деталі» — інакше перший
+         * екран знову перетворюється на довідник.
+         */
+        /**
+         * Метрики TMDB, зняті з першого екрана: рейтинг, статус, рік, жанр,
+         * реліз, бюджет. Пункт зʼявляється лише тоді, коли бічну картку
+         * справді віддано панелі — інакше показував би те саме двічі.
+         */
+        function openDetails(movie) {
+            openPanel('Деталі', movie.title || movie.name || '', function (body) {
+                body.empty();
+
+                var loading = $('<div class="likhtar-panel__loading">Читаємо TMDB…</div>');
+                body.append(loading);
+
+                detailsFor(movie, function (details) {
+                    if (!panel) return;
+                    loading.remove();
+
+                    if (!details) {
+                        body.append('<div class="likhtar-panel__loading">Даних немає</div>');
+                        return;
+                    }
+
+                    var facts = $('<div class="likhtar-metrics__facts likhtar-panel__facts"></div>');
+
+                    var rating = movie.vote_average ? Number(movie.vote_average).toFixed(1) : '';
+                    if (rating && rating !== '0.0') factRow(facts, 'Рейтинг', rating + ' TMDB');
+
+                    fillFacts(facts, movie, details);
+
+                    body.append(facts);
+                    refocusPanel();
+                });
+            });
+        }
+
         function updateMetricsWithVibe(hero, movie, cardData) {
             var card = hero.find('.likhtar-metrics').first();
             if (!card.length) return;
 
             card.empty();
 
-            // 1. TMDB Rating & Age rating (Top row)
-            var top = $('<div class="likhtar-metrics__top"></div>');
-            var rating = movie.vote_average ? Number(movie.vote_average).toFixed(1) : '';
-            if (rating && rating !== '0.0') {
-                top.append($('<div class="likhtar-metrics__rating"></div>')
-                    .append($('<span class="likhtar-metrics__num"></span>').text(rating))
-                    .append('<span class="likhtar-metrics__src">TMDB</span>'));
-            }
-            var age = $('<div class="likhtar-metrics__age likhtar-card__hidden"></div>');
+            // 1. Вік. Ряд ховаємо цілком: із порожнім віком лишалася б
+            //    смуга відступів угорі картки
+            var top = $('<div class="likhtar-metrics__top likhtar-card__hidden"></div>');
+            var age = $('<div class="likhtar-metrics__age"></div>');
             top.append(age);
             card.append(top);
 
@@ -5337,7 +5377,10 @@
                 if (!details) return;
 
                 var cert = certificationOf(details);
-                if (cert) age.text(cert).removeClass('likhtar-card__hidden');
+                if (cert) {
+                    age.text(cert);
+                    top.removeClass('likhtar-card__hidden');
+                }
 
                 // Update bottom section (Duration, Ends at, Next episode, etc.)
                 var bottom = $('<div class="likhtar-metrics__bottom"></div>');
@@ -5349,7 +5392,7 @@
                         : '';
                     if (seasonsText) {
                         bottom.append($('<div class="likhtar-metrics__bottom-row"></div>')
-                            .html('<span>Тривалість:</span> <b>' + seasonsText + '</b>'));
+                            .html('<span>Сезони:</span> <b>' + seasonsText + '</b>'));
                     }
                 } else if (details.runtime) {
                     var h = Math.floor(details.runtime / 60), m = details.runtime % 60;
@@ -5380,38 +5423,31 @@
                     }
                 });
 
-                card.append(bottom);
+                // Тривалість і таймер — угорі, під віком: решту картки вже
+                // зайняли панель і скорборд, а вони домальовуються синхронно
+                bottom.insertAfter(top);
                 refreshNavigation();
             });
 
-            // 2. Mood tags (from cardData.mood)
-            if (cardData.mood && cardData.mood.length) {
-                var moodsEl = $('<div class="likhtar-metrics__moods-row selector"></div>');
-                cardData.mood.forEach(function (tag) {
-                    moodsEl.append($('<span class="likhtar-mood-tag"></span>').text('#' + tag));
-                });
-                card.append(moodsEl);
-            }
-
-            // 3. Impressions (from cardData.watch)
-            if (cardData.watch) {
+            // 2. Кому підійде, а кому ні. Настрій і «Суть» лишаються в хабі:
+            //    на першому екрані рівно чотири речі, і це дві з них.
+            var watch = cardData.watch || {};
+            if (watch.for || watch.not_for) {
                 var watchEl = $('<div class="likhtar-metrics__watch selector"></div>');
-                if (cardData.watch.worth) {
+
+                function watchLine(caption, text) {
+                    if (!text) return;
                     watchEl.append($('<div class="likhtar-metrics__watch-line"></div>')
-                        .html('<strong>Суть:</strong> ' + cardData.watch.worth));
+                        .append($('<strong></strong>').text(caption))
+                        .append($('<span></span>').text(text)));
                 }
-                if (cardData.watch.for) {
-                    watchEl.append($('<div class="likhtar-metrics__watch-line"></div>')
-                        .html('<strong>Кому підійде:</strong> ' + cardData.watch.for));
-                }
-                if (cardData.watch.not_for) {
-                    watchEl.append($('<div class="likhtar-metrics__watch-line"></div>')
-                        .html('<strong>Кому ні:</strong> ' + cardData.watch.not_for));
-                }
+
+                watchLine('Для тебе, якщо…', watch.for);
+                watchLine('Не для тебе, бо…', watch.not_for);
                 card.append(watchEl);
             }
 
-            // 4. Content metrics (Complexity, Violence, Erotica, Kids rating)
+            // 3. Скорборд: складність, жорстокість, еротика, діти
             var ratingsEl = $('<div class="likhtar-metrics__ratings"></div>');
 
             function addVibeRatingRow(label, metric) {
@@ -5751,6 +5787,39 @@
         }
 
         /**
+         * Факти таблицею. Одна збірка на два місця: бічну картку (коли картки
+         * даних немає) і панель «Деталі» в хабі (коли бічну віддано панелі
+         * «Чи варто дивитись?»). Розійдуться — почнуть показувати різне.
+         */
+        function fillFacts(facts, movie, details) {
+            var status = CARD_STATUS[details.status];
+            if (status) factRow(facts, 'Статус', status.text);
+
+            var year = (details.release_date || details.first_air_date || '').substr(0, 4);
+            var country = details.production_countries && details.production_countries[0]
+                ? details.production_countries[0].name : '';
+            factRow(facts, 'Рік', [year, country].filter(Boolean).join(' · '));
+
+            if (isSeries(movie)) {
+                var seasons = details.number_of_seasons
+                    ? details.number_of_seasons + (details.number_of_episodes ? ' · ' + details.number_of_episodes + ' серій' : '')
+                    : '';
+                factRow(facts, 'Сезони', seasons);
+            } else if (details.runtime) {
+                var h = Math.floor(details.runtime / 60), m = details.runtime % 60;
+                factRow(facts, 'Тривалість', (h ? h + ' год ' : '') + m + ' хв');
+            }
+
+            factNodes(facts, 'Жанр', genreChips(details, isSeries(movie)));
+
+            factRow(facts, 'Реліз', humanDate(details.release_date || details.first_air_date));
+
+            if (details.budget && details.budget > 0) {
+                factRow(facts, 'Бюджет', '$ ' + String(details.budget).replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
+            }
+        }
+
+        /**
          * Бічна картка за макетом «Редизайн блоків» (1a): рейтинг і вік,
          * ряд плашок, факти таблицею, внизу акцентний блок. Збирається
          * власною розміткою з даних TMDB — рідні елементи Lampa влаштовані
@@ -5815,33 +5884,9 @@
                 var cert = certificationOf(details);
                 if (cert) age.text(cert).removeClass('likhtar-card__hidden');
 
-                var status = CARD_STATUS[details.status];
-                if (status) factRow(facts, 'Статус', status.text);
-
-                var year = (details.release_date || details.first_air_date || '').substr(0, 4);
-                var country = details.production_countries && details.production_countries[0]
-                    ? details.production_countries[0].name : '';
-                factRow(facts, 'Рік', [year, country].filter(Boolean).join(' · '));
-
-                if (isSeries(movie)) {
-                    var seasons = details.number_of_seasons
-                        ? details.number_of_seasons + (details.number_of_episodes ? ' · ' + details.number_of_episodes + ' серій' : '')
-                        : '';
-                    factRow(facts, 'Сезони', seasons);
-                } else if (details.runtime) {
-                    var h = Math.floor(details.runtime / 60), m = details.runtime % 60;
-                    factRow(facts, 'Тривалість', (h ? h + ' год ' : '') + m + ' хв');
-                }
-
-                factNodes(facts, 'Жанр', genreChips(details, isSeries(movie)));
-
-                factRow(facts, 'Реліз', humanDate(details.release_date || details.first_air_date));
+                fillFacts(facts, movie, details);
 
                 refreshNavigation();
-
-                if (details.budget && details.budget > 0) {
-                    factRow(facts, 'Бюджет', '$ ' + String(details.budget).replace(/\B(?=(\d{3})+(?!\d))/g, ' '));
-                }
 
                 // Акцент: наступна серія — або, для фільму, кінець сеансу і цифра
                 var next = details.next_episode_to_air;
@@ -6448,9 +6493,15 @@
                 '.likhtar-panel__child-badge { display: inline-block; font-size: .8em; font-weight: 700; padding: .2em .6em; border-radius: .4em; text-transform: uppercase; }' +
                 '.likhtar-panel__child-badge--yes { background: rgba(46,160,67,.2); color: #3fb46a; border: 1px solid rgba(46,160,67,.4); }' +
                 '.likhtar-panel__child-badge--no { background: rgba(219,83,79,.2); color: #d9534f; border: 1px solid rgba(219,83,79,.4); }' +
+                '.likhtar-panel__facts { margin: 0 .4em 1em; }' +
                 '.likhtar-metrics__moods-row { display: flex; flex-wrap: wrap; gap: 0.45em; padding: 0.8em 1.3em 0.4em; }' +
-                '.likhtar-metrics__watch { display: flex; flex-direction: column; gap: 0.5em; padding: 0.8em 1.3em; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85em; line-height: 1.4; }' +
+                '.likhtar-metrics__watch { display: flex; flex-direction: column; gap: 0.8em; padding: 0.9em 1.3em; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85em; line-height: 1.4; }' +
                 '.likhtar-metrics__watch-line { opacity: 0.9; }' +
+                /* Підпис окремим рядком: значення в картках стоять у давальному
+                   («Любителям…»), тож в один рядок із підписом воно не читається */
+                '.likhtar-metrics__watch-line strong { display: block; margin-bottom: .25em;' +
+                ' font-size: .82em; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;' +
+                ' color: rgba(233,233,236,0.5); }' +
                 '.likhtar-metrics__watch.focus { background: rgba(255,255,255,0.03); }' +
                 '.likhtar-metrics__ratings { display: flex; flex-direction: column; gap: 0.6em; padding: 0.8em 1.3em; border-top: 1px solid rgba(255,255,255,0.08); }' +
                 '.likhtar-metrics__rating-item { display: flex; flex-direction: column; gap: 0.3em; }' +
