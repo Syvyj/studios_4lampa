@@ -118,28 +118,26 @@ var IMG = 'https://image.tmdb.org/t/p/';
 
 var FIXTURES = {
   movie: {
-    card: { id: 634649, title: 'Людина-павук: Додому шляху нема', vote_average: 7.9,
+    card: { id: 338969, title: 'Токсичний месник', vote_average: 6.8,
             backdrop_path: '/14QbnygCuTO0vl7CAFmPf1fgZfV.jpg', poster_path: '/iQFcwSGbZXMkeyKrxbPnwnRo5fl.jpg' },
     details: {
-      id: 634649, runtime: 148, budget: 200000000, status: 'Released', release_date: '2021-12-15',
-      genres: [{ name: 'Бойовик' }, { name: 'Пригоди' }, { name: 'Фантастика' }],
-      production_countries: [{ name: 'США' }], belongs_to_collection: { id: 531241, name: 'Людина-павук: Колекція' },
-      release_dates: { results: [{ iso_3166_1: 'US', release_dates: [{ certification: 'PG-13' }] }] }
+      id: 338969, runtime: 102, budget: 0, status: 'Released', release_date: '2025-10-10',
+      genres: [{ name: 'Бойовик' }, { name: 'Комедія' }, { name: 'Жахи' }],
+      production_countries: [{ name: 'США' }], belongs_to_collection: null,
+      release_dates: { results: [{ iso_3166_1: 'US', release_dates: [{ certification: 'R' }] }] }
     }
   },
   tv: {
-    card: { id: 94997, name: 'Дім Дракона', vote_average: 8.4, first_air_date: '2022-08-21',
+    card: { id: 113959, name: 'Дастер', vote_average: 7.2, first_air_date: '2025-01-01',
             backdrop_path: '/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', poster_path: '/1X4h40fcB4WWUmIBK0auT4zRBAV.jpg' },
     details: {
-      id: 94997, status: 'Returning Series', first_air_date: '2022-08-21',
-      number_of_seasons: 3, number_of_episodes: 26,
-      genres: [{ name: 'Драма' }, { name: 'Фентезі' }], production_countries: [{ name: 'США' }],
-      next_episode_to_air: { air_date: nextWeek(), season_number: 3, episode_number: 8 },
+      id: 113959, status: 'Released', first_air_date: '2025-01-01',
+      number_of_seasons: 1, number_of_episodes: 8,
+      genres: [{ name: 'Драма' }, { name: 'Кримінал' }], production_countries: [{ name: 'США' }],
+      next_episode_to_air: null,
       content_ratings: { results: [{ iso_3166_1: 'US', rating: 'TV-MA' }] },
       seasons: [
-        { season_number: 1, name: 'Сезон 1', episode_count: 10, air_date: '2022-08-21' },
-        { season_number: 2, name: 'Сезон 2', episode_count: 8, air_date: '2024-06-16' },
-        { season_number: 3, name: 'Сезон 3', episode_count: 8, air_date: '2026-06-01' }
+        { season_number: 1, name: 'Сезон 1', episode_count: 8, air_date: '2025-01-01' }
       ]
     }
   },
@@ -181,8 +179,8 @@ function fixtureFor(url) {
   if (/\/season\/\d+/.test(url)) return FIXTURES.episodes;
   if (url.indexOf('/recommendations') !== -1 || url.indexOf('/similar') !== -1) return FIXTURES.list;
   if (url.indexOf('collection/') !== -1) return { parts: FIXTURES.list.results };
-  if (url.indexOf('tv/94997') !== -1) return FIXTURES.tv.details;
-  if (url.indexOf('movie/634649') !== -1) return FIXTURES.movie.details;
+  if (url.indexOf('tv/113959') !== -1) return FIXTURES.tv.details;
+  if (url.indexOf('movie/338969') !== -1) return FIXTURES.movie.details;
   return null;
 }
 
@@ -267,10 +265,11 @@ window.LikhtarCache = {
 };
 // Модуль картки питає в сусіда дату цифрового релізу
 window.LikhtarNet = { workerUrl: function(){ return 'http://127.0.0.1:8787'; }, hasWorker: function(){ return true; } };
+window.LIKHTAR_BASE_URL = '../';
 window.LikhtarSections = {
   getDigitalDate: function (id, cb) {
     var soon = new Date(); soon.setDate(soon.getDate() + 24);
-    cb(id === 634649 ? soon.toISOString().substr(0, 10) : null);
+    cb(id === 338969 ? soon.toISOString().substr(0, 10) : null);
   }
 };
 window.getTmdbKey = function () { return (document.getElementById('tmdb-key').value || 'KEY').trim() || 'KEY'; };
@@ -309,6 +308,7 @@ function render() {
 
   // Прибираємо сліди попереднього прогону
   $('.likhtar-panel').remove();
+  $('.likhtar-vibe').remove();
   $('#likhtar-card-css').remove();
   $('body').removeClass('likhtar-card-on');
   Object.keys(sessionStorage).forEach(function (k) { if (k.indexOf('sb_') === 0) sessionStorage.removeItem(k); });

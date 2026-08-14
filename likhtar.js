@@ -194,6 +194,114 @@
         return val !== false && val !== 'false' && val !== 0 && val !== '0';
     }
 
+    /**
+     * «Режим студії»: чистий каталог без небажаних країн і дрібних релізів.
+     *
+     * TMDB не вміє виключати країну запитом — without_origin_country він
+     * мовчки ігнорує (перевірено: total_results не змінюється). Тому
+     * відсіюємо у відповіді. Списки фільмів країни взагалі не містять, лише
+     * мову; країна є тільки в серіалах. Звідси два різні правила.
+     *
+     * ponytail: для фільмів мова замість країни — старий український чи
+     * казахський фільм російською теж відпаде. Точно було б лише запитом
+     * деталей на кожну назву (+1 запит на картку); робити, якщо заважатиме.
+     */
+    var STUDIO_BLOCK_COUNTRY = ['RU', 'BY', 'IN', 'TW', 'TH', 'PH'];
+    var STUDIO_BLOCK_LANG = ['ru', 'be', 'hi', 'ta', 'te', 'ml', 'kn', 'bn', 'mr', 'pa', 'th', 'tl'];
+    var STUDIO_MIN_VOTES = 150;
+
+    function studioAllows(item) {
+        if (!item) return true;
+
+        var countries = item.origin_country || [];
+        for (var i = 0; i < countries.length; i++) {
+            if (STUDIO_BLOCK_COUNTRY.indexOf(countries[i]) !== -1) return false;
+        }
+        // Мова — запасний варіант тільки там, де країни немає (фільми)
+        if (!countries.length && STUDIO_BLOCK_LANG.indexOf(item.original_language) !== -1) return false;
+
+        return !(item.vote_count < STUDIO_MIN_VOTES);
+    }
+
+    /**
+     * Аніме й дорами: коли винесені в окремі розділи, у загальних стрічках
+     * їм не місце. Ознаки навмисно прості — у TMDB окремої позначки «аніме»
+     * немає, лише жанр «Мультфільм» плюс японське походження.
+     *
+     * ponytail: китайські та корейські мультсеріали теж рахуються аніме.
+     * Точніше — за ключовим словом 210024 (anime), але це +1 запит на назву.
+     */
+    var DORAMA_COUNTRIES = ['KR', 'CN', 'HK', 'TW', 'TH'];
+
+    function isAnime(item) {
+        var jp = (item.origin_country || []).indexOf('JP') !== -1 || item.original_language === 'ja';
+        return jp && (item.genre_ids || []).indexOf(16) !== -1;
+    }
+
+    function isDorama(item) {
+        if (isAnime(item)) return false;
+        var countries = item.origin_country || [];
+        for (var i = 0; i < countries.length; i++) {
+            if (DORAMA_COUNTRIES.indexOf(countries[i]) !== -1) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Плагін створює Lampa.Reguest у десятку місць, тож фільтр вішаємо один
+     * раз на прототип: інакше його довелося б вписувати в кожен запит окремо
+     * й неминуче забути в новому.
+     *
+     * Поріг голосів дописуємо прямо в discover-запит, а не відсіюємо потім —
+     * інакше сторінки поверталися б напівпорожні.
+     */
+    (function filterCatalog() {
+        if (!window.Lampa || !Lampa.Reguest || Lampa.Reguest.prototype.likhtarFiltered) return;
+
+        var origSilent = Lampa.Reguest.prototype.silent;
+
+        Lampa.Reguest.prototype.silent = function () {
+            var args = Array.prototype.slice.call(arguments);
+            var url = String(args[0] || '');
+
+            if (isSettingEnabled('likhtar_studio_mode', false) && /themoviedb\.org/.test(url)) {
+                if (url.indexOf('/discover/') !== -1 && url.indexOf('vote_count.gte') === -1) {
+                    args[0] = url + '&vote_count.gte=' + STUDIO_MIN_VOTES;
+                }
+                if (typeof args[1] === 'function') {
+                    var done = args[1];
+                    args[1] = function (json) {
+                        if (json && Array.isArray(json.results)) json.results = json.results.filter(studioAllows);
+                        return done.apply(this, arguments);
+                    };
+                }
+            }
+
+            // Винесені в окремі розділи — прибираємо із загальних стрічок.
+            // Самі розділи ходять із міткою likhtar_own, щоб не відфільтрувати
+            // те, заради чого їх і відкрили.
+            if (/themoviedb\.org/.test(url) && url.indexOf('likhtar_own') === -1 &&
+                typeof args[1] === 'function' &&
+                (isSettingEnabled('likhtar_split_anime', false) || isSettingEnabled('likhtar_split_dorama', false))) {
+                var next = args[1];
+                args[1] = function (json) {
+                    if (json && Array.isArray(json.results)) {
+                        json.results = json.results.filter(function (it) {
+                            if (isSettingEnabled('likhtar_split_anime', false) && isAnime(it)) return false;
+                            if (isSettingEnabled('likhtar_split_dorama', false) && isDorama(it)) return false;
+                            return true;
+                        });
+                    }
+                    return next.apply(this, arguments);
+                };
+            }
+
+            return origSilent.apply(this, args);
+        };
+
+        Lampa.Reguest.prototype.likhtarFiltered = true;
+    })();
+
     /** Для рядка на головній: HBO/Prime/Paramount через watch_providers (TMDB), щоб отримувати і фільми, і серіали з актуальним контентом. */
     var SERVICE_WATCH_PROVIDERS_FOR_ROW = { hbo: '384', amazon: '119', paramount: '531' };
 
@@ -560,7 +668,9 @@
             '.hero-title--logo { margin-bottom: 0.3em; display: flex; align-items: flex-end; text-shadow: none; }' +
             /* em, а не vw: у Lampa кегль масштабується під екран, тож лого лишається пропорційним інтерфейсу
                (і не ламається на старих ТВ-браузерах, які не знають min()) */
-            '.likhtar-full-logo { max-width: 15em; max-height: 4.5em; margin-bottom: 0.2em; }' +
+            /* Ширину зменшено на ті самі 25%, що й у .full-start-new__right —
+               інакше лого лишається старого розміру і обрізається новою колонкою */
+            '.likhtar-full-logo { max-width: 11.25em; max-height: 3.375em; margin-bottom: 0.2em; }' +
             '</style>');
     }
 
@@ -2015,6 +2125,34 @@
             component: 'likhtar_plugin',
             param: { name: 'likhtar_section_mood', type: 'trigger', default: true },
             field: { name: 'Кіно під настрій', description: 'Підбірки фільмів за жанрами та настроєм' }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_studio_mode', type: 'trigger', default: false },
+            field: {
+                name: 'Режим студії',
+                description: 'Чистий каталог: лише помітні релізи від ' + STUDIO_MIN_VOTES +
+                    ' голосів, без російського та іншого небажаного. Діє в секціях Ліхтаря, не в пошуку Лампи.'
+            }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_split_anime', type: 'trigger', default: false },
+            field: {
+                name: 'Аніме окремим розділом',
+                description: 'Прибирає аніме із загальних стрічок і додає пункт «Аніме» в бічне меню.'
+            }
+        });
+
+        Lampa.SettingsApi.addParam({
+            component: 'likhtar_plugin',
+            param: { name: 'likhtar_split_dorama', type: 'trigger', default: false },
+            field: {
+                name: 'Дорами окремим розділом',
+                description: 'Прибирає корейські, китайські й тайські серіали із загальних стрічок і додає пункт «Дорами».'
+            }
         });
 
         // === Сервер і налаштування з телефона ===
@@ -3710,6 +3848,32 @@
                     'M13 3a9 9 0 00-9 9H1l4 4 4-4H6a7 7 0 117 7v2a9 9 0 000-18zm-1 5v5l4 2 .7-1.2-3.2-1.9V8H12z',
                     openChronologyMenu));
             }
+
+            // Розділи з'являються тільки коли аніме/дорами прибрані із загальних
+            // стрічок — інакше це просто дубль того, що і так усюди є.
+            // likhtar_own у запиті: мітка, щоб власний фільтр їх не вирізав.
+            if (isSettingEnabled('likhtar_split_anime', false) && !$('[data-action="likhtar_anime"]').length) {
+                list.append(menuItem('likhtar_anime', 'Аніме',
+                    'M12 2a10 10 0 100 20 10 10 0 000-20zm-3 7a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm6 0a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm-6.5 6h7a3.5 3.5 0 01-7 0z',
+                    function () {
+                        Lampa.Activity.push({
+                            url: 'discover/tv?with_genres=16&with_origin_country=JP&sort_by=popularity.desc&likhtar_own=1',
+                            title: 'Аніме', component: 'category_full', page: 1, source: 'tmdb'
+                        });
+                    }));
+            }
+
+            if (isSettingEnabled('likhtar_split_dorama', false) && !$('[data-action="likhtar_dorama"]').length) {
+                list.append(menuItem('likhtar_dorama', 'Дорами',
+                    'M4 5h16a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V6a1 1 0 011-1zm2 14h12v2H6v-2z',
+                    function () {
+                        Lampa.Activity.push({
+                            url: 'discover/tv?with_origin_country=' + DORAMA_COUNTRIES.join('|') +
+                                '&without_genres=16&sort_by=popularity.desc&likhtar_own=1',
+                            title: 'Дорами', component: 'category_full', page: 1, source: 'tmdb'
+                        });
+                    }));
+            }
         }
 
         return {
@@ -4220,6 +4384,62 @@
      */
     var LikhtarCard = (function () {
         var PANEL_CONTROLLER = 'likhtar_panel';
+        var cardsIndex = null;
+        var activeCardData = null;
+
+        function loadCardsIndex() {
+            $.ajax({
+                url: LIKHTAR_BASE_URL + 'cards/index.json',
+                dataType: 'json'
+            }).done(function (data) {
+                if (data) {
+                    cardsIndex = {
+                        ids: {},
+                        tv: {}
+                    };
+                    if (data.ids) {
+                        data.ids.forEach(function (id) { cardsIndex.ids[id] = true; });
+                    }
+                    if (data.tv) {
+                        data.tv.forEach(function (id) { cardsIndex.tv[id] = true; });
+                    }
+                }
+            }).fail(function () {
+                console.log('Ліхтар: не вдалося завантажити індекс карток');
+            });
+        }
+
+        function hasCardData(movie) {
+            if (!cardsIndex) return false;
+            var id = parseInt(movie.id, 10);
+            if (isSeries(movie)) {
+                return !!cardsIndex.tv[id];
+            } else {
+                return !!cardsIndex.ids[id];
+            }
+        }
+
+        function fetchCardData(movie, callback) {
+            if (cardsIndex && !hasCardData(movie)) return callback(null);
+
+            var type = isSeries(movie) ? 'tv' : '';
+            var url = LIKHTAR_BASE_URL + 'cards/' + type + movie.id + '.json';
+            var key = 'cardjson_' + (type ? 'tv' : 'movie') + '_' + movie.id;
+
+            var cached = LikhtarCache.get(key);
+            if (cached !== undefined) return callback(cached);
+
+            $.ajax({
+                url: url,
+                dataType: 'json'
+            }).done(function (data) {
+                LikhtarCache.set(key, data, LikhtarCache.TTL.WEEK);
+                callback(data);
+            }).fail(function () {
+                LikhtarCache.set(key, null, LikhtarCache.TTL.DAY);
+                callback(null);
+            });
+        }
 
         // Розділи, які вже покриті власними кнопками або нічого не дають.
         // Без цього поруч стоять наші «Актори та автори» і рідні «Актори».
@@ -4839,13 +5059,23 @@
                     body.append($('<div class="likhtar-panel__group"></div>').text(title));
                 }
 
+                // Якщо є розширені дані картки, додаємо пункт "Чи варто дивитись?"
+                if (activeCardData && activeCardData.watch) {
+                    body.append(hubEntry('Чи варто дивитись?', MODULE_ICONS.recommend, fromHub(function () { openWatchOpinion(movie, activeCardData); })));
+                }
+
                 // Перший блок — без заголовка, одразу найужиткові пункти
-                body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, fromHub(function () { openWiki(movie); })));
+                body.append(hubEntry('Цікаві факти', MODULE_ICONS.dots, fromHub(function () { openWiki(movie, activeCardData); })));
                 body.append(hubEntry('Актори та автори', MODULE_ICONS.cast, fromHub(function () { openCast(movie); })));
 
                 if (isSeries(movie)) {
                     body.append(hubEntry('Перелік серій', MODULE_ICONS.seasons, fromHub(function () { openSeasons(movie); })));
                     body.append(hubEntry('Попередній сезон: коротко', MODULE_ICONS.comments, fromHub(function () { openSeasonRecap(movie); })));
+                }
+
+                // Якщо є пояснення фіналу, додаємо відповідний пункт
+                if (activeCardData && activeCardData.ending_explained) {
+                    body.append(hubEntry('Пояснення фіналу', MODULE_ICONS.comments, fromHub(function () { openEndingExplained(movie, activeCardData); })));
                 }
 
                 group('Що далі');
@@ -4955,16 +5185,29 @@
             return sections;
         }
 
-        function openWiki(movie) {
+        function openWiki(movie, cardData) {
             openPanel('Цікаві факти', movie.title || movie.name || '', function (body) {
-                body.append('<div class="likhtar-panel__loading">Шукаємо у Вікіпедії…</div>');
+                body.empty();
+
+                var hasEggs = cardData && cardData.easter_eggs && cardData.easter_eggs.length;
+                if (hasEggs) {
+                    body.append($('<div class="likhtar-panel__group"></div>').text('Про створення'));
+                    cardData.easter_eggs.forEach(function (egg) {
+                        body.append($('<div class="likhtar-panel__text selector">• </div>').append($('<span></span>').text(egg)));
+                    });
+                }
+
+                var wikiGroup = $('<div class="likhtar-panel__loading">Шукаємо у Вікіпедії…</div>');
+                body.append(wikiGroup);
 
                 wikiFacts(movie, function (article) {
                     if (!panel) return;
-                    body.empty();
+                    wikiGroup.remove();
 
                     if (!article) {
-                        body.append('<div class="likhtar-panel__loading">У статті немає розділів із фактами</div>');
+                        if (!hasEggs) {
+                            body.append('<div class="likhtar-panel__loading">Даних немає</div>');
+                        }
                         return;
                     }
 
@@ -4978,6 +5221,244 @@
                     refocusPanel();
                 });
             });
+        }
+
+        function openEndingExplained(movie, cardData) {
+            openPanel('Пояснення фіналу', movie.title || movie.name || '', function (body) {
+                body.empty();
+
+                var warning = $('<div class="likhtar-panel__warning selector">' +
+                    '⚠️ ПОПЕРЕДЖЕННЯ: Нижче розкриваються важливі деталі сюжету та фіналу!' +
+                '</div>');
+                
+                var content = $('<div class="likhtar-panel__text selector"></div>').text(cardData.ending_explained);
+                
+                body.append(warning);
+                body.append(content);
+                refocusPanel();
+            });
+        }
+
+        function openWatchOpinion(movie, cardData) {
+            openPanel('Чи варто дивитись?', movie.title || movie.name || '', function (body) {
+                body.empty();
+
+                function group(title) {
+                    body.append($('<div class="likhtar-panel__group"></div>').text(title));
+                }
+
+                if (cardData.watch) {
+                    group('Враження');
+                    if (cardData.watch.worth) {
+                        body.append($('<div class="likhtar-panel__text selector"></div>')
+                            .html('<strong>Суть:</strong> ' + cardData.watch.worth));
+                    }
+                    if (cardData.watch.for) {
+                        body.append($('<div class="likhtar-panel__text selector"></div>')
+                            .html('<strong>Кому підійде:</strong> ' + cardData.watch.for));
+                    }
+                    if (cardData.watch.not_for) {
+                        body.append($('<div class="likhtar-panel__text selector"></div>')
+                            .html('<strong>Кому не підійде:</strong> ' + cardData.watch.not_for));
+                    }
+                }
+
+                if (cardData.mood && cardData.mood.length) {
+                    group('Настрій');
+                    var moodsEl = $('<div class="likhtar-panel__moods selector"></div>');
+                    cardData.mood.forEach(function (tag) {
+                        moodsEl.append($('<span class="likhtar-mood-tag"></span>').text('#' + tag));
+                    });
+                    body.append(moodsEl);
+                }
+
+                group('Оцінки вмісту');
+
+                function addRatingRow(label, metric) {
+                    if (!metric) return;
+                    var item = $('<div class="likhtar-panel__rating-item selector">' +
+                        '<div class="likhtar-panel__rating-label">' +
+                            '<span>' + label + '</span>' +
+                            '<b>' + metric.score + ' / 5</b>' +
+                        '</div>' +
+                        '<div class="likhtar-panel__rating-bar">' +
+                            '<div class="likhtar-panel__rating-fill" style="width: ' + (metric.score * 20) + '%"></div>' +
+                        '</div>' +
+                        '<div class="likhtar-panel__rating-desc"></div>' +
+                    '</div>');
+                    item.find('.likhtar-panel__rating-desc').text(metric.description || '');
+                    body.append(item);
+                }
+
+                addRatingRow('Складність сюжету', cardData.complexity);
+                addRatingRow('Рівень жорстокості', cardData.violence);
+                addRatingRow('Еротичні сцени', cardData.erotica);
+
+                if (cardData.children) {
+                    var rec = cardData.children.recommended;
+                    var badgeClass = rec ? 'likhtar-panel__child-badge--yes' : 'likhtar-panel__child-badge--no';
+                    var badgeText = rec ? 'Рекомендовано' : 'Не рекомендовано';
+                    
+                    var childItem = $('<div class="likhtar-panel__rating-item selector">' +
+                        '<div class="likhtar-panel__rating-label">' +
+                            '<span>Для дітей</span>' +
+                            '<span class="likhtar-panel__child-badge ' + badgeClass + '">' + badgeText + '</span>' +
+                        '</div>' +
+                        '<div class="likhtar-panel__rating-desc" style="margin-top: .4em;"></div>' +
+                    '</div>');
+                    childItem.find('.likhtar-panel__rating-desc').text(cardData.children.description || '');
+                    body.append(childItem);
+                }
+
+                refocusPanel();
+            });
+        }
+
+        function updateMetricsWithVibe(hero, movie, cardData) {
+            var card = hero.find('.likhtar-metrics').first();
+            if (!card.length) return;
+
+            card.empty();
+
+            // 1. TMDB Rating & Age rating (Top row)
+            var top = $('<div class="likhtar-metrics__top"></div>');
+            var rating = movie.vote_average ? Number(movie.vote_average).toFixed(1) : '';
+            if (rating && rating !== '0.0') {
+                top.append($('<div class="likhtar-metrics__rating"></div>')
+                    .append($('<span class="likhtar-metrics__num"></span>').text(rating))
+                    .append('<span class="likhtar-metrics__src">TMDB</span>'));
+            }
+            var age = $('<div class="likhtar-metrics__age likhtar-card__hidden"></div>');
+            top.append(age);
+            card.append(top);
+
+            // Fetch details to populate age rating, duration, and end time
+            detailsFor(movie, function (details) {
+                if (!details) return;
+
+                var cert = certificationOf(details);
+                if (cert) age.text(cert).removeClass('likhtar-card__hidden');
+
+                // Update bottom section (Duration, Ends at, Next episode, etc.)
+                var bottom = $('<div class="likhtar-metrics__bottom"></div>');
+
+                // Duration
+                if (isSeries(movie)) {
+                    var seasonsText = details.number_of_seasons
+                        ? details.number_of_seasons + (details.number_of_episodes ? ' · ' + details.number_of_episodes + ' серій' : '')
+                        : '';
+                    if (seasonsText) {
+                        bottom.append($('<div class="likhtar-metrics__bottom-row"></div>')
+                            .html('<span>Тривалість:</span> <b>' + seasonsText + '</b>'));
+                    }
+                } else if (details.runtime) {
+                    var h = Math.floor(details.runtime / 60), m = details.runtime % 60;
+                    var runText = (h ? h + ' год ' : '') + m + ' хв';
+                    bottom.append($('<div class="likhtar-metrics__bottom-row"></div>')
+                        .html('<span>Тривалість:</span> <b>' + runText + '</b>'));
+                }
+
+                // Ends at / Next episode / Digital release
+                var next = details.next_episode_to_air;
+                if (next && next.air_date) {
+                    var code = 'S' + ('0' + (next.season_number || 0)).slice(-2) +
+                        'E' + ('0' + (next.episode_number || 0)).slice(-2);
+                    bottom.append($('<div class="likhtar-metrics__bottom-row"></div>')
+                        .html('<span>Наступна серія:</span> <b>' + next.air_date + ' (' + code + ')</b>'));
+                } else if (!isSeries(movie) && details.runtime) {
+                    var end = new Date(Date.now() + details.runtime * 60000);
+                    var endTime = ('0' + end.getHours()).slice(-2) + ':' + ('0' + end.getMinutes()).slice(-2);
+                    bottom.append($('<div class="likhtar-metrics__bottom-row"></div>')
+                        .html('<span>Закінчиться о:</span> <b>' + endTime + '</b>'));
+                }
+
+                // Digital release date (if applicable)
+                LikhtarSections.getDigitalDate(details.id, function (digital) {
+                    if (digital && inDays(digital) >= 0) {
+                        bottom.append($('<div class="likhtar-metrics__bottom-row"></div>')
+                            .html('<span>В цифрі:</span> <b>' + digital + '</b>'));
+                    }
+                });
+
+                card.append(bottom);
+                refreshNavigation();
+            });
+
+            // 2. Mood tags (from cardData.mood)
+            if (cardData.mood && cardData.mood.length) {
+                var moodsEl = $('<div class="likhtar-metrics__moods-row selector"></div>');
+                cardData.mood.forEach(function (tag) {
+                    moodsEl.append($('<span class="likhtar-mood-tag"></span>').text('#' + tag));
+                });
+                card.append(moodsEl);
+            }
+
+            // 3. Impressions (from cardData.watch)
+            if (cardData.watch) {
+                var watchEl = $('<div class="likhtar-metrics__watch selector"></div>');
+                if (cardData.watch.worth) {
+                    watchEl.append($('<div class="likhtar-metrics__watch-line"></div>')
+                        .html('<strong>Суть:</strong> ' + cardData.watch.worth));
+                }
+                if (cardData.watch.for) {
+                    watchEl.append($('<div class="likhtar-metrics__watch-line"></div>')
+                        .html('<strong>Кому підійде:</strong> ' + cardData.watch.for));
+                }
+                if (cardData.watch.not_for) {
+                    watchEl.append($('<div class="likhtar-metrics__watch-line"></div>')
+                        .html('<strong>Кому ні:</strong> ' + cardData.watch.not_for));
+                }
+                card.append(watchEl);
+            }
+
+            // 4. Content metrics (Complexity, Violence, Erotica, Kids rating)
+            var ratingsEl = $('<div class="likhtar-metrics__ratings"></div>');
+
+            function addVibeRatingRow(label, metric) {
+                if (!metric) return;
+                var item = $('<div class="likhtar-metrics__rating-item selector">' +
+                    '<div class="likhtar-metrics__rating-label">' +
+                        '<span>' + label + '</span>' +
+                        '<b>' + metric.score + ' / 5</b>' +
+                    '</div>' +
+                    '<div class="likhtar-metrics__rating-bar">' +
+                        '<div class="likhtar-metrics__rating-fill" style="width: ' + (metric.score * 20) + '%"></div>' +
+                    '</div>' +
+                '</div>');
+
+                item.on('hover:focus', function () {
+                    if (metric.description) {
+                        Lampa.Noty.show(metric.description);
+                    }
+                });
+                ratingsEl.append(item);
+            }
+
+            addVibeRatingRow('Складність сюжету', cardData.complexity);
+            addVibeRatingRow('Рівень жорстокості', cardData.violence);
+            addVibeRatingRow('Еротичні сцени', cardData.erotica);
+
+            if (cardData.children) {
+                var rec = cardData.children.recommended;
+                var badgeClass = rec ? 'likhtar-panel__child-badge--yes' : 'likhtar-panel__child-badge--no';
+                var badgeText = rec ? 'Рекомендовано' : 'Не рекомендовано';
+
+                var childItem = $('<div class="likhtar-metrics__rating-item selector">' +
+                    '<div class="likhtar-metrics__rating-label">' +
+                        '<span>Для дітей</span>' +
+                        '<span class="likhtar-panel__child-badge ' + badgeClass + '">' + badgeText + '</span>' +
+                    '</div>' +
+                '</div>');
+
+                childItem.on('hover:focus', function () {
+                    if (cardData.children.description) {
+                        Lampa.Noty.show(cardData.children.description);
+                    }
+                });
+                ratingsEl.append(childItem);
+            }
+
+            card.append(ratingsEl);
         }
 
         /**
@@ -5640,6 +6121,8 @@
 
             var $render = $(renderEl);
 
+            activeCardData = null;
+
             // Вузол може і сам бути блоком героя, і містити його
             var hero = $render.filter('.full-start-new, .full-start');
             if (!hero.length) hero = $render.find('.full-start-new, .full-start').first();
@@ -5667,7 +6150,13 @@
             var details = hero.find('.full-start-new__details, .full-start__details').first();
             if (descr.length && details.length && !hero.find('.likhtar-card__descr').length) {
                 var fullText = descr.text();
-                var short = descr.clone().removeAttr('class').addClass('likhtar-card__descr selector');
+                // Обрізання рядків і padding — на різних елементах: деякі ТВ-браузери
+                // рахують -webkit-line-clamp неточно й тоді overflow:hidden зʼїдає
+                // власний padding-bottom рамки. Внутрішній блок ріжеться, зовнішній
+                // з padding лишається цілим у будь-якому разі.
+                var short = $('<div class="likhtar-card__descr selector"></div>');
+                var clampedText = descr.clone().removeAttr('class').addClass('likhtar-card__descr-text');
+                short.append(clampedText);
 
                 // На екрані опис обрізаний — повний текст відкривається панеллю
                 short.on('hover:enter click', function () {
@@ -5698,6 +6187,14 @@
             // перезбирання фокус на них просто не переходить.
             refreshNavigation();
 
+            fetchCardData(movie, function (cardData) {
+                if (cardData && cardData.id === movie.id) {
+                    activeCardData = cardData;
+                    updateMetricsWithVibe(hero, movie, cardData);
+                    refreshNavigation();
+                }
+            });
+
             console.log('Ліхтар: нова картка — розділів', scope.find('.items-line').length,
                 '· опис', descr.length ? 'знайдено' : 'немає');
         }
@@ -5710,8 +6207,14 @@
                 '.likhtar-card__anchor { display: none; }' +
 
                 /* Герой */
+                // Десь нижче є старе, нічим не прив'язане правило
+                // .full-start-new__body { align-items: center !important; },
+                // яке мало перекриватися класом .cardify — але його ніхто
+                // не додає. Без цієї строки текст центрувався в межах
+                // висоти, яку розтягує pinToBottom, і "висів у повітрі"
+                // замість того, щоб прилягати до низу.
                 'body.likhtar-card-on .full-start-new__body, body.likhtar-card-on .full-start__body' +
-                ' { position: relative; min-height: 26em; }' +
+                ' { position: relative; min-height: 26em; align-items: flex-end !important; }' +
                 /* Рідні кнопки й наші розділи — один ряд із прокруткою, як у Lampa:
                    перенос на другий ряд ламає навігацію пультом (вниз по діагоналі
                    Navigator не ходить) */
@@ -5815,7 +6318,10 @@
                 'body.likhtar-card-on .full-start-new__left, body.likhtar-card-on .full-start__left' +
                 ' { display: none !important; }' +
                 'body.likhtar-card-on .full-start-new__right, body.likhtar-card-on .full-start__right' +
-                ' { position: relative; z-index: 1; max-width: 60%; padding-right: 1em; }' +
+                ' { position: relative; z-index: 1; max-width: 35%; padding-right: 1em; display: flex; flex-direction: column; align-items: flex-start; text-align: center; }' +
+                'body.likhtar-card-on .full-start-new__title, body.likhtar-card-on .full-start__title' +
+                ' { max-width: 100% !important; width: 100% !important; white-space: normal !important; overflow-wrap: break-word !important; word-wrap: break-word !important; }' +
+                'body.likhtar-card-on .likhtar-hero-logo { max-width: 100% !important; }' +
                 /* Рідні кнопки під новий вигляд: головна — світла пігулка, решта круглі */
                 'body.likhtar-card-on .full-start__button { border-radius: 999px !important;' +
                 ' background: rgba(255,255,255,.14) !important; }' +
@@ -5827,14 +6333,16 @@
                 /* Рідна кнопка «Деталі» дублює нашу панель */
                 'body.likhtar-card-on .full-start__button.view--category,' +
                 ' body.likhtar-card-on .button--details { display: none !important; }' +
-                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5; max-width: 38em;' +
-                ' margin: .8em 0 .2em; padding: 1em 1.2em; border-radius: 1em;' +
+                '.likhtar-card__descr { font-size: 1.08em; line-height: 1.5; max-width: 40em; width: 100%; box-sizing: border-box; height: 7.8em;' +
+                ' margin: .8em auto .2em; padding: 0.8em 1.2em; border-radius: 1em;' +
                 ' background: rgba(14,14,17,.5); border: 1px solid rgba(255,255,255,.07);' +
                 ' backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);' +
-                ' color: rgba(233,233,236,.78);' +
-                /* Довжину тримає обрізання по рядках — жорстких меж не ставимо */
-                ' display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;' +
-                ' overflow: hidden; }' +
+                ' color: rgba(233,233,236,.78); display: flex; flex-direction: column; justify-content: center; text-align: center; }' +
+                /* Довжину тримає обрізання по рядках — жорстких меж не ставимо.
+                   На окремому елементі, без padding: інакше на деяких ТВ-браузерах
+                   overflow:hidden зʼїдає власний padding-bottom рамки. */
+                '.likhtar-card__descr-text { display: -webkit-box; -webkit-line-clamp: 4;' +
+                ' -webkit-box-orient: vertical; overflow: hidden; width: 100%; }' +
                 '.likhtar-card__descr.focus { border-color: rgba(255,255,255,.6);' +
                 ' background: rgba(20,22,28,.75); }' +
                 '.likhtar-panel__text { font-size: 1.05em; line-height: 1.6; padding: .6em;' +
@@ -5927,6 +6435,33 @@
                 /* Перенесена секція має вміщатись у вужчу панель */
                 '.likhtar-panel .items-line { margin: 0; }' +
                 '.likhtar-panel .items-line__title { font-size: 1em; }' +
+                /* Нові стилі для збагачених карток */
+                '.likhtar-panel__warning { background: rgba(229, 9, 20, 0.12); border: 1px solid rgba(229, 9, 20, 0.3); padding: 1.2em; border-radius: .8em; margin: 0 .4em 1em; text-align: center; color: #ff6b6b; font-weight: 700; font-size: .95em; line-height: 1.4; }' +
+                '.likhtar-panel__moods { display: flex; flex-wrap: wrap; gap: .5em; padding: .6em; margin: 0 .4em 1em; }' +
+                '.likhtar-mood-tag { font-size: .85em; font-weight: 600; padding: .3em .7em; border-radius: .5em; background: rgba(238,195,122,.15); color: #eec37a; border: 1px solid rgba(238,195,122,.3); }' +
+                '.likhtar-panel__rating-item { padding: .8em; margin: 0 .4em .8em; border-radius: .7em; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); }' +
+                '.likhtar-panel__rating-item.focus { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); }' +
+                '.likhtar-panel__rating-label { font-size: .92em; font-weight: 700; display: flex; justify-content: space-between; margin-bottom: .4em; }' +
+                '.likhtar-panel__rating-bar { height: .4em; border-radius: .2em; background: rgba(255,255,255,.1); overflow: hidden; margin-bottom: .5em; }' +
+                '.likhtar-panel__rating-fill { height: 100%; border-radius: .2em; background: linear-gradient(90deg, #eec37a, #ffb347); }' +
+                '.likhtar-panel__rating-desc { font-size: .82em; opacity: .6; line-height: 1.4; }' +
+                '.likhtar-panel__child-badge { display: inline-block; font-size: .8em; font-weight: 700; padding: .2em .6em; border-radius: .4em; text-transform: uppercase; }' +
+                '.likhtar-panel__child-badge--yes { background: rgba(46,160,67,.2); color: #3fb46a; border: 1px solid rgba(46,160,67,.4); }' +
+                '.likhtar-panel__child-badge--no { background: rgba(219,83,79,.2); color: #d9534f; border: 1px solid rgba(219,83,79,.4); }' +
+                '.likhtar-metrics__moods-row { display: flex; flex-wrap: wrap; gap: 0.45em; padding: 0.8em 1.3em 0.4em; }' +
+                '.likhtar-metrics__watch { display: flex; flex-direction: column; gap: 0.5em; padding: 0.8em 1.3em; border-top: 1px solid rgba(255,255,255,0.08); font-size: 0.85em; line-height: 1.4; }' +
+                '.likhtar-metrics__watch-line { opacity: 0.9; }' +
+                '.likhtar-metrics__watch.focus { background: rgba(255,255,255,0.03); }' +
+                '.likhtar-metrics__ratings { display: flex; flex-direction: column; gap: 0.6em; padding: 0.8em 1.3em; border-top: 1px solid rgba(255,255,255,0.08); }' +
+                '.likhtar-metrics__rating-item { display: flex; flex-direction: column; gap: 0.3em; }' +
+                '.likhtar-metrics__rating-item.focus { background: rgba(255,255,255,0.03); }' +
+                '.likhtar-metrics__rating-label { display: flex; justify-content: space-between; font-size: 0.82em; font-weight: 700; }' +
+                '.likhtar-metrics__rating-bar { height: 0.3em; border-radius: 0.15em; background: rgba(255,255,255,0.1); overflow: hidden; }' +
+                '.likhtar-metrics__rating-fill { height: 100%; border-radius: 0.15em; background: linear-gradient(90deg, #eec37a, #ffb347); }' +
+                '.likhtar-metrics__bottom { display: flex; flex-direction: column; gap: 0.4em; padding: 0.8em 1.3em; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.015); font-size: 0.82em; }' +
+                '.likhtar-metrics__bottom-row { display: flex; justify-content: space-between; align-items: center; }' +
+                '.likhtar-metrics__bottom-row span { color: rgba(233,233,236,0.5); }' +
+                '.likhtar-metrics__bottom-row b { font-weight: 600; color: #fff; }' +
                 '</style>');
         }
 
@@ -5934,6 +6469,7 @@
             init: function () {
                 addStyles();
                 if (isEnabled()) $('body').addClass('likhtar-card-on');
+                loadCardsIndex();
 
                 // «Вниз» з останнього ряду кнопок Lampa віддає прихованим
                 // розділам — фокус провалюється в порожнечу без вороття.
