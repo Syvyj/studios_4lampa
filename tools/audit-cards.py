@@ -78,6 +78,11 @@ def offline_checks(name, card):
     if not card.get("source") and (card.get("ending_explained") or card.get("easter_eggs")):
         problems.append("фінал/факти без джерела")
 
+    # Черга на ручний прохід. Окремий список тут не тримаємо — він застаріє
+    # після першого ж наповнення, а база рахує себе сама.
+    if not card.get("source") and (card.get("summary") or "").strip():
+        problems.append("без джерела — потрібен ручний прохід")
+
     if WEAK_WORTH.match((card.get("watch") or {}).get("worth") or "") or \
        SOFT_WORTH.search((card.get("watch") or {}).get("worth") or ""):
         problems.append("worth звернений до глядача замість думки про твір")
