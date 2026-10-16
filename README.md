@@ -1,6 +1,6 @@
 # 💡 Ліхтар (Likhtar) — Плагін для Lampa
 
-![Likhtar Hero](likhtar_promo/image_2026-03-03_03-29-53.png)
+![Likhtar Hero](likhtar_promo/home.jpg)
 
 [🇺🇦 Українська версія](#-опис) | [🇬🇧 English version](#-english-description)
 
@@ -32,7 +32,7 @@
 - Кожен сервіс має власні категорії (нові фільми, серіали, жанрові підбірки)
 - Кнопка «На сторінку» з повним каталогом студії
 
-![Streaming Services](likhtar_promo/image_2026-03-03_03-29-57.png)
+![Streaming Services](likhtar_promo/netflix-row.jpg)
 
 #### 🎭 Кіно під настрій
 - Підбірки за жанрами та настроєм для швидкого пошуку
@@ -51,7 +51,7 @@
 - Підписуйтесь на улюблені виробничі компанії
 - Окрема сторінка з новинками від підписаних студій
 
-![Studio Subscriptions](likhtar_promo/image_2026-03-03_03-30-01.png)
+![Studio Subscriptions](likhtar_promo/subscriptions.jpg)
 
 ### ⚙️ Налаштування
 
